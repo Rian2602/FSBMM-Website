@@ -54,10 +54,16 @@
                     <dd class="mt-1 text-stone-600">{{ number_format($organization->member_count, 0, ',', '.') }} pekerja</dd>
                 </div>
                 @if ($organization->website)
+                    {{-- Only http(s) values become links; anything else (e.g. javascript:) renders as inert text. --}}
+                    @php($isSafeWebsite = str_starts_with($organization->website, 'http://') || str_starts_with($organization->website, 'https://'))
                     <div>
                         <dt class="font-bold uppercase tracking-wide text-brand-950">Website</dt>
                         <dd class="mt-1">
-                            <a href="{{ $organization->website }}" target="_blank" rel="noopener noreferrer" class="text-brand-950 underline decoration-accent underline-offset-4 hover:text-accent">{{ $organization->website }}</a>
+                            @if ($isSafeWebsite)
+                                <a href="{{ $organization->website }}" target="_blank" rel="noopener noreferrer" class="text-brand-950 underline decoration-accent underline-offset-4 hover:text-accent">{{ $organization->website }}</a>
+                            @else
+                                <span class="text-stone-500">{{ $organization->website }}</span>
+                            @endif
                         </dd>
                     </div>
                 @endif

@@ -34,4 +34,43 @@ class OrganizationTest extends TestCase
 
         $this->get('/sba/'.$org->slug)->assertNotFound();
     }
+
+    public function test_unsafe_website_value_renders_inert_not_as_link(): void
+    {
+        $org = Organization::factory()->create([
+            'is_published' => true,
+            'website' => 'javascript:alert(1)',
+        ]);
+
+        $response = $this->get('/sba/'.$org->slug);
+
+        $response->assertOk();
+        $response->assertDontSee('href="javascript:', false);
+        $response->assertSee('javascript:alert(1)', false); // shown as inert text
+    }
+
+    public function test_https_website_renders_as_link(): void
+    {
+        $org = Organization::factory()->create([
+            'is_published' => true,
+            'website' => 'https://example.org/sba',
+        ]);
+
+        $this->get('/sba/'.$org->slug)
+            ->assertOk()
+            ->assertSee('href="https://example.org/sba"', false);
+    }
+
+    public function test_organization_without_company_lists_without_empty_row(): void
+    {
+        $org = Organization::factory()->create([
+            'is_published' => true,
+            'company' => null,
+        ]);
+
+        $this->get('/sba')
+            ->assertOk()
+            ->assertSee($org->name)
+            ->assertDontSee('font-semibold text-stone-700"></p>', false);
+    }
 }

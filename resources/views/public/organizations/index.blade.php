@@ -23,7 +23,9 @@
                         <h2 class="font-display text-xl font-bold text-brand-950">
                             <a href="{{ route('organizations.show', $org) }}" class="hover:text-accent">{{ $org->name }}</a>
                         </h2>
-                        <p class="mt-1 text-sm font-semibold text-stone-700">{{ $org->company }}</p>
+                        @if ($org->company)
+                            <p class="mt-1 text-sm font-semibold text-stone-700">{{ $org->company }}</p>
+                        @endif
                         @if ($org->location)
                             <p class="mt-3 text-sm text-stone-500">{{ $org->location }}</p>
                         @endif
