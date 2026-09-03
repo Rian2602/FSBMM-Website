@@ -490,7 +490,7 @@ Factories: `ArticleFactory` with real-looking Indonesian faker sentences, `publi
 Route::get('/berita', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/berita/{article:slug}', [ArticleController::class, 'show'])->name('articles.show');
 ```
-Controller: `index()` → published, latest first, optional `?category=` slug filter (pass `$categories` for the filter bar); `show(Article $article)` → `abort_unless($article->is_published && $article->published_at?->isPast(), 404);` render show with formatted date (`$article->published_at->translatedFormat('d F Y')`), category badge, author name, body (safe: store as sanitized HTML from Filament RichEditor — render with `{!! $article->body !!}` only because Filament persists sanitized output; note in code comment). Views extend public layout.
+Controller: `index()` → published, latest first, optional `?category=` slug filter (pass `$categories` for the filter bar); `show(Article $article)` → `abort_unless($article->is_published && $article->published_at?->isPast(), 404);` render show with formatted date (`$article->published_at->translatedFormat('d F Y')` — renders Indonesian because foundation config sets `APP_LOCALE=id`; do NOT add per-call locale overrides), category badge, author name, body (safe: store as sanitized HTML from Filament RichEditor — render with `{!! $article->body !!}` only because Filament persists sanitized output; note in code comment). Views extend public layout.
 
 - [ ] **Step 5: Filament resources**
 
