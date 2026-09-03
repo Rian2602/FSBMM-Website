@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\UserResource;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Models\User;
 use Filament\Pages\Auth\Login;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -132,5 +133,24 @@ class AdminAuthTest extends TestCase
         $this->actingAs($a);
 
         $this->assertTrue(UserResource::canDeleteAny());
+    }
+
+    public function test_bulk_delete_cannot_remove_the_actor_or_the_last_super_admin(): void
+    {
+        $a = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $b = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        // Actor selects BOTH admins (including the actor's own record) for bulk delete.
+        Livewire::actingAs($a)
+            ->test(ListUsers::class)
+            ->mountTableBulkAction('delete', [$a, $b])
+            ->callMountedTableBulkAction();
+
+        // The actor's own account must survive, and at least one super admin remains.
+        $this->assertDatabaseHas('users', ['id' => $a->id]);
+        $this->assertGreaterThanOrEqual(
+            1,
+            User::where('role', User::ROLE_SUPER_ADMIN)->count(),
+        );
     }
 }

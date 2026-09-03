@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserResource extends Resource
 {
@@ -137,7 +138,25 @@ class UserResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->using(static function (Collection $records): void {
+                            $actor = auth()->user();
+
+                            // Never delete the actor's own account via bulk delete.
+                            $candidates = $records->reject(
+                                static fn (User $record): bool => $actor && $record->is($actor)
+                            );
+
+                            // Keep at least one super admin in the system (anti-lockout),
+                            // matching the single-row canDelete() guard.
+                            $superAdmins = $candidates->where('role', User::ROLE_SUPER_ADMIN);
+                            $totalSuperAdmins = User::where('role', User::ROLE_SUPER_ADMIN)->count();
+                            $removable = max(0, $totalSuperAdmins - 1);
+
+                            $candidates->where('role', '!=', User::ROLE_SUPER_ADMIN)
+                                ->merge($superAdmins->take($removable))
+                                ->each(static fn (User $record): bool => (bool) $record->delete());
+                        }),
                 ]),
             ]);
     }
