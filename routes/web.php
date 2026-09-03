@@ -7,6 +7,16 @@ use App\Http\Controllers\Public\OrganizationController;
 use App\Http\Controllers\Public\PageController;
 use Illuminate\Support\Facades\Route;
 
+// Sitemap — must stay above the page slug catch-all below.
+Route::get('/sitemap.xml', function () {
+    $urls = collect(['/', '/tentang', '/berita', '/sba', '/e-resource', '/e-learning', '/kontak'])
+        ->map(fn (string $url) => url($url));
+
+    return response()
+        ->view('sitemap', ['urls' => $urls])
+        ->header('Content-Type', 'application/xml');
+});
+
 // Named entry pages (also reachable via the page slug catch-all below).
 Route::get('/', fn () => app(PageController::class)->show('home'))->name('home');
 Route::get('/tentang', fn () => app(PageController::class)->show('tentang'))->name('tentang');

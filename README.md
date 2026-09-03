@@ -1,59 +1,106 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# FSBMM — Website Federasi Serikat Buruh Makanan dan Minuman
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Situs resmi (SP1) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
+berbasis konten plus panel admin staf federasi. Dibangun dengan **Laravel 12**,
+**Filament 3**, dan **Tailwind CSS v4** — sepenuhnya *data-driven*: semua
+halaman, berita, direktori SBA, e-resource, dan kursus dikelola dari panel
+admin, tanpa konten hardcoded.
 
-## About Laravel
+> Rujukan desain/domain: [SPMKB](https://github.com/Rian2602/UnionDatabase)
+> (database anggota Serikat Pekerja/Buruh tingkat perusahaan). Proyek ini
+> adalah federasi yang menaungi banyak SBA; SP1 menyiapkan fondasinya.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Cakupan (SP1)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+| Area | Rute | Kelola di admin |
+|---|---|---|
+| Halaman beranda/tentang/kontak (page-builder: hero, teks kaya, gambar, statistik, CTA, kutipan) | `/`, `/tentang`, `/kontak` | Halaman |
+| Berita + kategori (terbit terjadwal: draf → terjadwal → tayang) | `/berita`, `/berita/{slug}` | Artikel, Kategori |
+| Direktori SBA (organisasi) | `/sba`, `/sba/{slug}` | Organisasi SBA |
+| Pustaka e-resource (unduhan PDF bertanda tangan + penghitung) | `/e-resource` | E-Resource |
+| Katalog e-learning (kursus; materi SP4) | `/e-learning` | Kursus E-Learning |
+| Panel admin staf (super admin + editor konten) | `/admin` | — |
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Di luar SP1 (lihat spec): login SBA/member, data anggota (PII), tenant scoping,
+authoring materi kursus — direncanakan di **SP2–SP4**.
 
-## Learning Laravel
+## Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Laravel 12 (PHP 8.3+), MySQL untuk produksi, SQLite untuk pengembangan lokal
+- Filament 3 (panel admin + editor konten + page-builder)
+- Tailwind CSS v4 + Vite (tanpa tema admin; tampilan publik diracik kustom)
+- Tidak ada paket auth/permission tambahan: role tetap (`super_admin`, `editor`)
+  dengan middleware/policy sederhana
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Menjalankan di lokal
 
-## Laravel Sponsors
+```bash
+# 1. Prasyarat: PHP 8.3+, Composer, Node 20+
+cp .env.example .env
+composer install
+npm install
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+# 2. Siapkan database SQLite
+touch database/database.sqlite
 
-### Premium Partners
+# 3. Kunci + migrasi + data demo
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link        # agar logo/sampul/PDF demo bisa diakses
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# 4. Aset frontend (mode dev: npm run dev; produksi:)
+npm run build
 
-## Contributing
+# 5. Jalankan
+php artisan serve               # http://127.0.0.1:8000
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Akun admin
 
-## Code of Conduct
+Seeder membuat akun super admin dari variabel env (lihat `.env`):
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```env
+FSBMM_ADMIN_EMAIL=admin@fsbmm.test
+FSBMM_ADMIN_PASSWORD=password
+```
 
-## Security Vulnerabilities
+> **Wajib ganti `FSBMM_ADMIN_PASSWORD` di produksi** (mis. lewat cPanel).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Menjalankan test
 
-## License
+```bash
+php artisan test          # seluruh suite feature (PHPUnit)
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Struktur penting
+
+- `app/Models/` — `User`, `Organization`, `Category`, `Article`, `Page`,
+  `PageBlock`, `Eresource`, `Course`
+- `app/Support/PageBlockRenderer.php` — merender blok halaman menjadi HTML
+  (lihat `resources/views/blocks/*.blade.php`)
+- `app/Filament/Resources/` — CRUD admin per entitas; `PageResource` memakai
+  Builder Filament untuk menyusun blok halaman
+- `resources/views/layouts/public.blade.php` — kerangka situs publik (token
+  warna placeholder Swiss-Brutalist-Green; ganti saat aset brand resmi tiba)
+- `database/seeders/` — data demo (admin, SBA, artikel, halaman, e-resource,
+  kursus)
+
+## Catatan keamanan
+
+- Konten RichEditor (artikel/halaman) dianggap **HTML tepercaya dari staf
+  federasi** — dirender mentah hanya karena penulis adalah pengguna
+  terautentikasi; semua input non-staf tetap di-escape.
+- Unduhan e-resource memakai URL **bertanda tangan** (`middleware('signed')`);
+  file yang dihapus dari storage menghasilkan 404 yang bersih.
+- Halaman struktural (`home`, `tentang`, `kontak`) tidak dapat dihapus/diubah
+  slug-nya (dilindungi di level model dan UI).
+
+## Roadmap
+
+- **SP2** — akun & dashboard SBA (organisasi → tenant scoping, login SBA)
+- **SP3** — modul data anggota per SBA (roster, upah & iuran, absensi,
+  pengaduan) dengan aturan PII
+- **SP4** — authoring e-learning (pelajaran + kuis untuk peserta staf)
+
+Lihat `docs/superpowers/specs/2026-09-03-fsbmm-website-sp1-design.md` dan
+`docs/superpowers/plans/2026-09-03-sp1-foundation-public-site.md` untuk detail.

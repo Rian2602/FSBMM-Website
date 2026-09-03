@@ -94,4 +94,16 @@ class PageTest extends TestCase
         $page->delete();
         $this->assertDatabaseMissing('pages', ['id' => $page->id]);
     }
+
+    public function test_home_page_showcases_latest_articles_and_resources(): void
+    {
+        $this->seed();
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Berita Terbaru')
+            ->assertSee('Rapat Kerja Nasional FSBMM 2026 Bahas Strategi Perjuangan Upah')
+            ->assertSee('Unduhan')
+            ->assertSee('AD/ART Federasi');
+    }
 }

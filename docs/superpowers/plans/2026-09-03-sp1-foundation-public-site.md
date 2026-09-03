@@ -791,11 +791,11 @@ Route::get('/sitemap.xml', function () {
 
 - [ ] **Step 3: Homepage composition**
 
-Decide: homepage = `home` page blocks (hero + stats) PLUS dynamic strips below via `pages/show.blade.php` special-case when `$page->slug === 'home'`: append latest 3 published articles and top 3 published eresources. Implement with a small `@if` in the show view calling `Article::published()->latest()->take(3)->get()` through a view composer-free inline query (acceptable for the home page only; comment why). Add section headings "Berita Terbaru" and "Unduhan".
+Decide: homepage = `home` page blocks (hero + stats) PLUS dynamic strips below via a special case when `$page->slug === 'home'`: append latest 3 published articles and top 3 published eresources. (**executed: the queries live in `PageController::show` — home is the only page mixing a dynamic feed, and controller-side keeps the view dumb and the feed testable; the view special-cases on `$page->slug === 'home'` and renders the passed collections.**) Section headings "Berita Terbaru" and "Unduhan".
 
 - [ ] **Step 4: README + .env.example + cleanup**
 
-Write `README.md` (Indonesian): what it is, SP1 scope, stack, setup (php/composer/node, sqlite dev, `composer install`, `npm install && npm run build`, `cp .env.example .env`, `php artisan key:generate`, `migrate --seed`, admin creds note, `php artisan serve`), test (`php artisan test`), roadmap SP2–SP4 pointer to the spec. Complete `.env.example` with MySQL prod block + `FSBMM_ADMIN_*`. `rm resources/views/welcome.blade.php` and any references.
+Write `README.md` (Indonesian): what it is, SP1 scope, stack, setup (php/composer/node, sqlite dev, `composer install`, `npm install && npm run build`, `cp .env.example .env`, `php artisan key:generate`, `migrate --seed`, admin creds note, `php artisan serve`), test (`php artisan test`), roadmap SP2–SP4 pointer to the spec. Complete `.env.example` with MySQL prod block + `FSBMM_ADMIN_*`. (**executed: `welcome.blade.php` was already removed in Task 6, when `/` moved to the DB home page — no references remain.**)
 
 - [ ] **Step 5: Full suite green**
 
