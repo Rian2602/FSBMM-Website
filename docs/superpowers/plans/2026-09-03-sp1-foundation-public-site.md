@@ -190,7 +190,7 @@ npm run build
 ls public/build/manifest.json
 ```
 
-Acceptance: `npm run build` exits 0 and `public/build/manifest.json` references `resources/css/app.css`. The layout itself is exercised end-to-end from Task 4 onward (views extend it); `/` still renders the skeleton `welcome.blade.php` until Task 8 removes it.
+Acceptance: `npm run build` exits 0 and `public/build/manifest.json` references `resources/css/app.css`. The layout itself is exercised end-to-end from Task 4 onward (views extend it); `/` renders the skeleton `welcome.blade.php` until Task 6 replaces it with the DB home page.
 
 - [ ] **Step 5: Commit**
 
@@ -642,9 +642,9 @@ Routes (order matters — after all collection routes):
 Route::get('/', fn () => app(PageController::class)->show('home'))->name('home');
 Route::get('/tentang', fn () => app(PageController::class)->show('tentang'))->name('tentang');
 Route::get('/kontak', fn () => app(PageController::class)->show('kontak'))->name('kontak');
-Route::get('/{page:slug}', [PageController::class, 'show'])->whereIn('page', Page::published()->pluck('slug'))->name('pages.show');
+Route::get('/{page:slug}', [PageController::class, 'show'])->name('pages.show');
 ```
-(The `whereIn` keeps arbitrary slugs from shadowing nothing — collection routes are declared above, so the catch-all is safe; whereIn is optional hardening — include it.)
+(**executed: the plan's optional `->whereIn()` slug whitelist was OMITTED — a dynamic whitelist freezes at `route:cache` time and would 404 freshly published pages in production; the controller already 404s unknown/unpublished slugs and more specific routes are declared above. `welcome.blade.php` was deleted in this task (its `/` route moved to the DB home page) and ExampleTest now seeds first.**)
 
 - [ ] **Step 6: Seeder pages + blocks (home hero/stats, tentang rich_text, kontak rich_text + cta)**
 
