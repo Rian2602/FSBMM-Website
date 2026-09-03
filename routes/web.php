@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Public\ArticleController;
+use App\Http\Controllers\Public\CourseController;
+use App\Http\Controllers\Public\EresourceController;
 use App\Http\Controllers\Public\OrganizationController;
 use App\Http\Controllers\Public\PageController;
 use Illuminate\Support\Facades\Route;
@@ -17,8 +19,12 @@ Route::get('/berita/{article:slug}', [ArticleController::class, 'show'])->name('
 Route::get('/sba', [OrganizationController::class, 'index'])->name('organizations.index');
 Route::get('/sba/{organization:slug}', [OrganizationController::class, 'show'])->name('organizations.show');
 
-// Page-builder catch-all. No ->whereIn() slug whitelist: a dynamic whitelist
-// freezes when routes are cached (route:cache) and would 404 freshly
-// published pages in production; the controller 404s unknown/unpublished
-// slugs instead, and more specific routes above always win.
+Route::get('/e-resource', [EresourceController::class, 'index'])->name('eresources.index');
+Route::get('/e-resource/{eresource:slug}/download', [EresourceController::class, 'download'])
+    ->name('eresources.download')
+    ->middleware('signed');
+
+Route::get('/e-learning', [CourseController::class, 'index'])->name('courses.index');
+
+// Page-builder catch-all (no whereIn: see Task 6 annotation).
 Route::get('/{page:slug}', [PageController::class, 'show'])->name('pages.show');

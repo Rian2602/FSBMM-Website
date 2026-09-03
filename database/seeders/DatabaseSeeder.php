@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             OrganizationSeeder::class,
             ArticleSeeder::class,
             PageSeeder::class,
+            LibrarySeeder::class,
         ]);
     }
 }
