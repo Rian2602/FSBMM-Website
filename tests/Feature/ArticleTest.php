@@ -45,4 +45,24 @@ class ArticleTest extends TestCase
             ->assertSee($article->title)
             ->assertSee('Isi artikel lengkap untuk diuji.');
     }
+
+    public function test_index_can_be_filtered_by_category(): void
+    {
+        $kabar = Category::factory()->create(['name' => 'Kabar Federasi', 'slug' => 'kabar-federasi']);
+        $edukasi = Category::factory()->create(['name' => 'Edukasi Anggota', 'slug' => 'edukasi-anggota']);
+        Article::factory()->create(['title' => 'Berita Federasi A', 'category_id' => $kabar->id, 'published_at' => now()]);
+        Article::factory()->create(['title' => 'Artikel Edukasi B', 'category_id' => $edukasi->id, 'published_at' => now()]);
+
+        $this->get('/berita?category=kabar-federasi')
+            ->assertOk()
+            ->assertSee('Berita Federasi A')
+            ->assertDontSee('Artikel Edukasi B');
+    }
+
+    public function test_draft_article_direct_slug_returns_404(): void
+    {
+        Article::factory()->draft()->create(['title' => 'Draf Belum Terbit', 'slug' => 'draf-belum-terbit']);
+
+        $this->get('/berita/draf-belum-terbit')->assertNotFound();
+    }
 }

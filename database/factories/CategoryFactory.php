@@ -21,9 +21,12 @@ class CategoryFactory extends Factory
             'Solidaritas',
         ]);
 
+        // Unique slug suffix so factory rows never collide on categories.slug
+        // (pool names repeat once several rows are created) or with explicit
+        // slugs like 'kabar-federasi' used by tests/seeders.
         return [
             'name' => $name,
-            'slug' => Str::slug($name),
+            'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(100, 99999),
         ];
     }
 }
