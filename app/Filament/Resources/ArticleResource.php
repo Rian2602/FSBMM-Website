@@ -72,6 +72,7 @@ class ArticleResource extends Resource
                     ->relationship('author', 'name')
                     ->searchable()
                     ->preload()
+                    ->required()
                     ->default(fn () => auth()->id()),
                 Forms\Components\DateTimePicker::make('published_at')
                     ->label('Jadwal terbit')
