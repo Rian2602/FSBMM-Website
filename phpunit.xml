@@ -30,6 +30,8 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="APP_TIMEZONE" value="Asia/Jakarta"/>
+        <env name="FSBMM_ADMIN_EMAIL" value="admin@fsbmm.test"/>
+        <env name="FSBMM_ADMIN_PASSWORD" value="password"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
