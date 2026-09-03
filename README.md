@@ -66,6 +66,15 @@ FSBMM_ADMIN_PASSWORD=password
 
 > **Wajib ganti `FSBMM_ADMIN_PASSWORD` di produksi** (mis. lewat cPanel).
 
+### Catatan deploy (cPanel/shared hosting)
+
+- Aset vendor Filament di `public/css|js/filament` **tidak ikut di-commit**
+  (diregenerasi otomatis saat `composer install` via `post-autoload-dump`);
+  jika perlu, jalankan manual: `php artisan filament:assets`.
+- Ganti `.env` produksi ke blok MySQL (lihat `.env.example`), lalu
+  `php artisan migrate --seed` + `php artisan storage:link` + `npm run build`
+  (atau jalankan skrip `composer setup`).
+
 ## Menjalankan test
 
 ```bash
