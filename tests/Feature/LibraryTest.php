@@ -46,6 +46,29 @@ class LibraryTest extends TestCase
         $this->get(route('eresources.download', ['eresource' => $res->slug]))->assertForbidden();
     }
 
+    public function test_unpublished_download_with_valid_signature_returns_404(): void
+    {
+        Storage::fake('public');
+        $res = Eresource::factory()->unpublished()->create();
+        Storage::disk('public')->put($res->file_path, '%PDF-1.4 rahasia');
+
+        $url = URL::signedRoute('eresources.download', ['eresource' => $res->slug]);
+
+        $this->get($url)->assertNotFound();
+        $this->assertSame(0, $res->fresh()->downloads_count);
+    }
+
+    public function test_signed_download_of_missing_file_returns_404(): void
+    {
+        Storage::fake('public');
+        $res = Eresource::factory()->create(['file_path' => 'eresources/tidak-ada.pdf']);
+
+        $url = URL::signedRoute('eresources.download', ['eresource' => $res->slug]);
+
+        $this->get($url)->assertNotFound();
+        $this->assertSame(0, $res->fresh()->downloads_count);
+    }
+
     public function test_course_catalog_lists_only_published_courses(): void
     {
         Course::factory()->create(['title' => 'Keselamatan Kerja', 'is_published' => true]);

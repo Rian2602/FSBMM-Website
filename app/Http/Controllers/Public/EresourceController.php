@@ -19,6 +19,8 @@ class EresourceController extends Controller
     {
         abort_unless($eresource->is_published, 404);
 
+        abort_unless(Storage::disk('public')->exists($eresource->file_path), 404, 'File tidak ditemukan.');
+
         $eresource->increment('downloads_count');
 
         return Storage::disk('public')->download($eresource->file_path);
