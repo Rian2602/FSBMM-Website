@@ -29,10 +29,13 @@ Route::get('/sitemap.xml', function () {
         ['loc' => url('/kontak'), 'lastmod' => null],
     ]);
 
-    $pages = Page::published()->get()->map(fn (Page $p) => [
-        'loc' => url('/'.$p->slug),
-        'lastmod' => optional($p->updated_at)->toDateString(),
-    ]);
+    $pages = Page::published()
+        ->whereNotIn('slug', Page::STRUCTURAL_SLUGS)
+        ->get()
+        ->map(fn (Page $p) => [
+            'loc' => url('/'.$p->slug),
+            'lastmod' => optional($p->updated_at)->toDateString(),
+        ]);
 
     $articles = Article::published()->get()->map(fn (Article $a) => [
         'loc' => url('/berita/'.$a->slug),

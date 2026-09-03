@@ -69,4 +69,21 @@ class SeoTest extends TestCase
                 ->assertSee('meta name="description"', false);
         }
     }
+
+    public function test_sitemap_has_no_duplicate_locs(): void
+    {
+        $this->seed();
+
+        $response = $this->get('/sitemap.xml');
+        $response->assertOk();
+
+        preg_match_all('#<loc>(.*?)</loc>#', $response->getContent(), $matches);
+        $locs = $matches[1];
+
+        $this->assertSame(
+            count($locs),
+            count(array_unique($locs)),
+            'Sitemap mengulang loc yang sama.'
+        );
+    }
 }
