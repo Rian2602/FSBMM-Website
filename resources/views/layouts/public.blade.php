@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', config('app.name'))</title>
+    @yield('meta')
+    @vite('resources/css/app.css')
+</head>
+<body class="min-h-screen flex flex-col">
+    <header class="bg-brand-950 text-white">
+        <div class="mx-auto max-w-6xl px-4 py-5 flex items-center justify-between">
+            <a href="/" class="font-display text-2xl font-bold tracking-tight">FSBMM<span class="text-accent">.</span></a>
+            <nav class="flex gap-6 text-sm font-semibold">
+                <a href="/berita" class="hover:text-accent">Berita</a>
+                <a href="/sba" class="hover:text-accent">SBA</a>
+                <a href="/e-resource" class="hover:text-accent">E-Resource</a>
+                <a href="/e-learning" class="hover:text-accent">E-Learning</a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-1">@yield('content')</main>
+    <footer class="bg-brand-950 text-white/80 text-sm">
+        <div class="mx-auto max-w-6xl px-4 py-6">© {{ date('Y') }} FSBMM — Federasi Serikat Buruh Makanan dan Minuman</div>
+    </footer>
+</body>
+</html>

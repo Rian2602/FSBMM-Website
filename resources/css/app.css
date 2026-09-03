@@ -1,11 +1,16 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
+/* Brand tokens — PLACEHOLDER palette from SPMKB family (Swiss Brutalist Green).
+   Replace --brand-* values when official federation logo/colors arrive. */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+  --color-brand-950: #073b32;
+  --color-brand-800: #0b5e4c;
+  --color-brand-600: #12806a;
+  --color-brand-100: #dcefe8;
+  --color-accent: #c9d43a;
+  --font-display: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  body { @apply bg-stone-50 text-stone-900 antialiased; }
 }
