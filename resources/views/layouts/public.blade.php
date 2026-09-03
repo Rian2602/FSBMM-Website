@@ -9,9 +9,9 @@
 </head>
 <body class="min-h-screen flex flex-col">
     <header class="bg-brand-950 text-white">
-        <div class="mx-auto max-w-6xl px-4 py-5 flex items-center justify-between">
+        <div class="mx-auto max-w-6xl px-4 py-5 flex flex-wrap items-center justify-between gap-y-3">
             <a href="{{ route('home') }}" class="font-display text-2xl font-bold tracking-tight">FSBMM<span class="text-accent">.</span></a>
-            <nav class="flex gap-6 text-sm font-semibold">
+            <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
                 <a href="{{ route('articles.index') }}" class="hover:text-accent">Berita</a>
                 <a href="{{ route('organizations.index') }}" class="hover:text-accent">SBA</a>
                 <a href="{{ route('eresources.index') }}" class="hover:text-accent">E-Resource</a>
