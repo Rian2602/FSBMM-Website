@@ -46,6 +46,27 @@ class LibraryTest extends TestCase
         $this->get(route('eresources.download', ['eresource' => $res->slug]))->assertForbidden();
     }
 
+    public function test_index_renders_expiring_download_link(): void
+    {
+        Storage::fake('public');
+        $res = Eresource::factory()->create();
+
+        $this->get('/e-resource')
+            ->assertOk()
+            ->assertSee(route('eresources.download', ['eresource' => $res->slug]), false)
+            ->assertSee('expires=', false);
+    }
+
+    public function test_expired_download_link_is_rejected(): void
+    {
+        Storage::fake('public');
+        $res = Eresource::factory()->create();
+
+        $url = URL::temporarySignedRoute('eresources.download', now()->subMinutes(1), ['eresource' => $res->slug]);
+
+        $this->get($url)->assertForbidden();
+    }
+
     public function test_unpublished_download_with_valid_signature_returns_404(): void
     {
         Storage::fake('public');
