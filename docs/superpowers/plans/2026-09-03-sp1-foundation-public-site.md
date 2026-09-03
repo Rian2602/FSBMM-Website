@@ -431,7 +431,7 @@ git add -A && git commit -m "feat(sba): Organization model + public directory + 
 
 **Interfaces:**
 - Consumes: Organization task conventions (factory + published-scope + resource pattern)
-- Produces: `Category` (name, slug), `Article` fillable `['title','slug','excerpt','body','cover_image_path','category_id','author_id','published_at','is_featured']`, `Article::scopePublished()` = `is_published && published_at <= now()`, routes `GET /berita`, `GET /berita/{article:slug}`.
+- Produces: `Category` (name, slug), `Article` fillable `['title','slug','excerpt','body','cover_image_path','category_id','author_id','published_at','is_featured']`, `Article::scopePublished()` = `published_at <= now()` (**executed: `published_at` is the single publish control — the spec's articles schema has NO `is_published` column; the draft/future/scheduled tests + scope formula in the original Step 1–3 snippets leaked the `is_published` convention from other collections. Tests were rewritten to `draft()` state = null `published_at`; ArticleResource omits any publish toggle — see DateTimePicker below.**), routes `GET /berita`, `GET /berita/{article:slug}`.
 
 - [ ] **Step 1: Write the failing test `tests/Feature/ArticleTest.php`**
 
@@ -494,7 +494,7 @@ Controller: `index()` → published, latest first, optional `?category=` slug fi
 
 - [ ] **Step 5: Filament resources**
 
-`php artisan make:filament-resource Category --generate` and `... Article --generate`. ArticleResource form: TextInput title (required, live → slug autofill via `->afterStateUpdated` using Str::slug), TextInput slug (unique), Textarea/TextInput excerpt, RichEditor body (required), FileUpload cover_image_path (image, directory `articles`), Select category_id (relationship, searchable, required), Select author_id (relationship, default current user), DateTimePicker published_at (helper text: kosong = draft), Toggle is_featured. Table: title, category name, published_at (sortable), is_published BadgeColumn computed from `is_published && published_at <= now()`? Show simple `published_at` column + featured icon; actions. Default `author_id` via `mutateFormDataBeforeCreate(fn ($data) => [...$data, 'author_id' => auth()->id()])`.
+`php artisan make:filament-resource Category --generate` and `... Article --generate`. ArticleResource form: TextInput title (required, live → slug autofill via `->afterStateUpdated` using Str::slug), TextInput slug (unique), Textarea/TextInput excerpt, RichEditor body (required), FileUpload cover_image_path (image, directory `articles`), Select category_id (relationship, searchable, required), Select author_id (relationship, default current user), DateTimePicker published_at (helper text: kosong = draft), Toggle is_featured. Table: title, category name, published_at (sortable), status BadgeColumn computed from `published_at` (Draf/Terjadwal/Tayang) + featured icon; filters incl. status. (**executed: author Select defaults to the current user via `->default(auth()->id())` instead of the `mutateFormDataBeforeCreate` override — the override would have made the author Select inert.**)
 
 - [ ] **Step 6: Seed demo articles (5 items, 2 categories) + green run**
 
