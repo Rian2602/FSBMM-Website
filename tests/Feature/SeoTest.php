@@ -86,4 +86,18 @@ class SeoTest extends TestCase
             'Sitemap mengulang loc yang sama.'
         );
     }
+
+    public function test_page_title_is_html_escaped(): void
+    {
+        $page = Page::factory()->create([
+            'slug' => 'uji',
+            'title' => '<script>alert(1)</script>Tentang',
+            'is_published' => true,
+        ]);
+
+        $this->get('/uji')
+            ->assertOk()
+            ->assertDontSee('<title><script>', false)
+            ->assertSee('<title>&lt;script&gt;alert(1)&lt;/script&gt;Tentang</title>', false);
+    }
 }
