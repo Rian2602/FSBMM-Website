@@ -13,4 +13,13 @@
 
 @layer base {
   body { @apply bg-stone-50 text-stone-900 antialiased; }
+
+  /* Trusted staff-authored rich HTML (Filament RichEditor) — see Task 5 convention. */
+  .rich-text p { @apply mb-3 last:mb-0; }
+  .rich-text a { @apply text-brand-950 underline decoration-accent underline-offset-4 hover:text-accent; }
+  .rich-text ul { @apply mb-3 list-disc pl-6; }
+  .rich-text ol { @apply mb-3 list-decimal pl-6; }
+  .rich-text h2 { @apply mb-2 mt-6 font-display text-xl font-bold text-brand-950; }
+  .rich-text h3 { @apply mb-2 mt-5 font-display text-lg font-bold text-brand-950; }
+  .rich-text blockquote { @apply mb-3 border-l-4 border-accent pl-4 italic text-stone-600; }
 }
