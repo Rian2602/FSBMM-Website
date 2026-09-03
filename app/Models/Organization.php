@@ -36,6 +36,15 @@ class Organization extends Model
         return $query->where('is_published', true);
     }
 
+    /**
+     * Normalize a cleared/blank "tahun berdiri" to null so the nullable column
+     * stores null (not the integer cast's 0) when a staff member blanks it.
+     */
+    public function setFoundedYearAttribute($value): void
+    {
+        $this->attributes['founded_year'] = ($value === '' || $value === null) ? null : (int) $value;
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';

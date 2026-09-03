@@ -56,6 +56,7 @@ class OrganizationResource extends Resource
                     ->maxLength(200),
                 Forms\Components\TextInput::make('founded_year')
                     ->label('Tahun berdiri')
+                    ->nullable()
                     ->numeric()
                     ->minValue(1900)
                     ->maxValue(2100),

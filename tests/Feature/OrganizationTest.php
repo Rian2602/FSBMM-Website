@@ -73,4 +73,18 @@ class OrganizationTest extends TestCase
             ->assertSee($org->name)
             ->assertDontSee('font-semibold text-stone-700"></p>', false);
     }
+
+    public function test_cleared_founded_year_stores_null_not_zero(): void
+    {
+        $org = Organization::factory()->create(['founded_year' => '']);
+
+        $this->assertNull($org->fresh()->founded_year);
+    }
+
+    public function test_valid_founded_year_is_preserved(): void
+    {
+        $org = Organization::factory()->create(['founded_year' => '2015']);
+
+        $this->assertSame(2015, $org->fresh()->founded_year);
+    }
 }
