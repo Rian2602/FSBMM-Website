@@ -40,9 +40,10 @@ class EresourceResource extends Resource
                 Forms\Components\FileUpload::make('file_path')
                     ->label('File PDF')
                     ->acceptedFileTypes(['application/pdf'])
+                    ->maxSize(10240)
                     ->directory('eresources')
                     ->required()
-                    ->helperText('Hanya PDF. File tersimpan di storage publik.'),
+                    ->helperText('Hanya PDF, maksimal 10 MB. File tersimpan di storage publik.'),
                 Forms\Components\Textarea::make('description')
                     ->label('Deskripsi')
                     ->maxLength(1000)
