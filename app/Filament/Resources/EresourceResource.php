@@ -41,7 +41,6 @@ class EresourceResource extends Resource
                     ->label('File PDF')
                     ->acceptedFileTypes(['application/pdf'])
                     ->directory('eresources')
-                    ->storeFileNames(false)
                     ->required()
                     ->helperText('Hanya PDF. File tersimpan di storage publik.'),
                 Forms\Components\Textarea::make('description')

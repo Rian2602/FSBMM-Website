@@ -734,7 +734,7 @@ EresourceController: `index()` → published ordered by title; `download(Eresour
 
 - [ ] **Step 5: Filament resources**
 
-`php artisan make:filament-resource Eresource --generate` + `Course --generate`. EresourceResource: TextInputs title/slug, RichEditor/Textarea description, FileUpload file_path (acceptedFileTypes `['application/pdf']`, directory `eresources`, storeFileNames false), Toggle is_published, downloads_count displayed read-only (`disabled` TextInput). CourseResource: title/slug/description, Select level (`dasar/menengah/lanjut`), Toggle is_published.
+`php artisan make:filament-resource Eresource --generate` + `Course --generate`. EresourceResource: TextInputs title/slug, RichEditor/Textarea description, FileUpload file_path (acceptedFileTypes `['application/pdf']`, directory `eresources`; **executed: `storeFileNames(false)` from the original snippet does NOT exist in Filament 3.3 — it crashed every eresource create/edit page with a 500 until removed and guarded by the AdminResourcesRenderTest smoke test**), Toggle is_published, downloads_count displayed read-only (`disabled` TextInput). CourseResource: title/slug/description, Select level (`dasar/menengah/lanjut`), Toggle is_published.
 
 - [ ] **Step 6: Seed + green**
 
