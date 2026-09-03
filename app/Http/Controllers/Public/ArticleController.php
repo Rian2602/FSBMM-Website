@@ -21,7 +21,9 @@ class ArticleController extends Controller
 
         return view('public.articles.index', [
             'articles' => $query->get(),
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => Category::with([
+                'articles' => fn ($q) => $q->published(),
+            ])->orderBy('name')->get()->filter(fn ($category) => $category->articles->isNotEmpty()),
             'activeCategory' => $categorySlug ?? null,
         ]);
     }
@@ -29,6 +31,8 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         abort_unless($article->published_at?->isPast(), 404);
+
+        $article->load(['category', 'author']);
 
         return view('public.articles.show', ['article' => $article]);
     }

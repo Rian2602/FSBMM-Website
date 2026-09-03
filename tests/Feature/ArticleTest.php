@@ -59,6 +59,19 @@ class ArticleTest extends TestCase
             ->assertDontSee('Artikel Edukasi B');
     }
 
+    public function test_index_hides_categories_without_published_articles(): void
+    {
+        $empty = Category::factory()->create(['name' => 'Kosong']);
+        $published = Category::factory()->create(['name' => 'Terisi']);
+        Article::factory()->create(['category_id' => $published->id, 'published_at' => now()]);
+        Article::factory()->draft()->create(['category_id' => $empty->id]);
+
+        $this->get('/berita')
+            ->assertOk()
+            ->assertSee('Terisi')
+            ->assertDontSee('Kosong');
+    }
+
     public function test_draft_article_direct_slug_returns_404(): void
     {
         Article::factory()->draft()->create(['title' => 'Draf Belum Terbit', 'slug' => 'draf-belum-terbit']);
