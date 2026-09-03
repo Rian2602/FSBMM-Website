@@ -33,7 +33,7 @@
                                 {{ number_format($resource->downloads_count, 0, ',', '.') }}× diunduh
                             </span>
                             <a
-                                href="{{ URL::signedRoute('eresources.download', ['eresource' => $resource->slug]) }}"
+                                href="{{ URL::temporarySignedRoute('eresources.download', now()->addMinutes(30), ['eresource' => $resource->slug]) }}"
                                 class="border-2 border-brand-950 bg-accent px-4 py-2 text-sm font-bold text-brand-950"
                             >
                                 Unduh PDF

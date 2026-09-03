@@ -51,7 +51,7 @@
                                     <p class="text-xs text-stone-500">{{ number_format($resource->downloads_count, 0, ',', '.') }}× diunduh</p>
                                 </div>
                                 <a
-                                    href="{{ URL::signedRoute('eresources.download', ['eresource' => $resource->slug]) }}"
+                                    href="{{ URL::temporarySignedRoute('eresources.download', now()->addMinutes(30), ['eresource' => $resource->slug]) }}"
                                     class="shrink-0 border-2 border-brand-950 bg-accent px-3 py-1.5 text-xs font-bold text-brand-950"
                                 >
                                     Unduh

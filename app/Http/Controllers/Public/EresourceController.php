@@ -19,10 +19,24 @@ class EresourceController extends Controller
     {
         abort_unless($eresource->is_published, 404);
 
-        abort_unless(Storage::disk('public')->exists($eresource->file_path), 404, 'File tidak ditemukan.');
+        $disk = Storage::disk('public');
+        $path = $eresource->file_path;
+
+        // Fail cleanly if the stored path would resolve outside the public
+        // disk root (Flysystem/OS would otherwise turn '../' into a traversal).
+        $real = realpath($disk->path($path));
+        $root = realpath($disk->path(''));
+
+        abort_unless(
+            $real !== false && $root !== false && str_starts_with($real, $root.DIRECTORY_SEPARATOR),
+            404,
+            'File tidak ditemukan.'
+        );
+
+        abort_unless($disk->exists($path), 404, 'File tidak ditemukan.');
 
         $eresource->increment('downloads_count');
 
-        return Storage::disk('public')->download($eresource->file_path);
+        return $disk->download($path);
     }
 }

@@ -79,4 +79,20 @@ class LibraryTest extends TestCase
             ->assertSee('Keselamatan Kerja')
             ->assertDontSee('Draft Kursus');
     }
+
+    public function test_download_rejects_path_escaping_disk_root(): void
+    {
+        Storage::fake('public');
+
+        // Simulasikan file_path yang menunjuk DI LUAR root disk publik
+        // (mewakili data DB yang dicorrupt). Flysystem menolak menulis lewat
+        // '../', jadi sentinel ditulis native di induk root disk.
+        $root = Storage::disk('public')->path('');
+        file_put_contents(dirname($root).'/evil.txt', 'RAHASIA');
+
+        $res = Eresource::factory()->create(['file_path' => '../evil.txt']);
+        $url = URL::signedRoute('eresources.download', ['eresource' => $res->slug]);
+
+        $this->get($url)->assertNotFound();
+    }
 }
