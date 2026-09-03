@@ -13,7 +13,10 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements FilamentUser
 {
     public const ROLE_SUPER_ADMIN = 'super_admin';
+
     public const ROLE_EDITOR = 'editor';
+
+    public const ROLE_SBA_ADMIN = 'sba_admin';
 
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -28,6 +31,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'organization_id',
     ];
 
     /**
@@ -58,8 +62,22 @@ class User extends Authenticatable implements FilamentUser
         return $this->role === self::ROLE_SUPER_ADMIN;
     }
 
+    public function isSbaAdmin(): bool
+    {
+        return $this->role === self::ROLE_SBA_ADMIN;
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return in_array($this->role, [self::ROLE_SUPER_ADMIN, self::ROLE_EDITOR], true);
+        return match ($panel->getId()) {
+            'admin' => in_array($this->role, [self::ROLE_SUPER_ADMIN, self::ROLE_EDITOR], true),
+            'sba' => $this->role === self::ROLE_SBA_ADMIN && $this->organization_id !== null,
+            default => false,
+        };
     }
 }

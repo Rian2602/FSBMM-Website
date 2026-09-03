@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +42,17 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the account is an SBA (organization) admin.
+     */
+    public function sbaAdmin(Organization $organization): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => User::ROLE_SBA_ADMIN,
+            'organization_id' => $organization->id,
         ]);
     }
 }

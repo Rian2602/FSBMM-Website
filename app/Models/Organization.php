@@ -36,6 +36,16 @@ class Organization extends Model
         return $query->where('is_published', true);
     }
 
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function hasSbaAccounts(): bool
+    {
+        return $this->users()->where('role', User::ROLE_SBA_ADMIN)->exists();
+    }
+
     /**
      * Normalize a cleared/blank "tahun berdiri" to null so the nullable column
      * stores null (not the integer cast's 0) when a staff member blanks it.
