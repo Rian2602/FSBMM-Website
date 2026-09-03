@@ -38,7 +38,8 @@ class PageResource extends Resource
                     ->required()
                     ->maxLength(200)
                     ->unique(ignoreRecord: true)
-                    ->helperText('Alamat halaman. home/tentang/kontak dipakai sebagai halaman tetap.'),
+                    ->disabled(fn (?Page $record): bool => $record !== null && $record->isStructural())
+                    ->helperText('Alamat halaman. home/tentang/kontak dipakai sebagai halaman tetap dan tidak dapat diubah/dihapus.'),
                 Forms\Components\TextInput::make('meta_title')
                     ->label('Judul SEO (opsional)')
                     ->maxLength(200)
@@ -159,6 +160,12 @@ class PageResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /** Structural pages (home/tentang/kontak) back named routes — never deletable. */
+    public static function canDelete($record): bool
+    {
+        return ! ($record instanceof Page && $record->isStructural());
     }
 
     public static function getPages(): array

@@ -66,4 +66,32 @@ class PageTest extends TestCase
         ]);
         $this->assertSame(['quote'], $page->blocks()->pluck('type')->all());
     }
+
+    public function test_structural_page_cannot_be_deleted_or_renamed(): void
+    {
+        $this->seed();
+
+        // Delete is blocked at the model level (covers UI, bulk, code paths).
+        try {
+            Page::where('slug', 'home')->first()->delete();
+            $this->fail('Structural page delete should have been blocked.');
+        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+            $this->assertSame(403, $e->getStatusCode());
+        }
+        $this->assertDatabaseHas('pages', ['slug' => 'home']);
+
+        // Rename away from 'home' would orphan the / route — blocked too.
+        try {
+            Page::where('slug', 'home')->first()->update(['slug' => 'beranda-baru']);
+            $this->fail('Structural page rename should have been blocked.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->assertArrayHasKey('slug', $e->errors());
+        }
+        $this->assertDatabaseHas('pages', ['slug' => 'home']);
+
+        // Normal (non-structural) pages stay deletable.
+        $page = Page::factory()->create();
+        $page->delete();
+        $this->assertDatabaseMissing('pages', ['id' => $page->id]);
+    }
 }

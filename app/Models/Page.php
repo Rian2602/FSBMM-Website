@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 class Page extends Model
 {
     use HasFactory;
+
+    /** Slugs hard-wired to named public routes (/, /tentang, /kontak). */
+    public const STRUCTURAL_SLUGS = ['home', 'tentang', 'kontak'];
 
     protected $fillable = [
         'title',
@@ -37,6 +41,32 @@ class Page extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
+    }
+
+    public function isStructural(): bool
+    {
+        return in_array($this->slug, self::STRUCTURAL_SLUGS, true);
+    }
+
+    protected static function booted(): void
+    {
+        // Enforcement backstop for every delete/rename path (UI, bulk, code,
+        // tinker): structural slugs back the named routes /, /tentang, /kontak.
+        static::deleting(function (Page $page): void {
+            abort_if($page->isStructural(), 403, 'Halaman struktural (home/tentang/kontak) tidak dapat dihapus.');
+        });
+
+        static::updating(function (Page $page): void {
+            // Check the ORIGINAL slug: at updating time the attribute already
+            // holds the new value, so isStructural() alone would see the renamed slug.
+            $originalSlug = $page->getOriginal('slug');
+
+            if (in_array($originalSlug, self::STRUCTURAL_SLUGS, true) && $originalSlug !== $page->slug) {
+                throw ValidationException::withMessages([
+                    'slug' => 'Slug halaman struktural tidak dapat diubah.',
+                ]);
+            }
+        });
     }
 
     /**
