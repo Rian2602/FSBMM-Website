@@ -29,12 +29,55 @@ class UserResource extends Resource
 
     public static function canEdit($record): bool
     {
-        return auth()->user()?->isSuperAdmin() ?? false;
+        $user = auth()->user();
+
+        if (! ($user?->isSuperAdmin() ?? false)) {
+            return false;
+        }
+
+        return $record instanceof User && static::roleChangeAllowed($record, $user);
     }
 
     public static function canDelete($record): bool
     {
-        return auth()->user()?->isSuperAdmin() ?? false;
+        $user = auth()->user();
+
+        if (! ($user?->isSuperAdmin() ?? false)) {
+            return false;
+        }
+
+        return $record instanceof User && static::roleChangeAllowed($record, $user);
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        $user = auth()->user();
+
+        if (! ($user?->isSuperAdmin() ?? false)) {
+            return false;
+        }
+
+        // Anti-lockout: never allow bulk-deleting the only super admin.
+        return User::where('role', User::ROLE_SUPER_ADMIN)->count() > 1;
+    }
+
+    /**
+     * Defensive guard: a super admin must not remove or demote their own
+     * account, nor the last remaining super admin — both would lock the panel.
+     */
+    protected static function roleChangeAllowed(User $record, User $actor): bool
+    {
+        // Never act on your own account.
+        if ($record->is($actor)) {
+            return false;
+        }
+
+        // Never remove the last remaining super admin.
+        if ($record->role === User::ROLE_SUPER_ADMIN) {
+            return User::where('role', User::ROLE_SUPER_ADMIN)->count() > 1;
+        }
+
+        return true;
     }
 
     public static function form(Form $form): Form
@@ -75,7 +118,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => $state === User::ROLE_SUPER_ADMIN ? 'Super Admin' : 'Editor'),
-                    // ->color() left default until brand palette lands
+                // ->color() left default until brand palette lands
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M Y')
                     ->sortable()

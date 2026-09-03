@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Resources\UserResource;
 use App\Models\User;
 use Filament\Pages\Auth\Login;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -65,5 +66,71 @@ class AdminAuthTest extends TestCase
         $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
 
         $this->actingAs($super)->get('/admin/users')->assertSuccessful();
+    }
+
+    public function test_super_admin_cannot_delete_their_own_account(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($super);
+
+        $this->assertFalse(UserResource::canDelete($super->fresh()));
+    }
+
+    public function test_super_admin_cannot_delete_the_last_super_admin(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($super);
+
+        $this->assertFalse(UserResource::canDelete($super->fresh()));
+    }
+
+    public function test_super_admin_can_delete_another_super_admin_when_more_than_one(): void
+    {
+        $a = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $b = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($a);
+
+        $this->assertTrue(UserResource::canDelete($b->fresh()));
+    }
+
+    public function test_super_admin_cannot_edit_their_own_account(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($super);
+
+        $this->assertFalse(UserResource::canEdit($super->fresh()));
+    }
+
+    public function test_super_admin_can_edit_an_editor_when_only_one_super_admin_exists(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $editor = User::factory()->create();
+
+        $this->actingAs($super);
+
+        $this->assertTrue(UserResource::canEdit($editor->fresh()));
+    }
+
+    public function test_bulk_delete_is_blocked_when_only_one_super_admin_exists(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($super);
+
+        $this->assertFalse(UserResource::canDeleteAny());
+    }
+
+    public function test_bulk_delete_is_allowed_when_multiple_super_admins_exist(): void
+    {
+        $a = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($a);
+
+        $this->assertTrue(UserResource::canDeleteAny());
     }
 }

@@ -24,6 +24,10 @@ class AdminResourcesRenderTest extends TestCase
     public function test_all_admin_resource_pages_render_for_super_admin(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        // A second staff user: the acting admin cannot edit their own account
+        // (super_admin self-edit is blocked), so the users edit page needs a
+        // different record to exercise the form.
+        $staff = User::factory()->create(['role' => User::ROLE_EDITOR]);
 
         // One row per resource so list + edit pages have data to render.
         $organization = Organization::factory()->create();
@@ -46,7 +50,7 @@ class AdminResourcesRenderTest extends TestCase
                 '/admin/courses',
             ],
             'edit' => [
-                '/admin/users/'.$admin->getRouteKey().'/edit',
+                '/admin/users/'.$staff->getRouteKey().'/edit',
                 '/admin/organizations/'.$organization->getRouteKey().'/edit',
                 '/admin/categories/'.$category->getRouteKey().'/edit',
                 '/admin/articles/'.$article->getRouteKey().'/edit',
