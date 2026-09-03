@@ -51,4 +51,13 @@ class SeoTest extends TestCase
             ->assertSee('/berita/'.$article->slug, false)
             ->assertSee('/sba/'.$org->slug, false);
     }
+
+    public function test_robots_txt_declares_absolute_sitemap_url(): void
+    {
+        $response = $this->get('/robots.txt');
+
+        $response->assertOk();
+        $this->assertStringContainsString('text/plain', $response->headers->get('content-type') ?? '');
+        $response->assertSee('Sitemap: '.url('/sitemap.xml'), false);
+    }
 }

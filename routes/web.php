@@ -10,6 +10,13 @@ use App\Models\Organization;
 use App\Models\Page;
 use Illuminate\Support\Facades\Route;
 
+// robots.txt — declared as a route (not a static file) so the Sitemap directive
+// uses an absolute, environment-correct URL (Sitemaps spec requires absolute).
+Route::get('/robots.txt', function () {
+    return response("User-agent: *\nDisallow:\n\nSitemap: ".url('/sitemap.xml'))
+        ->header('Content-Type', 'text/plain');
+});
+
 // Sitemap — must stay above the page slug catch-all below.
 Route::get('/sitemap.xml', function () {
     $entries = collect([
