@@ -62,7 +62,7 @@ class PageResource extends Resource
                             ->label('Hero (Judul Besar)')
                             ->schema([
                                 Forms\Components\TextInput::make('eyebrow')->label('Label kecil (opsional)')->maxLength(60),
-                                Forms\Components\TextInput::make('title')->label('Judul utama'),
+                                Forms\Components\TextInput::make('title')->label('Judul utama')->required(),
                                 Forms\Components\TextInput::make('subtitle')->label('Subjudul (opsional)'),
                                 Forms\Components\FileUpload::make('image_path')->label('Gambar (opsional)')->image()->directory('pages'),
                                 Forms\Components\TextInput::make('cta_label')->label('Teks tombol (opsional)'),
@@ -71,7 +71,7 @@ class PageResource extends Resource
                         Builder\Block::make('rich_text')
                             ->label('Teks Kaya')
                             ->schema([
-                                Forms\Components\RichEditor::make('content')->label('Isi teks'),
+                                Forms\Components\RichEditor::make('content')->label('Isi teks')->required(),
                             ]),
                         Builder\Block::make('image')
                             ->label('Gambar')
@@ -94,7 +94,7 @@ class PageResource extends Resource
                         Builder\Block::make('cta')
                             ->label('Ajakan (CTA)')
                             ->schema([
-                                Forms\Components\TextInput::make('title')->label('Judul'),
+                                Forms\Components\TextInput::make('title')->label('Judul')->required(),
                                 Forms\Components\TextInput::make('body')->label('Teks'),
                                 Forms\Components\TextInput::make('label')->label('Teks tombol'),
                                 Forms\Components\TextInput::make('url')->label('Alamat tombol'),
@@ -102,7 +102,7 @@ class PageResource extends Resource
                         Builder\Block::make('quote')
                             ->label('Kutipan')
                             ->schema([
-                                Forms\Components\Textarea::make('quote')->label('Isi kutipan')->rows(3),
+                                Forms\Components\Textarea::make('quote')->label('Isi kutipan')->rows(3)->required(),
                                 Forms\Components\TextInput::make('author')->label('Nama (opsional)'),
                             ]),
                     ])
