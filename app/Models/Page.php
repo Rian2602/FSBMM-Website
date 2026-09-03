@@ -61,10 +61,22 @@ class Page extends Model
             // holds the new value, so isStructural() alone would see the renamed slug.
             $originalSlug = $page->getOriginal('slug');
 
-            if (in_array($originalSlug, self::STRUCTURAL_SLUGS, true) && $originalSlug !== $page->slug) {
-                throw ValidationException::withMessages([
-                    'slug' => 'Slug halaman struktural tidak dapat diubah.',
-                ]);
+            if (in_array($originalSlug, self::STRUCTURAL_SLUGS, true)) {
+                $errors = [];
+
+                if ($originalSlug !== $page->slug) {
+                    $errors['slug'] = 'Slug halaman struktural tidak dapat diubah.';
+                }
+
+                // Unpublishing would 404 the named route (/, /tentang, /kontak) —
+                // the same outage slug-change protection prevents.
+                if ((bool) $page->getOriginal('is_published') && ! $page->is_published) {
+                    $errors['is_published'] = 'Halaman struktural (home/tentang/kontak) tidak dapat disembunyikan.';
+                }
+
+                if ($errors !== []) {
+                    throw ValidationException::withMessages($errors);
+                }
             }
         });
     }

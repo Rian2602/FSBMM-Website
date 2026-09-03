@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class PageTest extends TestCase
@@ -75,7 +77,7 @@ class PageTest extends TestCase
         try {
             Page::where('slug', 'home')->first()->delete();
             $this->fail('Structural page delete should have been blocked.');
-        } catch (\Symfony\Component\HttpKernel\Exception\HttpException $e) {
+        } catch (HttpException $e) {
             $this->assertSame(403, $e->getStatusCode());
         }
         $this->assertDatabaseHas('pages', ['slug' => 'home']);
@@ -84,7 +86,7 @@ class PageTest extends TestCase
         try {
             Page::where('slug', 'home')->first()->update(['slug' => 'beranda-baru']);
             $this->fail('Structural page rename should have been blocked.');
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $this->assertArrayHasKey('slug', $e->errors());
         }
         $this->assertDatabaseHas('pages', ['slug' => 'home']);
@@ -93,6 +95,22 @@ class PageTest extends TestCase
         $page = Page::factory()->create();
         $page->delete();
         $this->assertDatabaseMissing('pages', ['id' => $page->id]);
+    }
+
+    public function test_structural_page_cannot_be_unpublished(): void
+    {
+        $this->seed();
+
+        // Unpublishing a structural page would 404 the / (or /tentang, /kontak)
+        // named route, the same outage that slug-change protection prevents.
+        try {
+            Page::where('slug', 'home')->first()->update(['is_published' => false]);
+            $this->fail('Structural page unpublish should have been blocked.');
+        } catch (ValidationException $e) {
+            $this->assertArrayHasKey('is_published', $e->errors());
+        }
+
+        $this->assertSame(true, Page::where('slug', 'home')->value('is_published'));
     }
 
     public function test_home_page_showcases_latest_articles_and_resources(): void

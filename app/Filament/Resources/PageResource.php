@@ -50,7 +50,9 @@ class PageResource extends Resource
                     ->rows(2)
                     ->columnSpanFull(),
                 Forms\Components\Toggle::make('is_published')
-                    ->label('Terbit di situs publik'),
+                    ->label('Terbit di situs publik')
+                    ->disabled(fn (?Page $record): bool => $record !== null && $record->isStructural())
+                    ->helperText(fn (?Page $record): ?string => $record?->isStructural() ? 'Halaman ini selalu terbit (halaman tetap).' : null),
                 Builder::make('blocks')
                     ->label('Blok halaman')
                     ->addActionLabel('Tambah blok')

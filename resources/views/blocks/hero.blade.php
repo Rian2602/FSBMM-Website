@@ -3,7 +3,7 @@
         @if (! empty($payload['eyebrow']))
             <p class="text-sm font-bold uppercase tracking-widest text-accent">{{ $payload['eyebrow'] }}</p>
         @endif
-        <h1 class="mt-2 max-w-3xl font-display text-5xl font-bold">{{ $payload['title'] }}</h1>
+        <h1 class="mt-2 max-w-3xl font-display text-5xl font-bold">{{ $payload['title'] ?? '' }}</h1>
         @if (! empty($payload['subtitle']))
             <p class="mt-4 max-w-2xl text-lg text-white/80">{{ $payload['subtitle'] }}</p>
         @endif
