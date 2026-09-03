@@ -5,12 +5,39 @@ use App\Http\Controllers\Public\CourseController;
 use App\Http\Controllers\Public\EresourceController;
 use App\Http\Controllers\Public\OrganizationController;
 use App\Http\Controllers\Public\PageController;
+use App\Models\Article;
+use App\Models\Organization;
+use App\Models\Page;
 use Illuminate\Support\Facades\Route;
 
 // Sitemap — must stay above the page slug catch-all below.
 Route::get('/sitemap.xml', function () {
-    $urls = collect(['/', '/tentang', '/berita', '/sba', '/e-resource', '/e-learning', '/kontak'])
-        ->map(fn (string $url) => url($url));
+    $entries = collect([
+        ['loc' => url('/'), 'lastmod' => null],
+        ['loc' => url('/tentang'), 'lastmod' => null],
+        ['loc' => url('/berita'), 'lastmod' => null],
+        ['loc' => url('/sba'), 'lastmod' => null],
+        ['loc' => url('/e-resource'), 'lastmod' => null],
+        ['loc' => url('/e-learning'), 'lastmod' => null],
+        ['loc' => url('/kontak'), 'lastmod' => null],
+    ]);
+
+    $pages = Page::published()->get()->map(fn (Page $p) => [
+        'loc' => url('/'.$p->slug),
+        'lastmod' => optional($p->updated_at)->toDateString(),
+    ]);
+
+    $articles = Article::published()->get()->map(fn (Article $a) => [
+        'loc' => url('/berita/'.$a->slug),
+        'lastmod' => optional($a->published_at)->toDateString(),
+    ]);
+
+    $organizations = Organization::published()->get()->map(fn (Organization $o) => [
+        'loc' => url('/sba/'.$o->slug),
+        'lastmod' => optional($o->updated_at)->toDateString(),
+    ]);
+
+    $urls = $entries->concat($pages)->concat($articles)->concat($organizations);
 
     return response()
         ->view('sitemap', ['urls' => $urls])

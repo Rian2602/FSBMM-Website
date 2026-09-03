@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Article;
+use App\Models\Organization;
+use App\Models\Page;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -31,5 +34,21 @@ class SeoTest extends TestCase
         $response->assertOk();
         $this->assertStringContainsString('application/xml', $response->headers->get('content-type') ?? '');
         $response->assertSee('/berita', false)->assertSee('/sba', false)->assertSee('/e-resource', false);
+    }
+
+    public function test_sitemap_lists_published_dynamic_content_with_lastmod(): void
+    {
+        $page = Page::factory()->create(['slug' => 'sejarah', 'is_published' => true]);
+        $article = Article::factory()->create(['published_at' => now()]);
+        $org = Organization::factory()->create(['is_published' => true]);
+        Article::factory()->create(['published_at' => null]);
+        Organization::factory()->create(['is_published' => false]);
+
+        $response = $this->get('/sitemap.xml');
+
+        $response->assertOk()
+            ->assertSee('/sejarah', false)
+            ->assertSee('/berita/'.$article->slug, false)
+            ->assertSee('/sba/'.$org->slug, false);
     }
 }
