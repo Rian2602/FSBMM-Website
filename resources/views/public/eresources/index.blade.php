@@ -2,6 +2,10 @@
 
 @section('title', 'E-Resource')
 
+@section('meta')
+    <meta name="description" content="Pustaka digital dokumen resmi, template, dan materi pendidikan FSBMM untuk pengurus dan anggota SBA.">
+@endsection
+
 @section('content')
     <section class="mx-auto max-w-6xl px-4 py-12">
         <header class="mb-8">

@@ -2,6 +2,10 @@
 
 @section('title', 'E-Learning')
 
+@section('meta')
+    <meta name="description" content="Katalog pelatihan e-learning FSBMM untuk pengembangan kapasitas pengurus dan anggota serikat pekerja.">
+@endsection
+
 @section('content')
     <section class="mx-auto max-w-6xl px-4 py-12">
         <header class="mb-8">

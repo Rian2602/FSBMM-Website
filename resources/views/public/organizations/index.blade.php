@@ -2,6 +2,10 @@
 
 @section('title', 'Direktori SBA')
 
+@section('meta')
+    <meta name="description" content="Direktori serikat pekerja tingkat perusahaan (SBA) yang bernaung di bawah Federasi Serikat Buruh Makanan dan Minuman (FSBMM).">
+@endsection
+
 @section('content')
     <section class="mx-auto max-w-6xl px-4 py-12">
         <header class="mb-8">

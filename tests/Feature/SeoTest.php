@@ -60,4 +60,13 @@ class SeoTest extends TestCase
         $this->assertStringContainsString('text/plain', $response->headers->get('content-type') ?? '');
         $response->assertSee('Sitemap: '.url('/sitemap.xml'), false);
     }
+
+    public function test_index_pages_emit_meta_description(): void
+    {
+        foreach (['/berita', '/sba', '/e-resource', '/e-learning'] as $path) {
+            $this->get($path)
+                ->assertOk()
+                ->assertSee('meta name="description"', false);
+        }
+    }
 }

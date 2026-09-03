@@ -2,6 +2,10 @@
 
 @section('title', 'Berita')
 
+@section('meta')
+    <meta name="description" content="Berita dan informasi terbaru dari Federasi Serikat Buruh Makanan dan Minuman (FSBMM) untuk pengurus dan anggota SBA.">
+@endsection
+
 @section('content')
     <section class="mx-auto max-w-6xl px-4 py-12">
         <header class="mb-8">
