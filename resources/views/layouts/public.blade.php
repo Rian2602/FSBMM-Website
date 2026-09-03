@@ -10,12 +10,12 @@
 <body class="min-h-screen flex flex-col">
     <header class="bg-brand-950 text-white">
         <div class="mx-auto max-w-6xl px-4 py-5 flex items-center justify-between">
-            <a href="/" class="font-display text-2xl font-bold tracking-tight">FSBMM<span class="text-accent">.</span></a>
+            <a href="{{ route('home') }}" class="font-display text-2xl font-bold tracking-tight">FSBMM<span class="text-accent">.</span></a>
             <nav class="flex gap-6 text-sm font-semibold">
-                <a href="/berita" class="hover:text-accent">Berita</a>
-                <a href="/sba" class="hover:text-accent">SBA</a>
-                <a href="/e-resource" class="hover:text-accent">E-Resource</a>
-                <a href="/e-learning" class="hover:text-accent">E-Learning</a>
+                <a href="{{ route('articles.index') }}" class="hover:text-accent">Berita</a>
+                <a href="{{ route('organizations.index') }}" class="hover:text-accent">SBA</a>
+                <a href="{{ route('eresources.index') }}" class="hover:text-accent">E-Resource</a>
+                <a href="{{ route('courses.index') }}" class="hover:text-accent">E-Learning</a>
             </nav>
         </div>
     </header>
