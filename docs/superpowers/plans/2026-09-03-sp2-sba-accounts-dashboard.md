@@ -1013,6 +1013,11 @@ Note: `hasSbaAccounts()` on a fresh model fires a query per org — fine at thes
 
 - [x] **Step 6: Commit** — `feat(admin): federation SBA overview widget + block deleting organizations with SBA accounts` (** executed: ddcff83 **)
 
+**Post-Task-5 review notes (non-action, evaluated):**
+- T1 — single-delete gated by `canDelete()`; bulk-delete gated by `DeleteBulkAction->using()` (abort-all). Two deliberate guards on two paths; Filament's bulk ignores per-record `canDelete`, so the `->using()` guard is load-bearing. Do NOT add `canDeleteAny()` based on the account guard (would over-hide the bulk action). Documented in `OrganizationResource` code comment.
+- T2 — the `ValidationException` catch-and-rethrow from bulk `using()` is Filament's standard abort path; live-exploit/deletion blocked already proven. No additional UI-error assertion added (YAGNI; would be fragile across Filament minor versions).
+- T3 — `sba_admin` rows with null `organization_id` show "-" in the overview widget by design; no action.
+
 ---
 
 ### Task 6: Demo SBA accounts + README/env docs + full green + final verification
