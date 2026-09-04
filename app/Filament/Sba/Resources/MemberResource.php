@@ -4,7 +4,6 @@ namespace App\Filament\Sba\Resources;
 
 use App\Filament\Sba\Resources\MemberResource\Pages;
 use App\Models\Member;
-use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +22,7 @@ class MemberResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('organization_id', Filament::auth()->user()->organization_id);
+            ->where('organization_id', auth()->user()->organization_id);
     }
 
     public static function form(Form $form): Form

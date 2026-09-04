@@ -5,7 +5,6 @@ namespace App\Filament\Sba\Resources\DuesResource\Pages;
 use App\Filament\Sba\Resources\DuesResource;
 use App\Models\Due;
 use App\Models\Member;
-use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Validation\ValidationException;
 
@@ -15,8 +14,8 @@ class CreateDues extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['organization_id'] = Filament::auth()->user()->organization_id;
-        $data['recorded_by'] = Filament::auth()->user()->id;
+        $data['organization_id'] = auth()->user()->organization_id;
+        $data['recorded_by'] = auth()->user()->id;
 
         // Belt-and-suspenders: member must belong to this org (UI scopes the Select,
         // but a direct HTTP request could bypass the dropdown).

@@ -4,7 +4,6 @@ namespace App\Filament\Sba\Resources;
 
 use App\Filament\Sba\Resources\DuesResource\Pages;
 use App\Models\Due;
-use Filament\Facades\Filament;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,14 +22,14 @@ class DuesResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->where('organization_id', Filament::auth()->user()->organization_id);
+            ->where('organization_id', auth()->user()->organization_id);
     }
 
     public static function form(Form $form): Form
     {
         return $form->schema([
             Forms\Components\Select::make('member_id')
-                ->relationship('member', 'name', modifyQueryUsing: fn (Builder $q) => $q->where('organization_id', Filament::auth()->user()->organization_id))
+                ->relationship('member', 'name', modifyQueryUsing: fn (Builder $q) => $q->where('organization_id', auth()->user()->organization_id))
                 ->required()
                 ->searchable(),
             Forms\Components\TextInput::make('period')

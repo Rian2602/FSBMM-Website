@@ -3,7 +3,6 @@
 namespace App\Filament\Sba\Resources\MemberResource\Pages;
 
 use App\Filament\Sba\Resources\MemberResource;
-use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateMember extends CreateRecord
@@ -12,7 +11,7 @@ class CreateMember extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['organization_id'] = Filament::auth()->user()->organization_id;
+        $data['organization_id'] = auth()->user()->organization_id;
 
         return $data;
     }
