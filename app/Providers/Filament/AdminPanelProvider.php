@@ -29,6 +29,10 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => Color::Emerald, // brand family placeholder; final palette when official assets arrive
+                'info' => Color::Sky,
+                'warning' => Color::Amber,
+                'danger' => Color::Rose,
+                'success' => Color::Lime,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

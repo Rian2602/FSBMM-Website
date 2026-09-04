@@ -29,6 +29,10 @@ class SbaPanelProvider extends PanelProvider
             ->profile()
             ->colors([
                 'primary' => Color::Emerald, // same placeholder brand family as /admin
+                'info' => Color::Sky,
+                'warning' => Color::Amber,
+                'danger' => Color::Rose,
+                'success' => Color::Lime,
             ])
             ->discoverResources(in: app_path('Filament/Sba/Resources'), for: 'App\\Filament\\Sba\\Resources')
             ->discoverPages(in: app_path('Filament/Sba/Pages'), for: 'App\\Filament\\Sba\\Pages')
