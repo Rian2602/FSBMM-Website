@@ -105,6 +105,13 @@ class CourseResource extends Resource
             ]);
     }
 
+    public static function getRelations(): array
+    {
+        return [
+            CourseResource\RelationManagers\LessonsRelationManager::class,
+        ];
+    }
+
     public static function getPages(): array
     {
         return [
