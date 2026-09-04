@@ -9,7 +9,9 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class OrganizationResource extends Resource
 {
@@ -20,6 +22,12 @@ class OrganizationResource extends Resource
     protected static ?string $navigationLabel = 'Organisasi SBA';
 
     protected static ?string $modelLabel = 'Organisasi SBA';
+
+    /** An organization that still has SBA accounts cannot be deleted (spec §7). */
+    public static function canDelete($record): bool
+    {
+        return $record instanceof Organization && ! $record->hasSbaAccounts();
+    }
 
     public static function form(Form $form): Form
     {
@@ -101,7 +109,20 @@ class OrganizationResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->using(static function (Collection $records): void {
+                            $blocked = $records->first(
+                                static fn (Organization $org): bool => $org->hasSbaAccounts()
+                            );
+
+                            if ($blocked) {
+                                throw ValidationException::withMessages([
+                                    'table' => "Organisasi '{$blocked->name}' masih memiliki akun pengurus SBA. Pindahkan atau hapus akun tersebut terlebih dahulu.",
+                                ]);
+                            }
+
+                            $records->each->delete();
+                        }),
                 ]),
             ]);
     }
