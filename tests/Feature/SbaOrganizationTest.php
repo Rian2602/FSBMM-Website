@@ -5,6 +5,9 @@ namespace Tests\Feature;
 use App\Filament\Sba\Resources\OrganizationResource;
 use App\Filament\Sba\Resources\OrganizationResource\Pages\EditOrganization;
 use App\Filament\Sba\Widgets\OrganizationSummaryWidget;
+use App\Models\Complaint;
+use App\Models\Due;
+use App\Models\Member;
 use App\Models\Organization;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -167,5 +170,30 @@ class SbaOrganizationTest extends TestCase
         $this->assertStringContainsString('<a href="https://contoh.example"', $org->description);
         $this->assertStringContainsString('<ul>', $org->description);
         $this->assertStringContainsString('<li>a</li>', $org->description);
+    }
+
+    public function test_dashboard_summary_stats_show_own_org_numbers(): void
+    {
+        [$user, $org] = $this->sbaUser();
+
+        $m1 = Member::factory()->for($org)->create(['status' => Member::STATUS_ACTIVE]);
+        Member::factory()->for($org)->create(['status' => Member::STATUS_ACTIVE]);
+        Member::factory()->for($org)->create(['status' => Member::STATUS_INACTIVE]);
+        Due::factory()->for($m1)->for($org)->create(['period' => now()->format('Y-m'), 'amount' => 50000]);
+        Complaint::factory()->for($org)->create(['status' => 'baru']);
+        Complaint::factory()->for($org)->create(['status' => 'selesai']);
+
+        $other = Organization::factory()->create(['name' => 'SPM Lain']);
+        $otherMember = Member::factory()->for($other)->create(['status' => Member::STATUS_ACTIVE]);
+        Due::factory()->for($otherMember)->for($other)->create(['period' => now()->format('Y-m'), 'amount' => 999999]);
+        Complaint::factory()->for($other)->create(['status' => 'diproses']);
+
+        $this->actingAs($user);
+
+        $stats = (new OrganizationSummaryWidget)->stats();
+
+        $this->assertSame(2, $stats['active_members']);
+        $this->assertSame(50000.0, $stats['current_month_dues']);
+        $this->assertSame(1, $stats['open_complaints']);
     }
 }
