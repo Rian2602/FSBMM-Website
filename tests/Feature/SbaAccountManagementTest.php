@@ -108,6 +108,26 @@ class SbaAccountManagementTest extends TestCase
         $this->assertNull($sba->organization_id); // cleared on demotion
     }
 
+    public function test_promote_an_existing_editor_to_sba_admin_assigns_organization(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $org = Organization::factory()->create();
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+
+        // Two-step fill mirrors the live role select: promote first, then link an
+        // organization — the mirror-image of the demotion path.
+        Livewire::actingAs($super)
+            ->test(EditUser::class, ['record' => $editor->getRouteKey()])
+            ->fillForm(['role' => User::ROLE_SBA_ADMIN])
+            ->fillForm(['organization_id' => $org->id])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $editor->refresh();
+        $this->assertSame(User::ROLE_SBA_ADMIN, $editor->role);
+        $this->assertSame($org->id, $editor->organization_id);
+    }
+
     public function test_users_table_shows_sba_account_with_its_organization(): void
     {
         $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
