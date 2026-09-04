@@ -839,7 +839,7 @@ Add column `Tables\Columns\TextColumn::make('organization.name')->label('Organis
 **Interfaces:**
 - Produces: an admin-dashboard widget (auto-discovered from `app/Filament/Widgets`) showing SBA-account stats + account list for super admins; admin `OrganizationResource` cannot delete (single or bulk) an organization that still has `sba_admin` accounts.
 
-- [ ] **Step 1: Write the failing test `tests/Feature/FederationOverviewTest.php`**
+- [x] **Step 1: Write the failing test `tests/Feature/FederationOverviewTest.php`** (** executed: 5 tests @ddcff83 **)
 
 ```php
 <?php
@@ -925,9 +925,9 @@ class FederationOverviewTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run to verify failure** — `php artisan test --filter FederationOverviewTest` → FAIL (widget missing, delete allowed).
+- [x] **Step 2: Run to verify failure** — `php artisan test --filter FederationOverviewTest` → FAIL (widget missing, delete allowed). (** executed: red run confirmed — 4 failed / 1 passed @ddcff83 **)
 
-- [ ] **Step 3: Overview widget** (`app/Filament/Widgets/SbaAccountsOverviewWidget.php`)
+- [x] **Step 3: Overview widget** (`app/Filament/Widgets/SbaAccountsOverviewWidget.php`)
 
 Plain widget (avoids the deprecated `StatsOverviewWidget` API in v3.3.55 — verified absent of the newer `Stats` class; plain `Widget` + blade is version-safe):
 
@@ -978,9 +978,9 @@ class SbaAccountsOverviewWidget extends Widget
 }
 ```
 
-Blade `resources/views/filament/widgets/sba-accounts-overview.blade.php`: heading "Akun SBA", stat line (akun SBA / organisasi terdaftar / organisasi terbit), then a table of `$this->getAccounts()` — Nama, Email, Organisasi (or "-"), Dibuat (`created_at->translatedFormat('d M Y')`). Only ever queries `role = sba_admin`. Widgets on the admin dashboard are shown to every member by default, so `canView()` gates this one to `super_admin` (editors must not see federation account data); verified `Widget::canView()` exists in v3.3.55.
+Blade `resources/views/filament/widgets/sba-accounts-overview.blade.php`: heading "Akun SBA", stat line (akun SBA / organisasi terdaftar / organisasi terbit), then a table of `$this->getAccounts()` — Nama, Email, Organisasi (or "-"), Dibuat (`created_at->translatedFormat('d M Y')`). Only ever queries `role = sba_admin`. Widgets on the admin dashboard are shown to every member by default, so `canView()` gates this one to `super_admin` (editors must not see federation account data); verified `Widget::canView()` exists in v3.3.55. (** executed: widget + plain HTML table blade (no `x-filament::table` component in v3.3.55 — used a Tailwind `<table>` instead) @ddcff83 **)
 
-- [ ] **Step 4: Delete guards on admin `OrganizationResource`**
+- [x] **Step 4: Delete guards on admin `OrganizationResource`** (** executed: `canDelete` override + `DeleteBulkAction->using()` batch-abort guard @ddcff83 **)
 
 ```php
 // In app/Filament/Resources/OrganizationResource.php
@@ -1009,9 +1009,9 @@ Tables\Actions\DeleteBulkAction::make()
 
 Note: `hasSbaAccounts()` on a fresh model fires a query per org — fine at these row counts; do not over-optimize.
 
-- [ ] **Step 5: Green run** — `php artisan test --filter FederationOverviewTest`, then the full suite.
+- [x] **Step 5: Green run** — `php artisan test --filter FederationOverviewTest`, then the full suite. (** executed: full suite 94 pass / 280 assertions; pint clean (one `types_spaces` fix in widget); smoke: admin dashboard renders with widget @ddcff83 **)
 
-- [ ] **Step 6: Commit** — `feat(admin): federation SBA overview widget + block deleting organizations with SBA accounts`
+- [x] **Step 6: Commit** — `feat(admin): federation SBA overview widget + block deleting organizations with SBA accounts` (** executed: ddcff83 **)
 
 ---
 
