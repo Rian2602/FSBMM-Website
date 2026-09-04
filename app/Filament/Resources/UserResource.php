@@ -96,9 +96,20 @@ class UserResource extends Resource
                     ->options([
                         User::ROLE_SUPER_ADMIN => 'Super Admin (Federasi)',
                         User::ROLE_EDITOR => 'Editor Konten (Federasi)',
+                        User::ROLE_SBA_ADMIN => 'Pengurus SBA (Akun Organisasi)',
                     ])
                     ->default(User::ROLE_EDITOR)
+                    ->live()
                     ->required(),
+                Forms\Components\Select::make('organization_id')
+                    ->label('Organisasi SBA')
+                    ->relationship('organization', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->required(fn (Forms\Get $get): bool => $get('role') === User::ROLE_SBA_ADMIN)
+                    ->visible(fn (Forms\Get $get): bool => $get('role') === User::ROLE_SBA_ADMIN)
+                    ->dehydrated(fn (Forms\Get $get): bool => $get('role') === User::ROLE_SBA_ADMIN)
+                    ->helperText('Akun pengurus SBA wajib ditautkan ke satu organisasi.'),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->revealable()
@@ -116,9 +127,18 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('organization.name')
+                    ->label('Organisasi')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
-                    ->formatStateUsing(fn (string $state): string => $state === User::ROLE_SUPER_ADMIN ? 'Super Admin' : 'Editor'),
+                    ->formatStateUsing(static function (string $state): string {
+                        return match ($state) {
+                            User::ROLE_SUPER_ADMIN => 'Super Admin',
+                            User::ROLE_SBA_ADMIN => 'Pengurus SBA',
+                            default => 'Editor',
+                        };
+                    }),
                 // ->color() left default until brand palette lands
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime('d M Y')
@@ -130,6 +150,7 @@ class UserResource extends Resource
                     ->options([
                         User::ROLE_SUPER_ADMIN => 'Super Admin',
                         User::ROLE_EDITOR => 'Editor',
+                        User::ROLE_SBA_ADMIN => 'Pengurus SBA',
                     ]),
             ])
             ->actions([
