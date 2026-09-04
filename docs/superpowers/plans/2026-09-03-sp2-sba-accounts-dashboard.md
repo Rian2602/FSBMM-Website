@@ -58,7 +58,7 @@ tests/Feature/FederationOverviewTest.php
 **Interfaces:**
 - Produces: nullable FK `users.organization_id` (`nullOnDelete`, indexed); `User::ROLE_SBA_ADMIN`, `isSbaAdmin()`, `organization()`; `Organization::users()`, `hasSbaAccounts()`; `canAccessPanel(Panel $panel)` keyed on panel id; `UserFactory::sbaAdmin(Organization $org)` state.
 
-- [ ] **Step 1: Write the failing test `tests/Feature/SbaTenantTest.php`**
+- [x] **Step 1: Write the failing test `tests/Feature/SbaTenantTest.php`** (** executed @67fdbda **)
 
 ```php
 <?php
@@ -125,7 +125,7 @@ class SbaTenantTest extends TestCase
 ```
 
 (Whether the detached account still reaches the panel is Task 2's SbaAuthTest, once the `'sba'` panel exists.)
-- [ ] **Step 2: Migration**
+- [x] **Step 2: Migration** (** executed @67fdbda **)
 
 ```bash
 php artisan make:migration add_organization_id_to_users_table
@@ -145,7 +145,7 @@ Schema::table('users', function (Blueprint $table) {
 
 (`->after()` is ignored by SQLite — harmless for dev/tests.)
 
-- [ ] **Step 3: `app/Models/User.php` additions**
+- [x] **Step 3: `app/Models/User.php` additions** (** executed @67fdbda **)
 
 ```php
 public const ROLE_SBA_ADMIN = 'sba_admin';
@@ -171,7 +171,7 @@ public function canAccessPanel(Panel $panel): bool
 }
 ```
 
-- [ ] **Step 4: `app/Models/Organization.php` additions**
+- [x] **Step 4: `app/Models/Organization.php` additions** (** executed @67fdbda **)
 
 ```php
 public function users()
@@ -185,7 +185,7 @@ public function hasSbaAccounts(): bool
 }
 ```
 
-- [ ] **Step 5: `database/factories/UserFactory.php` state**
+- [x] **Step 5: `database/factories/UserFactory.php` state** (** executed @67fdbda **)
 
 ```php
 public function sbaAdmin(Organization $organization): static
@@ -197,9 +197,9 @@ public function sbaAdmin(Organization $organization): static
 }
 ```
 
-- [ ] **Step 6: Green run** — `php artisan test --filter SbaTenantTest` (this file only touches the `'admin'` panel, which exists from SP1, so it is green standalone).
+- [x] **Step 6: Green run** — `php artisan test --filter SbaTenantTest` (this file only touches the `'admin'` panel, which exists from SP1, so it is green standalone). (** executed @67fdbda **)
 
-- [ ] **Step 7: Commit** — `feat(tenant): users.organization_id + sba_admin role with panel-aware access gate`
+- [x] **Step 7: Commit** — `feat(tenant): users.organization_id + sba_admin role with panel-aware access gate` (** executed: 67fdbda **)
 
 ---
 
