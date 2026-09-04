@@ -1029,7 +1029,7 @@ Note: `hasSbaAccounts()` on a fresh model fires a query per org — fine at thes
 **Interfaces:**
 - Produces: one demo `sba_admin` account per seeded demo organization (SP1's SPM Kecap Bango / Minuman Segar / Roti Nusantara); documented credentials and SP2 scope in the README; `.env.example` documents `FSBMM_SBA_PASSWORD`.
 
-- [ ] **Step 1: `database/seeders/SbaAccountSeeder.php`** (mirror `AdminSeeder`'s env guard)
+- [x] **Step 1: `database/seeders/SbaAccountSeeder.php`** (mirror `AdminSeeder`'s env guard)
 
 ```php
 <?php
@@ -1082,7 +1082,7 @@ class SbaAccountSeeder extends Seeder
 
 Add `SbaAccountSeeder::class` to `DatabaseSeeder::run()` **after** `OrganizationSeeder::class` (the orgs must exist first).
 
-- [ ] **Step 2: `.env.example`** — add under the admin block:
+- [x] **Step 2: `.env.example`** — add under the admin block:
 
 ```
 # Demo SBA (pengurus) accounts, created by the seeder — MUST be changed in production.
@@ -1091,14 +1091,14 @@ FSBMM_SBA_PASSWORD=
 
 (Local `.env` may leave it empty; the seeder falls back to `password` in local/testing only.)
 
-- [ ] **Step 3: README updates**
+- [x] **Step 3: README updates**
 
 - Scope/roadmap: move SP2 from "roadmap" into the implemented scope — add a row noting SBA accounts + panel `/panel-sba` + tenant scoping (docs pointer to the SP2 spec/plan).
 - Add demo account credentials (three `pengurus@...fsbmm.test` addresses, password from `FSBMM_SBA_PASSWORD`, dev fallback `password`), next to the existing admin-account note.
 - Note the two panels: `/admin` (federasi) vs `/panel-sba` (pengurus SBA) — and why the SBA panel is not at `/sba` (public directory route).
 - Security notes: federation-controlled fields (`slug`/`is_published`/`member_count`) and the org-delete guard.
 
-- [ ] **Step 4: Full suite green + lint**
+- [x] **Step 4: Full suite green + lint**
 
 ```bash
 php artisan test
@@ -1108,7 +1108,7 @@ npm run build
 
 Expected: every SP1 test (auth, articles, library, organizations, pages, SEO, resource-render smoke) plus all SP2 tests pass; Pint clean.
 
-- [ ] **Step 5: Final verification**
+- [x] **Step 5: Final verification**
 
 ```bash
 php artisan migrate:fresh --seed
@@ -1119,7 +1119,14 @@ php artisan serve   # manual smoke:
 - `admin@fsbmm.test` still works on `/admin`; the admin dashboard shows the SBA overview; the users table lists the three demo accounts with their organizations.
 - `/admin`, `/sba`, `/berita`, `/e-resource`, `/e-learning` unaffected.
 
-- [ ] **Step 6: Commit** — `feat(sba): seed demo SBA accounts + README/env docs for SP2`
+- [x] **Step 6: Commit** — `feat(sba): seed demo SBA accounts + README/env docs for SP2`
+
+**Task 6 execution notes (SP2 final):**
+- `SbaAccountSeeder` mirrors `AdminSeeder`'s env guard exactly: no baked-in prod default; runtime exception outside local/testing when `FSBMM_SBA_PASSWORD` unset; `password` fallback in local/testing only. Three demo accounts, one per SP1 org, `firstOrCreate` idempotent.
+- Seeder wired into `DatabaseSeeder` after `OrganizationSeeder` (orgs must exist first). `migrate:fresh --seed` runs clean; tinker check confirmed all 3 seeded users are `role=sba_admin`, linked to correct org slug, and authenticate with the dev `password`.
+- `.env.example` documents `FSBMM_SBA_PASSWORD`; README scope row + `/panel-sba` note + SP2 moved to done in roadmap + two-panel security note.
+- SBA login + tenant scoping already covered by Task 3 tests (`SbaAuthTest`, `SbaTenantTest`); no redundant seeder test (plan specifies none) — seeder is data provisioning verified end-to-end.
+- Full suite 94 passed / 280 assertions, Pint clean, `npm run build` clean.
 
 ---
 

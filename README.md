@@ -1,6 +1,6 @@
 # FSBMM — Website Federasi Serikat Buruh Makanan dan Minuman
 
-Situs resmi (SP1) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
+Situs resmi (SP1–SP2) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
 berbasis konten plus panel admin staf federasi. Dibangun dengan **Laravel 12**,
 **Filament 3**, dan **Tailwind CSS v4** — sepenuhnya *data-driven*: semua
 halaman, berita, direktori SBA, e-resource, dan kursus dikelola dari panel
@@ -20,9 +20,10 @@ admin, tanpa konten hardcoded.
 | Pustaka e-resource (unduhan PDF bertanda tangan + penghitung) | `/e-resource` | E-Resource |
 | Katalog e-learning (kursus; materi SP4) | `/e-learning` | Kursus E-Learning |
 | Panel admin staf (super admin + editor konten) | `/admin` | — |
+| Panel dashboard SBA (pengurus tiap SPM ter-scope ke organisasinya) | `/panel-sba` | — |
 
-Di luar SP1 (lihat spec): login SBA/member, data anggota (PII), tenant scoping,
-authoring materi kursus — direncanakan di **SP2–SP4**.
+Di luar SP1–SP2 (lihat spec): data anggota (PII), authoring materi kursus —
+direncanakan di **SP3–SP4**.
 
 ## Stack
 
@@ -66,6 +67,17 @@ FSBMM_ADMIN_PASSWORD=password
 
 > **Wajib ganti `FSBMM_ADMIN_PASSWORD` di produksi** (mis. lewat cPanel).
 
+Seeder juga membuat akun demo pengurus SBA (role `sba_admin`, satu per
+organisasi SPM) di `/panel-sba`, dengan kata sandi dari env:
+
+```env
+FSBMM_SBA_PASSWORD=password
+```
+
+> Kedua panel memakai login yang sama: `/admin` untuk super admin + editor
+> konten, `/panel-sba` untuk pengurus organisasi (ter-scope ke SPM-nya).
+> Ganti `FSBMM_SBA_PASSWORD` di produksi — jangan pernah pakai nilai default.
+
 ### Catatan deploy (cPanel/shared hosting)
 
 - Aset vendor Filament di `public/css|js/filament` **tidak ikut di-commit**
@@ -106,7 +118,7 @@ php artisan test          # seluruh suite feature (PHPUnit)
 
 ## Roadmap
 
-- **SP2** — akun & dashboard SBA (organisasi → tenant scoping, login SBA)
+- ~~**SP2** — akun & dashboard SBA (organisasi → tenant scoping, login SBA)~~ ✅
 - **SP3** — modul data anggota per SBA (roster, upah & iuran, absensi,
   pengaduan) dengan aturan PII
 - **SP4** — authoring e-learning (pelajaran + kuis untuk peserta staf)
