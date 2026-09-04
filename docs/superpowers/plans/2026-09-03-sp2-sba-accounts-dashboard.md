@@ -668,7 +668,7 @@ class OrganizationSummaryWidget extends Widget
 **Interfaces:**
 - Produces: super admin can create/edit `sba_admin` accounts with a required linked organization; the organization Select appears only when role = `sba_admin`, is required, and is cleared when the role changes away; the users table shows the organization column and the role filter gains `sba_admin`.
 
-- [ ] **Step 1: Write the failing test `tests/Feature/SbaAccountManagementTest.php`**
+- [x] **Step 1: Write the failing test `tests/Feature/SbaAccountManagementTest.php`** (** executed: 5 tests @a0837f8 **)
 
 ```php
 <?php
@@ -795,9 +795,9 @@ class SbaAccountManagementTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run to verify failure** — `php artisan test --filter SbaAccountManagementTest` → FAIL.
+- [x] **Step 2: Run to verify failure** — `php artisan test --filter SbaAccountManagementTest` → FAIL. (** executed: red run confirmed — 4 failed / 1 passed @a0837f8 **)
 
-- [ ] **Step 3: `UserResource` form changes**
+- [x] **Step 3: `UserResource` form changes** (** executed: role Select `->live()` + sba_admin option; org Select relationship/searchable/required/visible/dehydrated by role @a0837f8 **)
 
 Role Select: add `'sba_admin' => 'Pengurus SBA (Akun Organisasi)'` and make it `->live()`. Add after the role select:
 
@@ -815,13 +815,13 @@ Forms\Components\Select::make('organization_id')
 
 `dehydrated(false)` when role ≠ sba_admin is what clears `organization_id` on demotion. Keep all existing anti-lockout guards (`canEdit`/`canDelete`/bulk) untouched — deleting/demoting an `sba_admin` is always allowed for a super admin, only super-admin self-protection rules apply.
 
-- [ ] **Step 4: `UserResource` table changes**
+- [x] **Step 4: `UserResource` table changes** (** executed: org column after email, role filter + badge third branch @a0837f8; deviation: `EditUser::mutateFormDataBeforeSave()` nulls `organization_id` when role ≠ sba_admin — plan Step 3 assumed `dehydrated(false)` clears org on demotion, but that only applies on Create; on Edit the org column is excluded from `$data` and the old value survives, so the plan's `assertNull` would fail without this override **)
 
 Add column `Tables\Columns\TextColumn::make('organization.name')->label('Organisasi')->searchable()` (after email) and add `sba_admin => 'Pengurus SBA'` to the existing role SelectFilter. Role badge `formatStateUsing` map needs a third branch: `'Pengurus SBA'`.
 
-- [ ] **Step 5: Green run** — `php artisan test --filter SbaAccountManagementTest`, then `php artisan test` (existing AdminAuth/AdminResourcesRender tests must stay green — they exercise the editor-role edit page where the org Select stays hidden).
+- [x] **Step 5: Green run** — `php artisan test --filter SbaAccountManagementTest`, then `php artisan test` (existing AdminAuth/AdminResourcesRender tests must stay green — they exercise the editor-role edit page where the org Select stays hidden). (** executed: 88 pass / 261 assertions, pint clean @a0837f8 **)
 
-- [ ] **Step 6: Commit** — `feat(admin-users): super admin creates/manages sba_admin accounts with linked organization`
+- [x] **Step 6: Commit** — `feat(admin-users): super admin creates/manages sba_admin accounts with linked organization` (** executed: <hash> **)
 
 ---
 
