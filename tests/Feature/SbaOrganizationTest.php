@@ -126,4 +126,46 @@ class SbaOrganizationTest extends TestCase
             ->assertSee($org->name)
             ->assertDontSee('SPM Lain Yang Tidak Terlihat');
     }
+
+    public function test_sba_cannot_store_scripts_or_event_handlers_in_description(): void
+    {
+        [$user, $org] = $this->sbaUser();
+
+        Filament::setCurrentPanel(Filament::getPanel('sba'));
+
+        Livewire::actingAs($user)
+            ->test(EditOrganization::class, ['record' => $org->slug])
+            ->fillForm([
+                'description' => '<p>OK</p><script>alert(1)</script><img src=x onerror=alert(2)>',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $org->refresh();
+
+        $this->assertStringNotContainsString('<script', $org->description);
+        $this->assertStringNotContainsString('onerror', $org->description);
+        $this->assertStringContainsString('<p>OK</p>', $org->description);
+    }
+
+    public function test_sanitization_preserves_safe_rich_text_markup_in_description(): void
+    {
+        [$user, $org] = $this->sbaUser();
+        $payload = '<p><strong>Bold</strong></p><p><a href="https://contoh.example">link</a></p><ul><li>a</li></ul>';
+
+        Filament::setCurrentPanel(Filament::getPanel('sba'));
+
+        Livewire::actingAs($user)
+            ->test(EditOrganization::class, ['record' => $org->slug])
+            ->fillForm(['description' => $payload])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $org->refresh();
+
+        $this->assertStringContainsString('<strong>Bold</strong>', $org->description);
+        $this->assertStringContainsString('<a href="https://contoh.example"', $org->description);
+        $this->assertStringContainsString('<ul>', $org->description);
+        $this->assertStringContainsString('<li>a</li>', $org->description);
+    }
 }

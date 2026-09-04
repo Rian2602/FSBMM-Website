@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Organization extends Model
 {
@@ -53,6 +54,16 @@ class Organization extends Model
     public function setFoundedYearAttribute($value): void
     {
         $this->attributes['founded_year'] = ($value === '' || $value === null) ? null : (int) $value;
+    }
+
+    /**
+     * Sanitize the HTML description on every write path (admin form, SBA form,
+     * seeder). Description renders raw on the public page, so it must never
+     * carry scripts/event handlers even from non-staff (sba_admin) authors.
+     */
+    public function setDescriptionAttribute($value): void
+    {
+        $this->attributes['description'] = $value === null ? null : Str::sanitizeHtml($value);
     }
 
     public function getRouteKeyName(): string

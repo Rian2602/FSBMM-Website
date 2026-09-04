@@ -65,6 +65,10 @@ them as a design decision.
 - RichEditor content (articles/pages) is **trusted HTML** — authored only by
   authenticated staff, rendered raw. Escape all non-staff input; only these
   fields may bypass escaping.
+- `Organization.description` renders raw on the public page but is editable by
+  non-staff `sba_admin`, so it is **sanitized at the model layer**
+  (`Organization::setDescriptionAttribute` → `Str::sanitizeHtml`) on every write
+  path. Never add a no-sanitize bypass for it; articles/pages remain staff-raw.
 - E-resource downloads use signed URLs (`middleware('signed')`) + per-download
   counting; deleted files return a clean 404.
 - Structural pages (`home`, `tentang`, `kontak`) are protected from delete and
