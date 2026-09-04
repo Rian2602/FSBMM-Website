@@ -3,21 +3,11 @@
 namespace App\Filament\Sba\Resources\ComplaintResource\Pages;
 
 use App\Filament\Sba\Resources\ComplaintResource;
-use App\Models\Member;
-use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Validation\ValidationException;
 
 class EditComplaint extends EditRecord
 {
     protected static string $resource = ComplaintResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\DeleteAction::make(),
-        ];
-    }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
@@ -29,15 +19,6 @@ class EditComplaint extends EditRecord
 
         if (isset($data['status']) && $data['status'] === 'selesai') {
             $data['resolved_at'] = now();
-        }
-
-        if (! empty($data['member_id'])) {
-            if (! Member::where('id', $data['member_id'])
-                ->where('organization_id', $this->record->organization_id)->exists()) {
-                throw ValidationException::withMessages([
-                    'data.member_id' => 'Anggota tidak terkait dengan organisasi ini.',
-                ]);
-            }
         }
 
         return $data;
