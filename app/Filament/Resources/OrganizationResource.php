@@ -24,16 +24,19 @@ class OrganizationResource extends Resource
     protected static ?string $modelLabel = 'Organisasi SBA';
 
     /**
-     * An organization that still has SBA accounts cannot be deleted (spec §7).
+     * An organization that still has SBA accounts or member data cannot be
+     * deleted (SP2 §7 + SP3 §7).
      *
-     * ponytail: single-delete is gated by canDelete(); bulk-delete is gated by
-     * DeleteBulkAction->using() below (abort-all). Keep both — do NOT add a
-     * canDeleteAny() based on the account guard: that would hide the bulk action
-     * for ALL orgs whenever any org has accounts, breaking batch abort.
+     * Single-delete is gated by canDelete(); bulk-delete is gated by the
+     * DeleteBulkAction->using() callback below (abort-all). Keep both — do NOT
+     * add a canDeleteAny() based on these guards: that would hide the bulk
+     * action for ALL orgs whenever any org is protected, breaking batch abort.
      */
     public static function canDelete($record): bool
     {
-        return $record instanceof Organization && ! $record->hasSbaAccounts();
+        return $record instanceof Organization
+            && ! $record->hasSbaAccounts()
+            && ! $record->hasMembers();
     }
 
     public static function form(Form $form): Form
@@ -79,7 +82,9 @@ class OrganizationResource extends Resource
                     ->label('Jumlah anggota')
                     ->numeric()
                     ->default(0)
-                    ->minValue(0),
+                    ->minValue(0)
+                    ->disabled(fn (?Organization $record) => $record?->hasMembers() ?? false)
+                    ->helperText(fn (?Organization $record) => $record?->hasMembers() ? 'Dihitung otomatis dari data anggota SBA (SP3).' : null),
                 Forms\Components\Toggle::make('is_published')
                     ->label('Terbit di situs publik'),
             ]);
@@ -119,12 +124,16 @@ class OrganizationResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                         ->using(static function (Collection $records): void {
                             $blocked = $records->first(
-                                static fn (Organization $org): bool => $org->hasSbaAccounts()
+                                static fn (Organization $org): bool => $org->hasSbaAccounts() || $org->hasMembers()
                             );
 
                             if ($blocked) {
+                                $reason = $blocked->hasSbaAccounts()
+                                    ? 'masih memiliki akun pengurus SBA. Pindahkan atau hapus akun tersebut terlebih dahulu.'
+                                    : 'masih memiliki data anggota. Hapus data anggota tersebut terlebih dahulu.';
+
                                 throw ValidationException::withMessages([
-                                    'table' => "Organisasi '{$blocked->name}' masih memiliki akun pengurus SBA. Pindahkan atau hapus akun tersebut terlebih dahulu.",
+                                    'table' => "Organisasi '{$blocked->name}' {$reason}",
                                 ]);
                             }
 

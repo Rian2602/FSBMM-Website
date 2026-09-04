@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Filament\Resources\OrganizationResource;
 use App\Filament\Resources\OrganizationResource\Pages\ListOrganizations;
 use App\Filament\Widgets\SbaAccountsOverviewWidget;
+use App\Models\Member;
 use App\Models\Organization;
 use App\Models\User;
 use Filament\Facades\Filament;
@@ -76,6 +77,30 @@ class FederationOverviewTest extends TestCase
             ->callMountedTableBulkAction();
 
         $this->assertDatabaseHas('organizations', ['id' => $withAccounts->id]);
+        $this->assertDatabaseHas('organizations', ['id' => $empty->id]); // whole batch aborted
+    }
+
+    public function test_organization_with_members_cannot_be_deleted(): void
+    {
+        $org = Organization::factory()->create();
+        Member::factory()->for($org)->create();
+
+        $this->assertFalse(OrganizationResource::canDelete($org));
+    }
+
+    public function test_bulk_delete_is_blocked_when_any_selected_organization_has_members(): void
+    {
+        $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+        $withMembers = Organization::factory()->create();
+        Member::factory()->for($withMembers)->create();
+        $empty = Organization::factory()->create();
+
+        Livewire::actingAs($super)
+            ->test(ListOrganizations::class)
+            ->mountTableBulkAction('delete', [$withMembers, $empty])
+            ->callMountedTableBulkAction();
+
+        $this->assertDatabaseHas('organizations', ['id' => $withMembers->id]);
         $this->assertDatabaseHas('organizations', ['id' => $empty->id]); // whole batch aborted
     }
 }
