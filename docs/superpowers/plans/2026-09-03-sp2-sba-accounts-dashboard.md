@@ -819,9 +819,14 @@ Forms\Components\Select::make('organization_id')
 
 Add column `Tables\Columns\TextColumn::make('organization.name')->label('Organisasi')->searchable()` (after email) and add `sba_admin => 'Pengurus SBA'` to the existing role SelectFilter. Role badge `formatStateUsing` map needs a third branch: `'Pengurus SBA'`.
 
-- [x] **Step 5: Green run** — `php artisan test --filter SbaAccountManagementTest`, then `php artisan test` (existing AdminAuth/AdminResourcesRender tests must stay green — they exercise the editor-role edit page where the org Select stays hidden). (** executed: 88 pass / 261 assertions, pint clean @a0837f8 **)
+- [x] **Step 5: Green run** — `php artisan test --filter SbaAccountManagementTest`, then `php artisan test` (existing AdminAuth/AdminResourcesRender tests must stay green — they exercise the editor-role edit page where the org Select stays hidden). (** executed: 88 pass / 261 assertions, pint clean @a0837f8; follow-up @331fc2c: added `test_promote_an_existing_editor_to_sba_admin_assigns_organization` (two-step fillForm mirroring the live role select) — promotion branch confirmed correct, full suite 89 pass / 267 assertions **)
 
-- [x] **Step 6: Commit** — `feat(admin-users): super admin creates/manages sba_admin accounts with linked organization` (** executed: <hash> **)
+- [x] **Step 6: Commit** — `feat(admin-users): super admin creates/manages sba_admin accounts with linked organization` (** executed: a0837f8 **)
+
+**Post-Task-4 review notes (non-action):**
+- T1 (promotion path): covered by the added regression test — no production change needed; the promotion branch is correct.
+- T2: spec §7 "filter role/status" — "status" is undefined (no users.status column) and the spec itself says "menyusul" (later); not a Task 4 deliverable. No action.
+- T3: admin users table renders `organization.name` without `->with('organization')` (minor N+1) — negligible at federation scale, intentionally left. Add eager-loading only if the list grows.
 
 ---
 
