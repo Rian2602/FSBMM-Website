@@ -14,11 +14,17 @@ This is **SP1**. Design + implementation plan live in
 SBA accounts, member data, e-learning authoring) should follow the same pattern
 and update the README scope table. Read the specs before touching these areas.
 
+The SP1 plan records every deviation from spec/snippets as inline
+`(** executed: ... **)` annotations (see plan lines 434, 497, 647, 724, 737,
+794, 798). Preserve/append these when you change spec behavior.
+
 ## Commands
 
 - Test whole suite: `composer test` (runs `config:clear` then `php artisan test`).
   Single: `php artisan test --filter <Name>`.
-- Lint: `vendor/bin/pint` (default Laravel Pint config — no `pint.json`, don't add one).
+- Lint: `vendor/bin/pint` (default Laravel Pint config — no `pint.json`, don't add
+  one). NOT part of `composer test`; generated Filament `Create*/Edit*` pages can
+  drift (unused imports) — run before committing.
 - Frontend: `npm run dev` (dev) / `npm run build` (prod).
 - Fresh install + seed + build: `composer setup`.
 
@@ -33,6 +39,20 @@ and update the README scope table. Read the specs before touching these areas.
 - Filament public assets are regenerated during `composer install`
   (`post-autoload-dump`) and not committed; run `php artisan filament:assets`
   manually if they go missing.
+
+## Routing
+
+- `routes/web.php`: collections (`/berita`, `/sba`, `/e-resource`, `/e-learning`),
+  sitemap/robots, and named home route MUST be declared ABOVE the page-builder
+  catch-all `Route::get('/{page:slug}', ...)`. Any new public collection route
+  that lands below it is shadowed by the catch-all.
+- Structural slugs `['home','tentang','kontak']` come from ONE constant,
+  `Page::STRUCTURAL_SLUGS` — reused by the model guards and the sitemap
+  (`routes/web.php:33`). Never hardcode a second copy.
+- `php artisan route:cache` is INCOMPATIBLE: `/`, `/tentang`, `/kontak`,
+  `/robots.txt`, `/sitemap.xml` are closures by spec design, so it throws
+  `LogicException`. Don't add it to a deploy script or "fix" the closures
+  without the plan's blessing.
 
 ## Style
 
