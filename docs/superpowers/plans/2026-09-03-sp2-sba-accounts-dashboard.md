@@ -1124,7 +1124,7 @@ php artisan serve   # manual smoke:
 **Task 6 execution notes (SP2 final):**
 - `SbaAccountSeeder` mirrors `AdminSeeder`'s env guard exactly: no baked-in prod default; runtime exception outside local/testing when `FSBMM_SBA_PASSWORD` unset; `password` fallback in local/testing only. Three demo accounts, one per SP1 org, `firstOrCreate` idempotent.
 - Seeder wired into `DatabaseSeeder` after `OrganizationSeeder` (orgs must exist first). `migrate:fresh --seed` runs clean; tinker check confirmed all 3 seeded users are `role=sba_admin`, linked to correct org slug, and authenticate with the dev `password`.
-- `.env.example` documents `FSBMM_SBA_PASSWORD`; README scope row + `/panel-sba` note + SP2 moved to done in roadmap + two-panel security note.
+- `.env.example` documents `FSBMM_SBA_PASSWORD` (deviation: `=password` vs plan's empty `=`, for consistency with the admin block) + README scope row `/panel-sba` + SP2 moved to done in roadmap + two-panel note.
 - SBA login + tenant scoping already covered by Task 3 tests (`SbaAuthTest`, `SbaTenantTest`); no redundant seeder test (plan specifies none) — seeder is data provisioning verified end-to-end.
 - Full suite 94 passed / 280 assertions, Pint clean, `npm run build` clean.
 

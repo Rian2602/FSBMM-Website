@@ -10,7 +10,7 @@ admin, tanpa konten hardcoded.
 > (database anggota Serikat Pekerja/Buruh tingkat perusahaan). Proyek ini
 > adalah federasi yang menaungi banyak SBA; SP1 menyiapkan fondasinya.
 
-## Cakupan (SP1)
+## Cakupan (SP1–SP2)
 
 | Area | Rute | Kelola di admin |
 |---|---|---|
@@ -77,6 +77,14 @@ FSBMM_SBA_PASSWORD=password
 > Kedua panel memakai login yang sama: `/admin` untuk super admin + editor
 > konten, `/panel-sba` untuk pengurus organisasi (ter-scope ke SPM-nya).
 > Ganti `FSBMM_SBA_PASSWORD` di produksi — jangan pernah pakai nilai default.
+
+Kredensial demo (sandi dari `FSBMM_SBA_PASSWORD`, fallback dev `password`):
+
+| Address | Organisasi |
+|---|---|
+| `pengurus@spm-kecap-bango.fsbmm.test` | SPM Kecap Bango |
+| `pengurus@spm-minuman-segar.fsbmm.test` | SPM Minuman Segar |
+| `pengurus@spm-roti-nusantara.fsbmm.test` | SPM Roti Nusantara |
 
 ### Catatan deploy (cPanel/shared hosting)
 
