@@ -48,9 +48,17 @@ class MemberDataSeedTest extends TestCase
     {
         $this->seed();
 
+        $kecap = Organization::where('slug', 'spm-kecap-bango')->firstOrFail();
+
+        // The computed count must be the real one, not the federation-manual
+        // placeholder (429) that the demo org is seeded with.
+        $this->assertNotSame(429, $kecap->member_count);
+
+        // Derive the expectation from the model instead of hardcoding it, so the
+        // assertion stays valid if the demo roster size ever changes.
         $this->get('/sba/spm-kecap-bango')
             ->assertOk()
-            ->assertSee('5 pekerja')
+            ->assertSee(number_format($kecap->member_count, 0, ',', '.').' pekerja')
             ->assertDontSee('429 pekerja');
     }
 }
