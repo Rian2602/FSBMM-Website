@@ -401,7 +401,7 @@ Register in `bootstrap/providers.php` **after** `AdminPanelProvider`. Do NOT cal
 **Interfaces:**
 - Produces: in the SBA panel, an `Organization` resource that can only ever see/edit the acting user's own organization (create/delete disabled; edit of another org's URL → 404); form subset excludes `slug`, `is_published`, `member_count`; dashboard widget summarizing the own organization.
 
-- [ ] **Step 1: Write the failing test `tests/Feature/SbaOrganizationTest.php`**
+- [x] **Step 1: Write the failing test `tests/Feature/SbaOrganizationTest.php`** (** executed: 7 tests @437281b; deviation: `test_sba_edits_own_organization_profile_fields_only` asserts `is_published`/`member_count` stay UNCHANGED (captured originals) instead of plan's hardcoded `false`/`0` — orgs are created published with a random member count, so the plan's literals contradicted the factory defaults **)
 
 ```php
 <?php
@@ -533,9 +533,9 @@ class SbaOrganizationTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run to verify failure** — `php artisan test --filter SbaOrganizationTest` → FAIL (no Sba resource/widget).
+- [x] **Step 2: Run to verify failure** — `php artisan test --filter SbaOrganizationTest` → FAIL (no Sba resource/widget). (** executed: red run confirmed — 5 failed / 2 passed @437281b **)
 
-- [ ] **Step 3: `app/Filament/Sba/Resources/OrganizationResource.php`**
+- [x] **Step 3: `app/Filament/Sba/Resources/OrganizationResource.php`** (** executed: resource + Sba pages (no create/delete actions) @437281b **)
 
 Craft manually (do NOT reuse the admin resource class — two resource classes for one model is fine in Filament; distinct namespaces/panels). Locked points:
 
@@ -628,7 +628,7 @@ class OrganizationResource extends Resource
 
 Pages mirror the admin-generated ones (`protected static string $resource = OrganizationResource::class;`), with ListOrganizations' header create action removed. Generated Filament pages can be reused by moving them into the Sba namespace — remember `vendor/bin/pint` for unused imports.
 
-- [ ] **Step 4: Dashboard summary widget** (`app/Filament/Sba/Widgets/OrganizationSummaryWidget.php`)
+- [x] **Step 4: Dashboard summary widget** (`app/Filament/Sba/Widgets/OrganizationSummaryWidget.php`) (** executed: widget + blade view @437281b **)
 
 ```php
 <?php
@@ -653,9 +653,9 @@ class OrganizationSummaryWidget extends Widget
 
 `resources/views/filament/widgets/organization-summary.blade.php`: a simple card listing nama organisasi, lokasi, tahun berdiri, jumlah anggota (read-only), status publikasi (Terbit/Belum terbit — informational), and a link to the edit page via `\App\Filament\Sba\Resources\OrganizationResource::getUrl('edit', ['record' => $organization])`. Query nothing but `auth()->user()->organization` — never a cross-tenant query.
 
-- [ ] **Step 5: Green run** — `php artisan test --filter SbaOrganizationTest`. Then smoke: `php artisan serve` + curl `/panel-sba/login` for 200.
+- [x] **Step 5: Green run** — `php artisan test --filter SbaOrganizationTest`. Then smoke: `php artisan serve` + curl `/panel-sba/login` for 200. (** executed: full suite 81 pass / 223 assertions; pint clean @437281b; manual `serve`+curl smoke skipped — `/panel-sba/login` and `/panel-sba/organizations` HTTP-200 already covered by `SbaAuthTest`/`SbaOrganizationTest` **)
 
-- [ ] **Step 6: Commit** — `feat(sba-panel): tenant-scoped organization profile resource + dashboard widget`
+- [x] **Step 6: Commit** — `feat(sba-panel): tenant-scoped organization profile resource + dashboard widget` (** executed: 437281b **)
 
 ---
 
