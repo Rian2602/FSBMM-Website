@@ -1281,6 +1281,18 @@ php artisan test --filter SbaEventAttendanceTest
 > model instances. Cross-tenant member_id validation needs `->rules()` on the
 > Select field itself, not just `mutateFormDataBeforeCreate` — the Select's
 > relationship resolver strips the value before mutation runs. **)**
+>
+> **(** executed: The Step-2 snippets below for `CreateComplaint`/`EditComplaint`
+> are the plan's original draft. The shipped version (`e7e5c6f`) is **simpler**:
+> the inline `Member` existence checks were removed as unreachable dead code —
+> the Select field's committed `->rules()` (Task 5 select above) already rejects
+> cross-tenant `member_id` server-side before `mutateFormDataBeforeCreate` runs,
+> so the duplicate guard could never fire. The `ListComplaints` header
+> `Actions\DeleteAction` was also dropped (the plan never specified a delete
+> action, and it went untested). Both pages now keep only their single-purpose
+> mutation hooks: `CreateComplaint::mutateFormDataBeforeCreate()` injects
+> `organization_id`; `EditComplaint::mutateFormDataBeforeSave()` sets
+> `handled_by`/`resolved_at` from `auth()->user()`. **)**
 
 **Files:**
 - Create: `app/Filament/Sba/Resources/ComplaintResource.php` + Pages, `tests/Feature/SbaComplaintTest.php`
@@ -1707,6 +1719,17 @@ php artisan test --filter SbaComplaintTest
 - Modify: `app/Filament/Sba/Widgets/OrganizationSummaryWidget.php`, `resources/views/filament/widgets/organization-summary.blade.php`, `app/Filament/Resources/OrganizationResource.php`
 - Create: `app/Filament/Widgets/MemberDataOverviewWidget.php`, `resources/views/filament/widgets/member-data-overview.blade.php`, `tests/Feature/MemberDataOverviewTest.php`
 - Modify or extend `tests/Feature/FederationOverviewTest.php` with `hasMembers()` cases (the SP2 organization-delete guard tests live here: `test_organization_with_sba_accounts_cannot_be_deleted`, `test_organization_without_sba_accounts_can_be_deleted`, `test_bulk_delete_is_blocked_when_any_selected_organization_has_sba_accounts`). There is **no** `OrganizationDeleteGuardTest` file — that name does not exist.
+
+**(** executed: In the Step-1 `MemberDataOverviewTest` snippet below, the plan
+wrote `Due::factory()->for($org)->create(...)` — but the `Due` factory's
+`definition()` never sets `organization_id` (Task 1 design: caller supplies it),
+so that call would throw an FK-constraint violation. The shipped test uses
+`Due::factory()->for($member)->for($org)->create(...)`, attaching both the
+member and the owning organization explicitly so `organization_id` lands in the
+row (see `tests/Feature/MemberDataOverviewTest.php:21`). Same principle applied
+in `MemberDataSeeder` (`->for($org)->for($member)->make`). The widget logic is
+unchanged; only the factory call in the test/seeder had to make the nested org
+explicit. **)**
 
 **Interfaces:**
 - SBA dashboard: `OrganizationSummaryWidget` gains active-member count, this-month dues total, open-complaint count — all scoped to the logged-in user's own org (reuses `hasMembers()`/query patterns from Tasks 1–5, no new scoping logic).

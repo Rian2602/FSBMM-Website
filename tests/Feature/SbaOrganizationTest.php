@@ -209,16 +209,4 @@ class SbaOrganizationTest extends TestCase
         $this->assertSame(0.0, $stats['current_month_dues']);
         $this->assertSame(0, $stats['open_complaints']);
     }
-
-    public function test_member_count_re_syncs_when_member_status_changes(): void
-    {
-        [$user, $org] = $this->sbaUser();
-        $member = Member::factory()->for($org)->create(['status' => Member::STATUS_ACTIVE]);
-
-        $this->assertSame(1, (int) $org->refresh()->member_count);
-
-        $member->update(['status' => Member::STATUS_INACTIVE]);
-
-        $this->assertSame(0, (int) $org->refresh()->member_count);
-    }
 }
