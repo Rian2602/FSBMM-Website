@@ -19,7 +19,7 @@ class FederationOverviewTest extends TestCase
     public function test_overview_widget_lists_sba_accounts_with_their_organizations(): void
     {
         $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
-        User::factory()->create(['role' => User::ROLE_EDITOR]); // staff must not appear
+        User::factory()->create(['role' => User::ROLE_EDITOR, 'name' => 'Editor Federasi']); // staff must not appear
         $orgA = Organization::factory()->create(['name' => 'SPM Alpha']);
         $orgB = Organization::factory()->create(['name' => 'SPM Beta']);
         User::factory()->sbaAdmin($orgA)->create(['name' => 'Pengurus Alpha']);
