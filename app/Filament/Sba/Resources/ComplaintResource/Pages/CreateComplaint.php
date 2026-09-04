@@ -19,7 +19,7 @@ class CreateComplaint extends CreateRecord
             if (! Member::where('id', $data['member_id'])
                 ->where('organization_id', $data['organization_id'])->exists()) {
                 throw ValidationException::withMessages([
-                    'member_id' => 'Anggota tidak terkait dengan organisasi ini.',
+                    'data.member_id' => 'Anggota tidak terkait dengan organisasi ini.',
                 ]);
             }
         }
