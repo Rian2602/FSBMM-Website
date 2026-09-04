@@ -47,6 +47,42 @@ class Organization extends Model
         return $this->users()->where('role', User::ROLE_SBA_ADMIN)->exists();
     }
 
+    public function members()
+    {
+        return $this->hasMany(Member::class);
+    }
+
+    public function dues()
+    {
+        return $this->hasMany(Due::class);
+    }
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
+    public function hasMembers(): bool
+    {
+        return $this->members()->exists();
+    }
+
+    public function syncMemberCount(): void
+    {
+        $this->member_count = $this->members()->where('status', Member::STATUS_ACTIVE)->count();
+        $this->saveQuietly();
+    }
+
     /**
      * Normalize a cleared/blank "tahun berdiri" to null so the nullable column
      * stores null (not the integer cast's 0) when a staff member blanks it.
