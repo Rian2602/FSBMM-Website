@@ -1,6 +1,6 @@
 # FSBMM — Website Federasi Serikat Buruh Makanan dan Minuman
 
-Situs resmi (SP1–SP2) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
+Situs resmi (SP1–SP3) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
 berbasis konten plus panel admin staf federasi. Dibangun dengan **Laravel 12**,
 **Filament 3**, dan **Tailwind CSS v4** — sepenuhnya *data-driven*: semua
 halaman, berita, direktori SBA, e-resource, dan kursus dikelola dari panel
@@ -10,7 +10,7 @@ admin, tanpa konten hardcoded.
 > (database anggota Serikat Pekerja/Buruh tingkat perusahaan). Proyek ini
 > adalah federasi yang menaungi banyak SBA; SP1 menyiapkan fondasinya.
 
-## Cakupan (SP1–SP2)
+## Cakupan (SP1–SP3)
 
 | Area | Rute | Kelola di admin |
 |---|---|---|
@@ -21,9 +21,11 @@ admin, tanpa konten hardcoded.
 | Katalog e-learning (kursus; materi SP4) | `/e-learning` | Kursus E-Learning |
 | Panel admin staf (super admin + editor konten) | `/admin` | — |
 | Panel dashboard SBA (pengurus tiap SPM ter-scope ke organisasinya) | `/panel-sba` | — |
+| Data anggota per SBA (roster, iuran bulanan, kegiatan & absensi, pengaduan) | `/panel-sba` | Anggota, Iuran, Kegiatan, Pengaduan |
 
-Di luar SP1–SP2 (lihat spec): data anggota (PII), authoring materi kursus —
-direncanakan di **SP3–SP4**.
+`member_count` kini dihitung otomatis begitu sebuah SBA punya data anggota
+(SP3); SBA yang belum punya data anggota tetap memakai angka manual federasi.
+Di luar SP1–SP3 (lihat spec): authoring materi kursus — direncanakan di **SP4**.
 
 ## Stack
 
@@ -104,7 +106,8 @@ php artisan test          # seluruh suite feature (PHPUnit)
 ## Struktur penting
 
 - `app/Models/` — `User`, `Organization`, `Category`, `Article`, `Page`,
-  `PageBlock`, `Eresource`, `Course`
+  `PageBlock`, `Eresource`, `Course`; data anggota SP3: `Member`, `Due`,
+  `Event`, `Attendance`, `Complaint`
 - `app/Support/PageBlockRenderer.php` — merender blok halaman menjadi HTML
   (lihat `resources/views/blocks/*.blade.php`)
 - `app/Filament/Resources/` — CRUD admin per entitas; `PageResource` memakai
@@ -123,12 +126,15 @@ php artisan test          # seluruh suite feature (PHPUnit)
   file yang dihapus dari storage menghasilkan 404 yang bersih.
 - Halaman struktural (`home`, `tentang`, `kontak`) tidak dapat dihapus/diubah
   slug-nya (dilindungi di level model dan UI).
+- Data anggota (PII) bersifat internal per SBA: staf federasi hanya melihat
+  **agregat** (widget dashboard), tidak pernah baris perorangan — lihat
+  `docs/superpowers/specs/2026-09-04-fsbmm-website-sp3-member-data.md`.
 
 ## Roadmap
 
 - ~~**SP2** — akun & dashboard SBA (organisasi → tenant scoping, login SBA)~~ ✅
-- **SP3** — modul data anggota per SBA (roster, upah & iuran, absensi,
-  pengaduan) dengan aturan PII
+- ~~**SP3** — modul data anggota per SBA (roster, upah & iuran, absensi,
+  pengaduan) dengan aturan PII~~ ✅
 - **SP4** — authoring e-learning (pelajaran + kuis untuk peserta staf)
 
 Lihat `docs/superpowers/specs/2026-09-03-fsbmm-website-sp1-design.md` dan
