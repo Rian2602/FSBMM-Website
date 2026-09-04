@@ -196,4 +196,29 @@ class SbaOrganizationTest extends TestCase
         $this->assertSame(50000.0, $stats['current_month_dues']);
         $this->assertSame(1, $stats['open_complaints']);
     }
+
+    public function test_dashboard_summary_stats_zeroed_when_user_has_no_organization(): void
+    {
+        $user = User::factory()->create(['role' => User::ROLE_SBA_ADMIN]);
+
+        $this->actingAs($user);
+
+        $stats = (new OrganizationSummaryWidget)->stats();
+
+        $this->assertSame(0, $stats['active_members']);
+        $this->assertSame(0.0, $stats['current_month_dues']);
+        $this->assertSame(0, $stats['open_complaints']);
+    }
+
+    public function test_member_count_re_syncs_when_member_status_changes(): void
+    {
+        [$user, $org] = $this->sbaUser();
+        $member = Member::factory()->for($org)->create(['status' => Member::STATUS_ACTIVE]);
+
+        $this->assertSame(1, (int) $org->refresh()->member_count);
+
+        $member->update(['status' => Member::STATUS_INACTIVE]);
+
+        $this->assertSame(0, (int) $org->refresh()->member_count);
+    }
 }

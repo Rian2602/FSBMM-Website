@@ -24,7 +24,7 @@ class OrganizationSummaryWidget extends Widget
         if (! $organization) {
             return [
                 'active_members' => 0,
-                'current_month_dues' => 0,
+                'current_month_dues' => 0.0,
                 'open_complaints' => 0,
             ];
         }
