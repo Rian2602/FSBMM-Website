@@ -212,7 +212,7 @@ public function sbaAdmin(Organization $organization): static
 **Interfaces:**
 - Produces: second Filament panel id `sba`, path `panel-sba`, `->login()` at `/panel-sba/login`, `->profile()` (built-in EditProfile — name/email/password change), dashboard page + discovered Sba pages/widgets. Anonymous → redirect to `/panel-sba/login`; authenticated-but-ineligible → 403 (verified Filament middleware behavior in v3.3.55).
 
-- [ ] **Step 1: Write the failing test `tests/Feature/SbaAuthTest.php`**
+- [x] **Step 1: Write the failing test `tests/Feature/SbaAuthTest.php`** (** executed: 9 tests @9e31bd0 **)
 
 ```php
 <?php
@@ -319,9 +319,9 @@ class SbaAuthTest extends TestCase
 
 Notes: the factory default keeps `organization_id` null — a plain `role => sba_admin` user has no org. Filament's `Authenticate` middleware aborts 403 for an authenticated user failing `canAccessPanel()` (verified in `vendor/filament/filament/src/Http/Middleware/Authenticate.php` v3.3.55).
 
-- [ ] **Step 2: Run to verify failure** — `php artisan test --filter SbaAuthTest` → FAIL (no provider/route yet).
+- [x] **Step 2: Run to verify failure** — `php artisan test --filter SbaAuthTest` → FAIL (no provider/route yet). (** executed: red run confirmed @9e31bd0 **)
 
-- [ ] **Step 3: Create `app/Providers/Filament/SbaPanelProvider.php`**
+- [x] **Step 3: Create `app/Providers/Filament/SbaPanelProvider.php`** (** executed: provider + providers.php @9e31bd0 **)
 
 Mirror `AdminPanelProvider`'s middleware lists exactly; only the identity changes:
 
@@ -387,9 +387,9 @@ class SbaPanelProvider extends PanelProvider
 
 Register in `bootstrap/providers.php` **after** `AdminPanelProvider`. Do NOT call `->default()` (admin stays the default panel).
 
-- [ ] **Step 4: Green run** — `php artisan test --filter SbaAuthTest`, plus Task 1's `SbaTenantTest` now that `Filament::getPanel('sba')` resolves. Then `php artisan test` to confirm the whole SP1 suite is still green.
+- [x] **Step 4: Green run** — `php artisan test --filter SbaAuthTest`, plus Task 1's `SbaTenantTest` now that `Filament::getPanel('sba')` resolves. Then `php artisan test` to confirm the whole SP1 suite is still green. (** executed: 74 pass / 199 assertions @9e31bd0 **)
 
-- [ ] **Step 5: Commit** — `feat(sba): second Filament panel /panel-sba with role-gated login + profile`
+- [x] **Step 5: Commit** — `feat(sba): second Filament panel /panel-sba with role-gated login + profile` (** executed: 9e31bd0 **)
 
 ---
 
