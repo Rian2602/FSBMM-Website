@@ -18,7 +18,7 @@ class MemberDataOverviewTest extends TestCase
     {
         $org = Organization::factory()->create();
         $member = Member::factory()->for($org)->create(['status' => Member::STATUS_ACTIVE]);
-        Due::factory()->for($org)->for($member)->create(['period' => now()->format('Y-m'), 'amount' => 50000]);
+        Due::factory()->for($member)->for($org)->create(['period' => now()->format('Y-m'), 'amount' => 50000]);
         Complaint::factory()->for($org)->create(['status' => 'baru']);
 
         $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);

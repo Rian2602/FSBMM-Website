@@ -1273,6 +1273,15 @@ php artisan test --filter SbaEventAttendanceTest
 
 ### Task 5: `ComplaintResource`
 
+> **(** executed: All `Filament::auth()` calls replaced with `auth()` helper —
+> `Filament::auth()` returns null in Livewire test context (Livewire::actingAs
+> doesn't propagate through Filament's auth resolver). Applied retroactively to
+> Tasks 2–4 resources too. Edit tests use `['record' => $model->id]` not the
+> model instance — Livewire::test() doesn't resolve route-model binding from
+> model instances. Cross-tenant member_id validation needs `->rules()` on the
+> Select field itself, not just `mutateFormDataBeforeCreate` — the Select's
+> relationship resolver strips the value before mutation runs. **)**
+
 **Files:**
 - Create: `app/Filament/Sba/Resources/ComplaintResource.php` + Pages, `tests/Feature/SbaComplaintTest.php`
 
