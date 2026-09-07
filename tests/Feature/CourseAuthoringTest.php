@@ -3,8 +3,14 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\CourseLessonResource\Pages\CreateCourseLesson;
+use App\Filament\Resources\CourseQuizResource\Pages\EditCourseQuiz;
+use App\Filament\Resources\CourseQuizResource\RelationManagers\QuestionsRelationManager;
+use App\Filament\Resources\QuizQuestionResource\Pages\EditQuizQuestion;
+use App\Filament\Resources\QuizQuestionResource\RelationManagers\OptionsRelationManager;
 use App\Models\Course;
+use App\Models\CourseQuiz;
 use App\Models\Organization;
+use App\Models\QuizQuestion;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -70,5 +76,54 @@ class CourseAuthoringTest extends TestCase
             ])
             ->call('create')
             ->assertHasFormErrors(['title', 'content']);
+    }
+
+    // (** executed: the plan's Task 3 test snippets omitted pageClass, but
+    // relation-manager tests in this repo always mount with
+    // ['ownerRecord' => ..., 'pageClass' => ...] (SP3 SbaEventAttendanceTest,
+    // and the Task 2 evaluation proved the pageClass-less mount crashes with
+    // a null getPageClass()). **)
+    public function test_editor_can_create_a_question_on_a_quiz(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $quiz = CourseQuiz::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(QuestionsRelationManager::class, ['ownerRecord' => $quiz, 'pageClass' => EditCourseQuiz::class])
+            ->callTableAction('create', data: ['question' => 'Apa itu serikat pekerja?'])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('quiz_questions', [
+            'course_quiz_id' => $quiz->id,
+            'question' => 'Apa itu serikat pekerja?',
+        ]);
+    }
+
+    public function test_editor_can_create_an_option_and_mark_it_correct(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $question = QuizQuestion::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(OptionsRelationManager::class, ['ownerRecord' => $question, 'pageClass' => EditQuizQuestion::class])
+            ->callTableAction('create', data: ['option' => 'Jawaban Benar', 'is_correct' => true])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('quiz_options', [
+            'quiz_question_id' => $question->id,
+            'option' => 'Jawaban Benar',
+            'is_correct' => true,
+        ]);
+    }
+
+    public function test_question_requires_text(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $quiz = CourseQuiz::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(QuestionsRelationManager::class, ['ownerRecord' => $quiz, 'pageClass' => EditCourseQuiz::class])
+            ->callTableAction('create', data: ['question' => ''])
+            ->assertHasTableActionErrors(['question']);
     }
 }
