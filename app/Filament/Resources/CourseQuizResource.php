@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CourseQuizResource\Pages;
 use App\Filament\Resources\CourseQuizResource\RelationManagers;
-use App\Models\CourseLesson;
 use App\Models\CourseQuiz;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -31,9 +30,12 @@ class CourseQuizResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('title')->label('Judul')->required()->maxLength(255),
+                // (** executed: the course column is `title`, not `name` — the
+                // plan's snippets assumed a `name` column that doesn't exist
+                // (SP1 Course uses `title`). **)
                 Forms\Components\Select::make('course_id')
                     ->label('Kursus')
-                    ->relationship('course', 'name')
+                    ->relationship('course', 'title')
                     ->required()
                     ->searchable()
                     ->disabledOn('edit'),
@@ -63,7 +65,7 @@ class CourseQuizResource extends Resource
                 Tables\Columns\TextColumn::make('pass_threshold')->label('Ambang'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('course')->relationship('course', 'name'),
+                Tables\Filters\SelectFilter::make('course')->relationship('course', 'title'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -89,18 +91,5 @@ class CourseQuizResource extends Resource
             'create' => Pages\CreateCourseQuiz::route('/create'),
             'edit' => Pages\EditCourseQuiz::route('/{record}/edit'),
         ];
-    }
-
-    public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        // (** executed: course_quizzes.course_id is NOT NULL; when the author
-        // picks a lesson, the course must come from that lesson so the quiz
-        // never lands in a different course than its lesson (same invariant
-        // enforced in QuizzesRelationManager). **)
-        if (($data['lesson_id'] ?? null) !== null) {
-            $data['course_id'] = CourseLesson::find($data['lesson_id'])->course_id;
-        }
-
-        return $data;
     }
 }

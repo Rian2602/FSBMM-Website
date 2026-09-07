@@ -29,12 +29,15 @@ class QuizQuestionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('quiz_id')
+                // (** executed: the FK column is course_quiz_id — a Select
+                // named `quiz_id` would write to a non-existent column and
+                // trip NOT NULL on insert (same naming trap as Task 1/2). **)
+                Forms\Components\Select::make('course_quiz_id')
                     ->label('Kuis')
                     ->relationship('quiz', 'title')
                     ->required()
                     ->searchable()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->course?->name.' — '.$record->title),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->course?->title.' — '.$record->title),
                 Forms\Components\Textarea::make('question')->label('Pertanyaan')->required()->rows(3)->columnSpanFull(),
                 Forms\Components\TextInput::make('sort_order')->label('Urutan')->numeric()->default(0),
             ]);
