@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Filament\Resources\CourseLessonResource\Pages\CreateCourseLesson;
 use App\Filament\Resources\CourseQuizResource\Pages\EditCourseQuiz;
 use App\Filament\Resources\CourseQuizResource\RelationManagers\QuestionsRelationManager;
+use App\Filament\Resources\CourseResource\Pages\EditCourse;
+use App\Filament\Resources\CourseResource\RelationManagers\FinalQuizRelationManager;
 use App\Filament\Resources\QuizQuestionResource\Pages\EditQuizQuestion;
 use App\Filament\Resources\QuizQuestionResource\RelationManagers\OptionsRelationManager;
 use App\Models\Course;
@@ -125,5 +127,24 @@ class CourseAuthoringTest extends TestCase
             ->test(QuestionsRelationManager::class, ['ownerRecord' => $quiz, 'pageClass' => EditCourseQuiz::class])
             ->callTableAction('create', data: ['question' => ''])
             ->assertHasTableActionErrors(['question']);
+    }
+
+    // (** executed: plan snippet mounted the RM without pageClass — always
+    // required in this repo (see Task 3 note). **)
+    public function test_editor_can_create_a_final_quiz_on_a_course(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('create', data: ['title' => 'Evaluasi Akhir', 'pass_threshold' => 70])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('course_quizzes', [
+            'course_id' => $course->id,
+            'lesson_id' => null,
+            'title' => 'Evaluasi Akhir',
+        ]);
     }
 }
