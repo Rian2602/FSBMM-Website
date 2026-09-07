@@ -27,8 +27,10 @@ class LessonsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
+        // (** executed: plan snippet used `orderColumn('sort_order')`, which
+        // doesn't exist in Filament v3.3.55 — the real API is `reorderable()`. **)
         return $table
-            ->orderColumn('sort_order')
+            ->reorderable('sort_order')
             ->columns([
                 Tables\Columns\TextColumn::make('sort_order')->label('Urutan')->sortable(),
                 Tables\Columns\TextColumn::make('title')->label('Judul')->searchable(),

@@ -37,8 +37,19 @@ class QuizzesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('questions_count')->label('Jml Soal')->counts('questions'),
                 Tables\Columns\TextColumn::make('pass_threshold')->label('Ambang'),
             ])
+            // (** executed: the relationship is lesson's quizzes, so the RM
+            // only fills lesson_id — course_id must be copied from the owning
+            // lesson or the NOT NULL constraint fails. Plan Task 2 snippet
+            // omitted this. **)
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                // (** executed: plan snippet used `mutateDataUsing`, which
+                // doesn't exist in Filament v3.3.55 — the real API is
+                // `mutateFormDataUsing`. **)
+                Tables\Actions\CreateAction::make()->mutateFormDataUsing(function (array $data): array {
+                    $data['course_id'] = $this->getOwnerRecord()->course_id;
+
+                    return $data;
+                }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
