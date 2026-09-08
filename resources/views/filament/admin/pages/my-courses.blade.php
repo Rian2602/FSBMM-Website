@@ -1,9 +1,10 @@
 <x-filament-panels::page>
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        @foreach ($this->getCourses() as $course)
+        @foreach ($this->getCourses() as $row)
             @php
-                $done = $this->getProgress()->forCourse($course)->count();
-                $total = $course->lessons->count();
+                $course = $row['course'];
+                $done = $row['lessons_done'];
+                $total = $row['lessons_total'];
             @endphp
             <a href="{{ route('filament.admin.courses.show', $course->slug) }}"
                class="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-primary-400 hover:shadow-md dark:border-white/10 dark:bg-gray-900">

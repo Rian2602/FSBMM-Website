@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Pages;
 
-use App\Models\Course;
 use App\Support\LearningProgress;
 use Filament\Pages\Page;
+use Illuminate\Support\Collection;
 
 class MyCoursesPage extends Page
 {
@@ -23,16 +23,8 @@ class MyCoursesPage extends Page
         return 'Pembelajaran';
     }
 
-    public function getCourses()
+    public function getCourses(): Collection
     {
-        // (** executed: `finalQuiz` is a method returning ?CourseQuiz, not a
-        // relation — with('finalQuiz') crashes eager loading (addEagerConstraints
-        // on null). Access it as $course->finalQuiz (dynamic call) instead. **)
-        return Course::published()->with('lessons')->orderBy('title')->get();
-    }
-
-    public function getProgress(): LearningProgress
-    {
-        return app(LearningProgress::class);
+        return app(LearningProgress::class)->forUser(auth()->user());
     }
 }

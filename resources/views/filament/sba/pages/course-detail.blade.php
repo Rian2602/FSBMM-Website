@@ -1,4 +1,5 @@
 <x-filament-panels::page>
+    @php $courseProgress = $this->getCourseProgress(); @endphp
     <div class="space-y-6">
         <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-gray-900">
             <div class="flex items-start justify-between gap-4">
@@ -19,9 +20,10 @@
         <div>
             <h3 class="mb-2 font-semibold text-gray-900 dark:text-white">Daftar Pelajaran</h3>
             <ol class="space-y-2">
-                @foreach ($this->getCourse()->lessons as $lesson)
+                @foreach ($courseProgress['lessons'] as $item)
                     @php
-                        $complete = $this->getProgress()->isLessonComplete($this->getCourse(), $lesson);
+                        $lesson = $item['lesson'];
+                        $complete = $item['done'];
                     @endphp
                     <li class="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-gray-900">
                         <div class="flex items-center gap-3">
@@ -51,14 +53,12 @@
             </ol>
         </div>
 
-        {{-- (** executed: call finalQuiz() explicitly — property access makes
-             Laravel treat it as a relation and throw (see Admin twin). **) --}}
-        @if ($this->getCourse()->finalQuiz())
+        @if ($courseProgress['final_quiz'])
             <div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-500/30 dark:bg-amber-500/10">
                 <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
-                    🏁 Kuis Akhir — kerjakan setelah semua pelajaran selesai.
+                    🏁 Kuis Akhir — {{ $courseProgress['final_quiz_passed'] ? '✓ lulus' : 'kerjakan setelah semua pelajaran selesai.' }}
                 </p>
-                <a href="{{ route('filament.sba.quizzes.show', $this->getCourse()->finalQuiz()->id) }}"
+                <a href="{{ route('filament.sba.quizzes.show', $courseProgress['final_quiz']->id) }}"
                    class="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-500">
                     Kerjakan Kuis Akhir
                 </a>

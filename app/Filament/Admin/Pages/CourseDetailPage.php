@@ -37,8 +37,8 @@ class CourseDetailPage extends Page
         return $this->record;
     }
 
-    public function getProgress(): LearningProgress
+    public function getCourseProgress(): array
     {
-        return app(LearningProgress::class);
+        return app(LearningProgress::class)->forCourse(auth()->user(), $this->record);
     }
 }
