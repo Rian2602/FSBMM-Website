@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Course;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\LearningProgress;
+use App\Support\QuizEngine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -84,5 +86,26 @@ class CourseContentSeedTest extends TestCase
         $this->get('/e-learning')
             ->assertOk()
             ->assertSee('Dasar Kepengurusan Serikat');
+    }
+
+    public function test_seeded_course_is_completable(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $this->seed();
+
+        $course = Course::where('slug', self::DEMO_SLUG)->firstOrFail();
+        $lessonQuiz = $course->lessons()->with('quizzes')->get()->pluck('quizzes')->flatten()->first();
+        $final = $course->quizzes()->whereNull('lesson_id')->first();
+
+        $manualLesson = $course->lessons()->whereDoesntHave('quizzes')->first();
+        app(LearningProgress::class)->setLessonCompleted($editor, $course, $manualLesson);
+        app(QuizEngine::class)->submit($lessonQuiz, $editor, [
+            $lessonQuiz->questions()->first()->id => $lessonQuiz->questions()->first()->options()->where('is_correct', true)->first()->id,
+        ]);
+        app(QuizEngine::class)->submit($final, $editor, [
+            $final->questions()->first()->id => $final->questions()->first()->options()->where('is_correct', true)->first()->id,
+        ]);
+
+        $this->assertTrue(app(LearningProgress::class)->isCourseComplete($editor, $course));
     }
 }
