@@ -866,6 +866,20 @@ public static function getRelations(): array
 
 - [ ] **Step 7: Commit** — `feat(elearning): authoring — course lesson resource + per-lesson quizzes`
 
+(** executed: Task 2 evaluation-hunt probes added to `CourseAuthoringTest`:
+create a lesson-quiz through `QuizzesRelationManager` (asserts the 19282e1
+`course_id` injection + owner `lesson_id` fill + `pass_threshold => null`
+stored), create a lesson through `LessonsRelationManager` (asserts owner
+`course_id` auto-fill when the form has no `course_id` field), mount both RM
+tables (`assertCanSeeTableRecords`) to smoke-render the `counts()`/reorder
+columns, and `GET /admin/course-lessons` render for editor. All pass —
+the RM authoring paths carry no bugs. Separately fixed a rendering bug in the
+Task 3 file `CourseQuizResource` table: `course.name` → `course.title` (the
+`courses` column is `title`; `name` displayed an always-empty "Kursus" column
+in the quiz list). Ceilings left as-is: `sort_order` ties on standalone-created
+lessons (default 0 + RM reorder) and the `pass_threshold` Select default-70 UX
+(fallback only via explicit empty). **)
+
 ---
 
 ### Task 3: Authoring — questions + options

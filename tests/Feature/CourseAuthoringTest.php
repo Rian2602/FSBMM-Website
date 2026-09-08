@@ -3,13 +3,17 @@
 namespace Tests\Feature;
 
 use App\Filament\Resources\CourseLessonResource\Pages\CreateCourseLesson;
+use App\Filament\Resources\CourseLessonResource\Pages\EditCourseLesson;
+use App\Filament\Resources\CourseLessonResource\RelationManagers\QuizzesRelationManager;
 use App\Filament\Resources\CourseQuizResource\Pages\EditCourseQuiz;
 use App\Filament\Resources\CourseQuizResource\RelationManagers\QuestionsRelationManager;
 use App\Filament\Resources\CourseResource\Pages\EditCourse;
 use App\Filament\Resources\CourseResource\RelationManagers\FinalQuizRelationManager;
+use App\Filament\Resources\CourseResource\RelationManagers\LessonsRelationManager;
 use App\Filament\Resources\QuizQuestionResource\Pages\EditQuizQuestion;
 use App\Filament\Resources\QuizQuestionResource\RelationManagers\OptionsRelationManager;
 use App\Models\Course;
+use App\Models\CourseLesson;
 use App\Models\CourseQuiz;
 use App\Models\Organization;
 use App\Models\QuizQuestion;
@@ -146,5 +150,69 @@ class CourseAuthoringTest extends TestCase
             'lesson_id' => null,
             'title' => 'Evaluasi Akhir',
         ]);
+    }
+
+    public function test_lesson_relation_manager_table_renders(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+
+        Livewire::actingAs($editor)
+            ->test(LessonsRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->assertOk()
+            ->assertCanSeeTableRecords([$lesson]);
+    }
+
+    public function test_editor_can_add_a_quiz_through_the_lesson_relation_manager(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $otherCourse = Course::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(QuizzesRelationManager::class, ['ownerRecord' => $lesson, 'pageClass' => EditCourseLesson::class])
+            ->callTableAction('create', data: [
+                'title' => 'Kuis Pelajaran',
+                'pass_threshold' => null,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('course_quizzes', [
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'title' => 'Kuis Pelajaran',
+            'pass_threshold' => null,
+        ]);
+        $this->assertDatabaseMissing('course_quizzes', ['course_id' => $otherCourse->id]);
+    }
+
+    public function test_editor_can_add_a_lesson_through_the_course_relation_manager(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(LessonsRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('create', data: [
+                'title' => 'Pelajaran RM',
+                'content' => '<p>Isi.</p>',
+                'sort_order' => 3,
+            ])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('course_lessons', [
+            'course_id' => $course->id,
+            'title' => 'Pelajaran RM',
+            'sort_order' => 3,
+        ]);
+    }
+
+    public function test_lesson_list_page_renders_for_editor(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+
+        $this->actingAs($editor)->get('/admin/course-lessons')->assertSuccessful();
     }
 }

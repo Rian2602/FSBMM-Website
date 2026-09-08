@@ -59,7 +59,7 @@ class CourseQuizResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('title')->label('Judul')->searchable(),
-                Tables\Columns\TextColumn::make('course.name')->label('Kursus'),
+                Tables\Columns\TextColumn::make('course.title')->label('Kursus'),
                 Tables\Columns\TextColumn::make('lesson.title')->label('Pelajaran')->placeholder('Kuis akhir'),
                 Tables\Columns\TextColumn::make('questions_count')->label('Jml Soal')->counts('questions'),
                 Tables\Columns\TextColumn::make('pass_threshold')->label('Ambang'),
