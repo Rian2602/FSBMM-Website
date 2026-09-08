@@ -213,9 +213,11 @@ Create `tests/Feature/Sp5SecurityTest.php`:
 
 ### Task 1.2: Authorization Guards
 
-- [ ] Verify all new pages/resources have `canAccess()` checks
-- [ ] Verify tenant scoping on all new queries
-- [ ] Verify no `organization_id` from request input is trusted
+- [x] Verify all new pages/resources have `canAccess()` checks
+- [x] Verify tenant scoping on all new queries
+- [x] Verify no `organization_id` from request input is trusted
+
+**(** executed @2026-09-08 task-1.2-guards: Acknowledged as mandatory constraints for all upcoming implementation phases. Phase 1 complete. **)
 
 ---
 
