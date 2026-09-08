@@ -5,17 +5,17 @@
         </x-slot>
 
         <dl class="mb-4 grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
-            <div>
-                <dt class="text-xs text-gray-500">Akun SBA</dt>
-                <dd>{{ number_format($this->getTotalAccounts()) }}</dd>
+            <div style="border-left: 4px solid #3a86ff; background: #eef5ff; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                <dt style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #3a86ff;">Akun SBA</dt>
+                <dd style="margin-top: 0.15rem; font-weight: 800; color: #073b32;">{{ number_format($this->getTotalAccounts()) }}</dd>
             </div>
-            <div>
-                <dt class="text-xs text-gray-500">Organisasi terdaftar</dt>
-                <dd>{{ number_format($this->getTotalOrganizations()) }}</dd>
+            <div style="border-left: 4px solid #8338ec; background: #f6f0fe; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                <dt style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #8338ec;">Organisasi terdaftar</dt>
+                <dd style="margin-top: 0.15rem; font-weight: 800; color: #073b32;">{{ number_format($this->getTotalOrganizations()) }}</dd>
             </div>
-            <div>
-                <dt class="text-xs text-gray-500">Organisasi terbit</dt>
-                <dd>{{ number_format($this->getPublishedOrganizations()) }}</dd>
+            <div style="border-left: 4px solid #ffb703; background: #fff7de; border-radius: 0.5rem; padding: 0.5rem 0.75rem;">
+                <dt style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #b57e00;">Organisasi terbit</dt>
+                <dd style="margin-top: 0.15rem; font-weight: 800; color: #073b32;">{{ number_format($this->getPublishedOrganizations()) }}</dd>
             </div>
         </dl>
 
