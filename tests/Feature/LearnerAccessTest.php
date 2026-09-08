@@ -4,11 +4,14 @@ namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\CourseDetailPage;
 use App\Models\Course;
+use App\Models\CourseAttempt;
 use App\Models\CourseLesson;
+use App\Models\CourseQuiz;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Tests\TestCase;
 
 class LearnerAccessTest extends TestCase
@@ -124,5 +127,112 @@ class LearnerAccessTest extends TestCase
             'lesson_id' => $lesson->id,
             'is_completed' => false,
         ]);
+    }
+
+    // (** executed: task 5 evaluation — the toggle is only legal for lessons
+    // WITHOUT a quiz (spec §6b); the blade hides the button for quiz lessons
+    // but the method accepted any lesson, letting a crafted Livewire call mark
+    // a quiz-bearing lesson done without passing its quiz. LearningStatus()
+    // prefers the progress row over quiz attempts, so this forged completion
+    // also flips course completion. The guard must be server-side. **)
+    public function test_lesson_with_quiz_cannot_be_toggled_done_from_course_detail(): void
+    {
+        $this->withoutExceptionHandling();
+
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-guard']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Berkuis']);
+        CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['title' => 'Kuis 1']);
+
+        $this->assertThrows(
+            fn () => Livewire::actingAs($editor)
+                ->test(CourseDetailPage::class, ['record' => $course])
+                ->call('toggleLessonCompletion', $lesson->id),
+            HttpException::class
+        );
+
+        $this->assertDatabaseMissing('course_progress', [
+            'user_id' => $editor->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+        ]);
+    }
+
+    // (** executed: task 5 evaluation — the detail page must render every
+    // quiz of a lesson; the view only linked $lesson->quizzes->first(), so
+    // quizzes 2..n were unreachable from the learning surface. **)
+    public function test_course_detail_links_each_quiz_of_a_lesson(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-duakuis', 'title' => 'Dua Kuis']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran Kuis']);
+        $k1 = CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['title' => 'Kuis Satu']);
+        $k2 = CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['title' => 'Kuis Dua']);
+
+        $this->actingAs($editor)
+            ->get('/admin/courses/kursus-duakuis')
+            ->assertOk()
+            ->assertSee('/admin/quizzes/'.$k1->id, false)
+            ->assertSee('/admin/quizzes/'.$k2->id, false);
+    }
+
+    public function test_course_detail_shows_lesson_statuses_and_quiz_button(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-status', 'title' => 'Kursus Status']);
+        CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran Tanpa Kuis']);
+        $quizzed = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran Berkuis']);
+        CourseQuiz::factory()->for($course, 'course')->for($quizzed, 'lesson')->create(['title' => 'Kuis Pelajaran']);
+
+        $this->actingAs($editor)
+            ->get('/admin/courses/kursus-status')
+            ->assertOk()
+            ->assertSee('Pelajaran Tanpa Kuis')
+            ->assertSee('Pelajaran Berkuis')
+            ->assertSee('Belum')
+            ->assertSee('Kuis belum lulus')
+            ->assertSee('Tandai Selesai')
+            ->assertSee('Kerjakan Kuis');
+    }
+
+    public function test_course_detail_shows_final_quiz_entry_and_flips_when_passed(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-final', 'title' => 'Kursus Final']);
+        $final = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'title' => 'Evaluasi Akhir']);
+
+        $this->actingAs($editor)
+            ->get('/admin/courses/kursus-final')
+            ->assertOk()
+            ->assertSee('Kuis Akhir')
+            ->assertSee('kerjakan setelah semua pelajaran selesai');
+
+        CourseAttempt::create([
+            'course_quiz_id' => $final->id,
+            'user_id' => $editor->id,
+            'score' => 100,
+            'passed' => true,
+            'attempt_date' => now(),
+        ]);
+
+        $this->actingAs($editor)
+            ->get('/admin/courses/kursus-final')
+            ->assertSee('lulus')
+            ->assertDontSee('kerjakan setelah semua pelajaran selesai');
+    }
+
+    public function test_lesson_view_renders_lesson_content(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-konten', 'title' => 'Kursus Konten']);
+        $lesson = CourseLesson::factory()->for($course)->create([
+            'title' => 'Materi X',
+            'content' => '<h2>Header Bab</h2><p>Isi paragraf.</p>',
+        ]);
+
+        $this->actingAs($editor)
+            ->get('/admin/courses/kursus-konten/lessons/'.$lesson->id)
+            ->assertOk()
+            ->assertSee('Header Bab');
     }
 }

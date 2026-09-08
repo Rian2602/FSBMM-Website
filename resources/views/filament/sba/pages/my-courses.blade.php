@@ -1,6 +1,7 @@
 <x-filament-panels::page>
+    @php $rows = $this->getCourses(); @endphp
     <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        @foreach ($this->getCourses() as $row)
+        @foreach ($rows as $row)
             @php
                 $course = $row['course'];
                 $done = $row['lessons_done'];
@@ -35,7 +36,7 @@
         @endforeach
     </div>
 
-    @if ($this->getCourses()->isEmpty())
+    @if ($rows->isEmpty())
         <div class="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500 dark:border-white/10">
             Belum ada kursus yang terbit.
         </div>

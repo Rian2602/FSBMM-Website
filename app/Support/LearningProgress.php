@@ -82,6 +82,8 @@ class LearningProgress
     /** Per-lesson + final-quiz status map for one course/user (course detail page). */
     public function forCourse(User $user, Course $course): array
     {
+        $finalQuiz = $course->finalQuiz();
+
         return [
             'course' => $course,
             'is_complete' => $this->isCourseComplete($user, $course),
@@ -89,9 +91,9 @@ class LearningProgress
                 'lesson' => $lesson,
                 'done' => $this->lessonStatus($user, $course, $lesson),
             ])->values(),
-            'final_quiz' => $course->finalQuiz(),
-            'final_quiz_passed' => $course->finalQuiz()
-                ? $course->finalQuiz()->attempts()->where('user_id', $user->id)->where('passed', true)->exists()
+            'final_quiz' => $finalQuiz,
+            'final_quiz_passed' => $finalQuiz
+                ? $finalQuiz->attempts()->where('user_id', $user->id)->where('passed', true)->exists()
                 : false,
         ];
     }

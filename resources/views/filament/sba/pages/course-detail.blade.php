@@ -43,13 +43,14 @@
                                class="rounded-lg bg-primary-600 px-3 py-1 text-xs font-medium text-white hover:bg-primary-500">
                                 Baca Materi
                             </a>
-                            @if ($lesson->quizzes->isNotEmpty())
-                                <a href="{{ route('filament.sba.quizzes.show', $lesson->quizzes->first()->id) }}"
-                                   class="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white hover:bg-amber-400">
-                                    Kerjakan Kuis
-                                </a>
-                            @else
-                                {{-- spec §6b: lesson without quiz → manual toggle --}}
+@foreach ($lesson->quizzes as $quiz)
+                            <a href="{{ route('filament.sba.quizzes.show', $quiz->id) }}"
+                               class="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white hover:bg-amber-400">
+                                Kerjakan Kuis
+                            </a>
+                        @endforeach
+                            {{-- spec §6b: lesson without quiz → manual toggle --}}
+                            @if ($lesson->quizzes->isEmpty())
                                 <button wire:click="toggleLessonCompletion({{ $lesson->id }})"
                                         class="rounded-lg px-3 py-1 text-xs font-medium {{ $complete ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-white/10 dark:text-gray-200' : 'bg-lime-600 text-white hover:bg-lime-500' }}">
                                     {{ $complete ? 'Batal Selesai' : 'Tandai Selesai' }}

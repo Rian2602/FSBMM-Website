@@ -45,10 +45,18 @@ class CourseDetailPage extends Page
     // (** executed: spec §6b requires a manual "Tandai Selesai"/"Batal
     // Selesai" toggle for lessons WITHOUT a quiz (quiz lessons complete
     // automatically on pass); Task 5's view omitted it, which blocked course
-    // completion for quiz-less lessons. Surfaced by the Task 9 smoke. **)
+    // completion for quiz-less lessons. Surfaced by the Task 9 smoke.
+    // Task 5 evaluation: the toggle must reject quiz-bearing lessons
+    // server-side — the blade hides the button, but a crafted Livewire call
+    // would mark such a lesson done without passing its quiz, and
+    // LearningProgress::lessonStatus() prefers the progress row over quiz
+    // attempts. **)
     public function toggleLessonCompletion(int $lessonId): void
     {
         $lesson = $this->record->lessons()->findOrFail($lessonId);
+
+        abort_unless($lesson->quizzes->isEmpty(), 403);
+
         $progress = app(LearningProgress::class);
         $user = auth()->user();
         $nowDone = $progress->lessonStatus($user, $this->record, $lesson);

@@ -1349,6 +1349,30 @@ Register it: in `CourseResource::getRelations()`, add both `LessonsRelationManag
 - Consumes: Task 1 models/relations, `Course::published()`, `CourseLesson`.
 - Produces: twin Filament pages (one namespace per panel) listing published courses with per-user progress, a course detail page listing lessons with statuses + actions, and a lesson view page rendering `content`. Learner = whatever `users()` is logged into that panel.
 
+> (** executed: Task 5 evaluation (post-implementation audit) — shipped routing
+> deviates from the plan's per-page `getRoutes()` (which does not exist in
+> Filament v3.3.55): the four learning pages are registered per-panel via
+> `->pages([...])` + `Panel::authenticatedRoutes()` with pretty URLs
+> `/courses/{record}`, `/courses/{record}/lessons/{lesson}` (AGENTS.md
+> documents this convention), and `LearningProgress::forUser/forCourse` are
+> built here and shared by the Task 7 pages + Task 8 report. Evaluator also
+> fixed:
+> - `toggleLessonCompletion` only rendered the manual toggle for quiz-less
+>   lessons but accepted ANY lesson server-side; a crafted Livewire call could
+>   mark a quiz-bearing lesson done without passing its quiz, and — because
+>   `lessonStatus()` prefers a `course_progress` row over quiz attempts — also
+>   flip course completion (spec §6b integrity). Now guarded server-side with
+>   `abort_unless($lesson->quizzes->isEmpty(), 403)`.
+> - Course-detail linked only `$lesson->quizzes->first()`, so lessons with
+>   several quizzes (allowed by Task 3 authoring) exposed just the first; the
+>   view now renders one "Kerjakan Kuis" button per quiz.
+> - Render/eval slop: `getCourses()` ran twice per page render (loop + empty
+>   check), and `forCourse()` called `$course->finalQuiz()` three times; both
+>   now compute once.
+> The shipped `LearnerAccessTest` gained coverage for the toggle guard,
+> per-quiz links, lesson status/button rendering, the final-quiz entry +
+> passed flip, and lesson-content rendering (12 tests). **)
+
 Design: to avoid duplicating query logic across the four Admin pages and four Sba pages, share a single `App\Support\LearningProgress` helper (see Task 7) and have the Admin/Sba pages be near-identical thin views. To keep the plan DRY, the pages in both panels are structurally identical; only the namespace differs.
 
 - [ ] **Step 1: Write the failing test `tests/Feature/LearnerAccessTest.php`**
