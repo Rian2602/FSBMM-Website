@@ -7,6 +7,8 @@ use App\Models\CourseLesson;
 use App\Models\CourseQuiz;
 use App\Models\QuizOption;
 use App\Models\QuizQuestion;
+use App\Models\User;
+use App\Support\QuizEngine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -96,5 +98,71 @@ class QuizEngineTest extends TestCase
         // quiz with explicit threshold → wins
         $explicit = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'pass_threshold' => 60]);
         $this->assertSame(60, $explicit->passThreshold());
+    }
+
+    public function test_submit_records_attempt_and_marks_lesson_complete_when_passed(): void
+    {
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course)->for($lesson, 'lesson')->create(['pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => true]);
+        $user = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $answers = [$q->id => $q->options->firstWhere('is_correct')->id];
+
+        $result = app(QuizEngine::class)->submit($quiz, $user, $answers);
+
+        $this->assertSame(100, $result['score']);
+        $this->assertTrue($result['passed']);
+        $this->assertDatabaseHas('course_attempts', [
+            'course_quiz_id' => $quiz->id,
+            'user_id' => $user->id,
+            'score' => 100,
+            'passed' => true,
+        ]);
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+    }
+
+    public function test_failed_attempt_does_not_mark_lesson_complete(): void
+    {
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course)->for($lesson, 'lesson')->create(['pass_threshold' => 90]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => true]);
+        $user = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $answers = [$q->id => $q->options->where('is_correct', false)->first()->id];
+
+        app(QuizEngine::class)->submit($quiz, $user, $answers);
+
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => false,
+        ]);
+    }
+
+    public function test_retake_records_multiple_attempts(): void
+    {
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course)->for($lesson, 'lesson')->create(['pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => true]);
+        $user = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $answers = [$q->id => $q->options->first()->id];
+
+        app(QuizEngine::class)->submit($quiz, $user, $answers);
+        app(QuizEngine::class)->submit($quiz, $user, $answers);
+
+        $this->assertSame(2, $quiz->attempts()->where('user_id', $user->id)->count());
     }
 }

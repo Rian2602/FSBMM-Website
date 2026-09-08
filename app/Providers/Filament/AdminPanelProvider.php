@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Admin\Pages\CourseDetailPage;
 use App\Filament\Admin\Pages\LessonViewPage;
 use App\Filament\Admin\Pages\MyCoursesPage;
+use App\Filament\Admin\Pages\QuizViewPage;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -45,6 +46,7 @@ class AdminPanelProvider extends PanelProvider
                 MyCoursesPage::class,
                 CourseDetailPage::class,
                 LessonViewPage::class,
+                QuizViewPage::class,
             ])
             // (** executed: plan Task 5 used a page-level getRoutes() method,
             // which does not exist in Filament v3.3.55 (custom pages get a
@@ -57,6 +59,7 @@ class AdminPanelProvider extends PanelProvider
                 return [
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
+                    Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
                 ];
             })
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')

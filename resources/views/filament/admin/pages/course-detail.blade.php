@@ -39,6 +39,12 @@
                                class="rounded-lg bg-primary-600 px-3 py-1 text-xs font-medium text-white hover:bg-primary-500">
                                 Baca Materi
                             </a>
+                            @if ($lesson->quizzes->isNotEmpty())
+                                <a href="{{ route('filament.admin.quizzes.show', $lesson->quizzes->first()->id) }}"
+                                   class="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white hover:bg-amber-400">
+                                    Kerjakan Kuis
+                                </a>
+                            @endif
                         </div>
                     </li>
                 @endforeach
@@ -49,10 +55,14 @@
              Laravel treat it as a relation and throw "must return a
              relationship instance" (it returns ?CourseQuiz, not a Relation). **) --}}
         @if ($this->getCourse()->finalQuiz())
-            <div class="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-500/30 dark:bg-amber-500/10">
+            <div class="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 dark:border-amber-500/30 dark:bg-amber-500/10">
                 <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
-                    🏁 Kuis Akhir tersedia — kerjakan setelah semua pelajaran selesai.
+                    🏁 Kuis Akhir — kerjakan setelah semua pelajaran selesai.
                 </p>
+                <a href="{{ route('filament.admin.quizzes.show', $this->getCourse()->finalQuiz()->id) }}"
+                   class="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-500">
+                    Kerjakan Kuis Akhir
+                </a>
             </div>
         @endif
     </div>

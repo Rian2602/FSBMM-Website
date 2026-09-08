@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Sba\Pages\CourseDetailPage;
 use App\Filament\Sba\Pages\LessonViewPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
+use App\Filament\Sba\Pages\QuizViewPage;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -46,6 +47,7 @@ class SbaPanelProvider extends PanelProvider
                 MyCoursesPage::class,
                 CourseDetailPage::class,
                 LessonViewPage::class,
+                QuizViewPage::class,
             ])
             // (** executed: same panel-route pattern as the admin panel — see
             // AdminPanelProvider note (page-level getRoutes() does not exist
@@ -54,6 +56,7 @@ class SbaPanelProvider extends PanelProvider
                 return [
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
+                    Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
                 ];
             })
             ->widgets([
