@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Admin\Pages\CourseDetailPage;
 use App\Models\Course;
 use App\Models\CourseLesson;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class LearnerAccessTest extends TestCase
@@ -88,5 +90,39 @@ class LearnerAccessTest extends TestCase
             ->get('/panel-sba/courses/kursus-sba/lessons/'.$lesson->id)
             ->assertOk()
             ->assertSee('Materi Satu');
+    }
+
+    // (** executed: spec §6b — lesson without a quiz gets a manual
+    // "Tandai Selesai"/"Batal Selesai" toggle; Task 5's view omitted it and
+    // the Task 9 smoke proved course completion was unreachable for quiz-less
+    // lessons. **)
+    public function test_lesson_without_quiz_can_be_toggled_done_from_course_detail(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-toggle']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran Manual']);
+
+        Livewire::actingAs($editor)
+            ->test(CourseDetailPage::class, ['record' => $course])
+            ->call('toggleLessonCompletion', $lesson->id);
+
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $editor->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+
+        // toggling again undoes the completion
+        Livewire::actingAs($editor)
+            ->test(CourseDetailPage::class, ['record' => $course])
+            ->call('toggleLessonCompletion', $lesson->id);
+
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $editor->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => false,
+        ]);
     }
 }

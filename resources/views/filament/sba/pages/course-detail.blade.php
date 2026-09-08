@@ -34,8 +34,10 @@
                             <span class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ $lesson->title }}</span>
                         </div>
                         <div class="flex items-center gap-3">
-                            <span class="text-xs {{ $complete ? 'text-lime-600 dark:text-lime-400' : 'text-gray-400' }}">
-                                {{ $complete ? 'Selesai' : 'Belum' }}
+                            {{-- (** executed: spec §6b status: Belum / Selesai /
+                                 kuis belum lulus. **) --}}
+                            <span class="text-xs {{ $complete ? 'text-lime-600 dark:text-lime-400' : ($lesson->quizzes->isNotEmpty() ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400') }}">
+                                {{ $complete ? 'Selesai' : ($lesson->quizzes->isNotEmpty() ? 'Kuis belum lulus' : 'Belum') }}
                             </span>
                             <a href="{{ route('filament.sba.courses.lessons.show', [$this->getCourse()->slug, $lesson->id]) }}"
                                class="rounded-lg bg-primary-600 px-3 py-1 text-xs font-medium text-white hover:bg-primary-500">
@@ -46,6 +48,12 @@
                                    class="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white hover:bg-amber-400">
                                     Kerjakan Kuis
                                 </a>
+                            @else
+                                {{-- spec §6b: lesson without quiz → manual toggle --}}
+                                <button wire:click="toggleLessonCompletion({{ $lesson->id }})"
+                                        class="rounded-lg px-3 py-1 text-xs font-medium {{ $complete ? 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-white/10 dark:text-gray-200' : 'bg-lime-600 text-white hover:bg-lime-500' }}">
+                                    {{ $complete ? 'Batal Selesai' : 'Tandai Selesai' }}
+                                </button>
                             @endif
                         </div>
                     </li>

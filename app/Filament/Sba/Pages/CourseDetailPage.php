@@ -39,4 +39,15 @@ class CourseDetailPage extends Page
     {
         return app(LearningProgress::class)->forCourse(auth()->user(), $this->record);
     }
+
+    // (** executed: spec §6b toggle for lessons without a quiz (see Admin twin). **)
+    public function toggleLessonCompletion(int $lessonId): void
+    {
+        $lesson = $this->record->lessons()->findOrFail($lessonId);
+        $progress = app(LearningProgress::class);
+        $user = auth()->user();
+        $nowDone = $progress->lessonStatus($user, $this->record, $lesson);
+
+        $progress->setLessonCompleted($user, $this->record, $lesson, ! $nowDone);
+    }
 }
