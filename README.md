@@ -1,6 +1,6 @@
 # FSBMM — Website Federasi Serikat Buruh Makanan dan Minuman
 
-Situs resmi (SP1–SP3) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
+Situs resmi (SP1–SP4) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
 berbasis konten plus panel admin staf federasi. Dibangun dengan **Laravel 12**,
 **Filament 3**, dan **Tailwind CSS v4** — sepenuhnya *data-driven*: semua
 halaman, berita, direktori SBA, e-resource, dan kursus dikelola dari panel
@@ -10,7 +10,7 @@ admin, tanpa konten hardcoded.
 > (database anggota Serikat Pekerja/Buruh tingkat perusahaan). Proyek ini
 > adalah federasi yang menaungi banyak SBA; SP1 menyiapkan fondasinya.
 
-## Cakupan (SP1–SP3)
+## Cakupan (SP1–SP4)
 
 | Area | Rute | Kelola di admin |
 |---|---|---|
@@ -22,10 +22,15 @@ admin, tanpa konten hardcoded.
 | Panel admin staf (super admin + editor konten) | `/admin` | — |
 | Panel dashboard SBA (pengurus tiap SPM ter-scope ke organisasinya) | `/panel-sba` | — |
 | Data anggota per SBA (roster, iuran bulanan, kegiatan & absensi, pengaduan) | `/panel-sba` | Anggota, Iuran, Kegiatan, Pengaduan |
+| Authoring e-learning (pelajaran, kuis, soal, opsi, kuis akhir per kursus) | — | Pelajaran, Kuis, Soal, Kuis Akhir (E-Learning) |
+| Area belajar "Kursus Saya" (progres per pengguna, materi, kuis) | `/admin`, `/panel-sba` | — |
+| Laporan pembelajaran federasi (kursus × peserta, super admin saja) | `/admin` | — |
 
 `member_count` kini dihitung otomatis begitu sebuah SBA punya data anggota
 (SP3); SBA yang belum punya data anggota tetap memakai angka manual federasi.
-Di luar SP1–SP3 (lihat spec): authoring materi kursus — direncanakan di **SP4**.
+SP4 menambahkan authoring e-learning di `/admin` (staf) dan area belajar dengan
+progres per pengguna di kedua panel; kursus bersifat global milik federasi
+(bukan per-SBA), dan laporan pembelajaran hanya untuk super admin.
 
 ## Stack
 
@@ -107,9 +112,16 @@ php artisan test          # seluruh suite feature (PHPUnit)
 
 - `app/Models/` — `User`, `Organization`, `Category`, `Article`, `Page`,
   `PageBlock`, `Eresource`, `Course`; data anggota SP3: `Member`, `Due`,
-  `Event`, `Attendance`, `Complaint`
+  `Event`, `Attendance`, `Complaint`; e-learning SP4: `CourseLesson`,
+  `CourseQuiz`, `QuizQuestion`, `QuizOption`, `CourseProgress`, `CourseAttempt`
 - `app/Support/PageBlockRenderer.php` — merender blok halaman menjadi HTML
   (lihat `resources/views/blocks/*.blade.php`)
+- `app/Support/QuizEngine.php` — penilaian kuis server-side + pencatatan
+  percobaan + penyelesaian pelajaran
+- `app/Support/LearningProgress.php` — progres per pengguna, kelengkapan
+  kursus (semua pelajaran + kuis akhir), dan laporan federasi
+- `app/Filament/Admin/Pages/` + `app/Filament/Sba/Pages/` — area belajar
+  "Kursus Saya" (daftar kursus, detail, materi, kuis) di kedua panel
 - `app/Filament/Resources/` — CRUD admin per entitas; `PageResource` memakai
   Builder Filament untuk menyusun blok halaman
 - `resources/views/layouts/public.blade.php` — kerangka situs publik (token
@@ -129,13 +141,20 @@ php artisan test          # seluruh suite feature (PHPUnit)
 - Data anggota (PII) bersifat internal per SBA: staf federasi hanya melihat
   **agregat** (widget dashboard), tidak pernah baris perorangan — lihat
   `docs/superpowers/specs/2026-09-04-fsbmm-website-sp3-member-data.md`.
+- Konten pelajaran kursus dianggap **HTML tepercaya dari staf** (dirender
+  mentah), sama seperti artikel/halaman.
+- **Penilaian kuis sepenuhnya server-side**: `is_correct` tidak pernah
+  dikirim ke browser; skor + kelulusan dihitung di `QuizEngine`.
+- Laporan pembelajaran federasi (kursus × peserta) hanya untuk super admin
+  (`LearningReportWidget::canView()`).
 
 ## Roadmap
 
 - ~~**SP2** — akun & dashboard SBA (organisasi → tenant scoping, login SBA)~~ ✅
 - ~~**SP3** — modul data anggota per SBA (roster, upah & iuran, absensi,
   pengaduan) dengan aturan PII~~ ✅
-- **SP4** — authoring e-learning (pelajaran + kuis untuk peserta staf)
+- ~~**SP4** — authoring e-learning (pelajaran + kuis, area belajar "Kursus
+  Saya" di kedua panel, progres per pengguna, laporan super admin)~~ ✅
 
 Lihat `docs/superpowers/specs/2026-09-03-fsbmm-website-sp1-design.md` dan
 `docs/superpowers/plans/2026-09-03-sp1-foundation-public-site.md` untuk detail.
