@@ -24,6 +24,12 @@ class CourseQuizFactory extends Factory
             // The plan's definition used two independent factories, producing
             // quizzes whose course_id and lesson_id belong to different
             // courses. **)
+            // (** executed: footgun — `for($course)->create()` alone does NOT
+            // hit this closure: the state overrides course_id while lesson_id
+            // stays the definition's fresh lesson, so the quiz links to a new
+            // lesson from another course. Callers wanting a course-level quiz
+            // MUST also pass ['lesson_id' => null]; callers wanting a lesson
+            // quiz pass ->for($lesson, 'lesson'). **)
             'course_id' => function (array $attributes) {
                 $lessonId = $attributes['lesson_id'] ?? null;
 

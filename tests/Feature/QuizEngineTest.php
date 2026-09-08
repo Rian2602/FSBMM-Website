@@ -74,6 +74,17 @@ class QuizEngineTest extends TestCase
         $this->assertSame(50, $quiz->score($answers));
     }
 
+    public function test_score_tolerates_string_option_ids_from_form_input(): void
+    {
+        $quiz = $this->quizWithThreshold();
+        $answers = [
+            $quiz->questions->get(0)->id => (string) $quiz->questions->get(0)->options->firstWhere('is_correct')->id,
+            $quiz->questions->get(1)->id => (string) $quiz->questions->get(1)->options->firstWhere('is_correct')->id,
+        ];
+
+        $this->assertSame(100, $quiz->score($answers));
+    }
+
     public function test_passes_when_score_meets_threshold(): void
     {
         $quiz = $this->quizWithThreshold(50);

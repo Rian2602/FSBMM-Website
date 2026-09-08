@@ -64,7 +64,11 @@ class CourseQuiz extends Model
         $correct = 0;
         foreach ($questions as $question) {
             $right = $question->options->firstWhere('is_correct', true)?->id;
-            if ($right !== null && ($answers[$question->id] ?? null) === $right) {
+            $chosen = $answers[$question->id] ?? null;
+            // (** executed: form answers arrive as strings (radio value), so
+            // strict comparison against the int option id scored 0 — cast both
+            // sides at this trust boundary. **)
+            if ($right !== null && $chosen !== null && (int) $chosen === (int) $right) {
                 $correct++;
             }
         }
