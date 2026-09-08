@@ -1691,6 +1691,10 @@ The Blade view renders each question's options as radio inputs bound to `wire:mo
 >   admin/Sba taking flows, unanswered-submission guard (engine is not reached,
 >   no attempt row), 404 for a quiz on an unpublished course, and the
 >   pass/fail result panels ("Lulus" vs "Belum lulus" + "Ulangi kuis").
+>   (14b9cd9 self-evaluation: the unanswered guard is a UX gate, not a trust
+>   boundary — a crafted client can drop keys from its `answers` array; the
+>   attempt is then scored server-side from the present subset, so there is no
+>   score-forgery path.)
 > - Engine edge semantics: final-quiz pass records the attempt but writes no
 >   `course_progress`; pass→fail retake keeps `is_completed=true`; fail→pass
 >   upgrades the earlier `false` row. Residual notes (no action): a fully
