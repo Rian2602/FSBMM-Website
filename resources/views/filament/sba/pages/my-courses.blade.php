@@ -6,6 +6,7 @@
                 $course = $row['course'];
                 $done = $row['lessons_done'];
                 $total = $row['lessons_total'];
+                $complete = $row['is_complete'];
             @endphp
             <a href="{{ route('filament.sba.courses.show', $course->slug) }}"
                class="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-primary-400 hover:shadow-md dark:border-white/10 dark:bg-gray-900">
@@ -16,8 +17,13 @@
                             {{ ucfirst($course->level) }} · {{ $total }} pelajaran
                         </p>
                     </div>
-                    <x-filament::icon icon="heroicon-o-arrow-right"
-                                      class="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-primary-500" />
+                    <div class="flex items-center gap-2">
+                        @if ($complete)
+                            <span class="rounded-full bg-lime-600 px-2 py-0.5 text-[11px] font-semibold text-white">✓ Selesai</span>
+                        @endif
+                        <x-filament::icon icon="heroicon-o-arrow-right"
+                                          class="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-primary-500" />
+                    </div>
                 </div>
 
                 <p class="mt-3 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">{{ $course->description }}</p>

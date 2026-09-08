@@ -72,6 +72,10 @@
                     Kerjakan Kuis Akhir
                 </a>
             </div>
+        @else
+            <div class="rounded-xl border border-gray-200 bg-gray-50 px-5 py-4 text-sm text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">
+                Kuis akhir belum tersedia — kursus dinilai selesai setelah kuis akhir lulus.
+            </div>
         @endif
     </div>
 </x-filament-panels::page>

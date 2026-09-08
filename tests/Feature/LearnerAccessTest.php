@@ -14,6 +14,7 @@ use App\Models\Organization;
 use App\Models\QuizOption;
 use App\Models\QuizQuestion;
 use App\Models\User;
+use App\Support\LearningProgress;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -420,5 +421,107 @@ class LearnerAccessTest extends TestCase
             ->assertSet('result.passed', false)
             ->assertSee('Belum lulus')
             ->assertSee('Ulangi kuis');
+    }
+
+    public function test_sba_admin_can_submit_lesson_quiz(): void
+    {
+        $org = Organization::factory()->create();
+        $sba = User::factory()->sbaAdmin($org)->create();
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Salah', 'is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Benar', 'is_correct' => true]);
+
+        Livewire::actingAs($sba)
+            ->test(SbaQuizViewPage::class, ['record' => $quiz])
+            ->set('answers', [$q->id => $q->options->firstWhere('is_correct')->id])
+            ->call('submit')
+            ->assertSet('result.passed', true);
+
+        $this->assertDatabaseHas('course_attempts', [
+            'course_quiz_id' => $quiz->id,
+            'user_id' => $sba->id,
+            'passed' => true,
+        ]);
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $sba->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+    }
+
+    public function test_my_courses_shows_completion_badge_only_when_course_complete(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-badge', 'title' => 'Kursus Badge']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran']);
+        $final = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+
+        $this->actingAs($editor)
+            ->get('/admin/my-courses')
+            ->assertOk()
+            ->assertDontSee('✓ Selesai');
+
+        app(LearningProgress::class)->setLessonCompleted($editor, $course, $lesson);
+        CourseAttempt::create([
+            'course_quiz_id' => $final->id,
+            'user_id' => $editor->id,
+            'score' => 100,
+            'passed' => true,
+            'attempt_date' => now(),
+        ]);
+
+        $this->actingAs($editor)
+            ->get('/admin/my-courses')
+            ->assertOk()
+            ->assertSee('✓ Selesai');
+    }
+
+    public function test_my_courses_shows_completion_badge_for_sba_admin(): void
+    {
+        $org = Organization::factory()->create();
+        $sba = User::factory()->sbaAdmin($org)->create();
+        $course = Course::factory()->create(['title' => 'Kursus SBA Badge']);
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $final = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+        app(LearningProgress::class)->setLessonCompleted($sba, $course, $lesson);
+        CourseAttempt::create([
+            'course_quiz_id' => $final->id,
+            'user_id' => $sba->id,
+            'score' => 100,
+            'passed' => true,
+            'attempt_date' => now(),
+        ]);
+
+        $this->actingAs($sba)
+            ->get('/panel-sba/my-courses')
+            ->assertOk()
+            ->assertSee('✓ Selesai');
+    }
+
+    public function test_course_detail_hints_when_final_quiz_is_missing(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-tanpa-final']);
+
+        $this->actingAs($editor)
+            ->get('/admin/courses/kursus-tanpa-final')
+            ->assertOk()
+            ->assertSee('Kuis akhir belum tersedia');
+    }
+
+    public function test_sba_course_detail_hints_when_final_quiz_is_missing(): void
+    {
+        $org = Organization::factory()->create();
+        $sba = User::factory()->sbaAdmin($org)->create();
+        $course = Course::factory()->create(['slug' => 'kursus-sba-tanpa-final']);
+
+        $this->actingAs($sba)
+            ->get('/panel-sba/courses/kursus-sba-tanpa-final')
+            ->assertOk()
+            ->assertSee('Kuis akhir belum tersedia');
     }
 }
