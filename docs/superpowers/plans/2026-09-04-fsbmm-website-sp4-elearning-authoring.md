@@ -2077,6 +2077,36 @@ Blade `resources/views/filament/widgets/learning-report.blade.php`: a heading "L
 
 - [ ] **Step 6: Commit** — `feat(elearning): federation learning report widget (super-admin only)`
 
+> (** executed in `f99a318`: shipped widget + blade as planned; `canView()`
+> super-admin only, auto-discovered via `discoverWidgets(app/Filament/Widgets)`
+> so it renders on the `/admin` dashboard. `e15d48f` added
+> `protected static bool $isLazy = false;` — Filament 3.3.55 widgets render
+> lazy by default and the report content would be absent from the initial HTTP
+> response, breaking dashboard assertions (same convention as the SP3
+> MemberDataOverviewWidget). `report()` itself was shipped earlier under
+> Task 7's file and annotated there. SbaPanelProvider discovers widgets only
+> from `app/Filament/Sba/Widgets`, so the report can never surface on
+> `/panel-sba` — isolation is structural, not just `canView()`. **)
+>
+> (** 89db545 Task 8 self-evaluation — spec (header §3) asks the report to
+> answer "sudah / belum / SEDANG mengerjakan kursus mana", but the shipped
+> widget rendered a binary Selesai/Belum. Added the third state:
+> `LearningProgress::report()` rows now carry `lessons_done`, computed by a
+> new private `userCourseStatus()` that derives is_complete + lessons_done in
+> ONE pass over lessons (instead of isCourseComplete then a separate count);
+> the blade renders Selesai / Sedang (`lessons_done > 0`, but not complete) /
+> Belum pills. New coverage in LearningReportTest (2→7): HTTP `/admin`
+> dashboard shows it for super_admin only (plan Step 5's verification, never
+> asserted before), `/panel-sba` never shows it, completer count "1/3 peserta
+> selesai", Sedang vs Belum pills, empty state. CourseProgressTest P7 also
+> locks the `lessons_done` key. Suite 243/805. **)
+>
+> (** Residuals: report() stays O(courses × users × lessons) with per-quiz
+> attempt queries on dashboard load (non-lazy) — watch if the user base grows;
+> every account (staff, the viewing super_admin) appears as a "Peserta" row;
+> a user who attempted but failed every quiz with no manual lesson completion
+> reads as "Belum". All accepted. **)
+
 ---
 
 ### Task 9: Demo seed data + README + full green + final verification
