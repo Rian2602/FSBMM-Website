@@ -227,12 +227,12 @@ Create `tests/Feature/Sp5SecurityTest.php`:
 
 Create `app/Filament/Sba/Pages/MemberReportPage.php`:
 
-- [ ] Filament custom page with filter form (status, department, position, education, gender, join date range)
-- [ ] Summary cards: total, active, inactive
-- [ ] Breakdown: by department, by position
-- [ ] Detail table (paginated, tenant-scoped)
-- [ ] Register in `SbaPanelProvider` → `->pages([...])`
-- [ ] Add navigation item: "Laporan" → "Anggota"
+- [x] Filament custom page with filter form (status, department, position, education, gender, join date range)
+- [x] Summary cards: total, active, inactive
+- [x] Breakdown: by department, by position
+- [x] Detail table (paginated, tenant-scoped)
+- [x] Register in `SbaPanelProvider` → `->pages([...])`
+- [x] Add navigation item: "Laporan" → "Anggota"
 
 ### Task 2.2: Dues Report Page
 

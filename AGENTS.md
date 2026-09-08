@@ -6,6 +6,8 @@ Laravel 12 + Filament 3 + Tailwind v4 public site for a trade-union federation
 locale/timezone (`APP_LOCALE=id`, `Asia/Jakarta`).
 
 See `README.md` for setup, stack, and structure that stays canonical.
+`knowledge.md` (repo root) is a longer module walkthrough — treat it as
+supplementary; its checklists/counts may trail the committed suite.
 
 ## Multi-phase roadmap
 
@@ -16,6 +18,13 @@ federation PII-minimization policy. SP4 added federation-**global** e-learning:
 authoring in `/admin` (staff only), a "Kursus Saya" learner surface in both
 panels, and a super-admin-only learning report. Skipping a spec/plan is how
 this repo breaks — read the relevant one before touching an area.
+
+**SP5 (operational reporting / secure export / kartu anggota) is not started.**
+Its draft spec + plan live untracked in `docs/superpowers/`
+(`...2026-09-08-fsbmm-website-sp5-operational-reporting.{md}`) — read them
+before touching SBA reporting, exports, or member-cards. Federation reporting
+is `super_admin`-only and `/verifikasi/kartu/{token}` must be declared ABOVE
+the `{page:slug}` catch-all (spec §9.10).
 
 Every plan records every deviation from spec/snippets as inline
 `(** executed: ... **)` annotations. Preserve/append these when you change
@@ -93,6 +102,10 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
 - Filament public assets are regenerated during `composer install`
   (`post-autoload-dump`) and not committed; run `php artisan filament:assets`
   manually if they go missing.
+- Public pages load `@vite(['resources/css/app.css', 'resources/js/site.js'])`.
+  A stale `public/build/manifest.json` missing the `site.js` entry makes EVERY
+  public page throw `ViteException` (mass 500s across tests). Fix: `npm run build`
+  (`public/build` is gitignored — rebuild after branch switches too).
 
 ## Routing
 
@@ -110,9 +123,11 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
 
 ## Style
 
-`resources/views/layouts/public.blade.php` uses placeholder Swiss-Brutalist-Green
-token colors — not final brand. Swap when official assets arrive; don't treat
-them as a design decision.
+The public design pass (multi-color `--color-vivid-*` palette, gradients, blobs,
+`resources/js/site.js` interactivity, redesigned widget/public blades) is
+**committed** — don't revert or re-theme it. Only the `--color-brand-*` token
+VALUES (Swiss-Brutalist Green family, `resources/css/app.css:3`) are still
+placeholder: swap them when official brand assets arrive, nothing else.
 
 ## Security conventions
 
@@ -174,6 +189,15 @@ them as a design decision.
 - `LearningProgress::forUser()`/`report()` return an
   `Illuminate\Support\Collection` of maps, not an Eloquent collection — don't
   type-hint for `Collection` from Eloquent and keep the field-light access.
+- `Course::lessons()` already orders by `sort_order` (relation) — don't add your
+  own `orderByDesc('sort_order')` (double ORDER BY → nondeterministic pick;
+  prefer `whereDoesntHave('quizzes')->first()` for a no-quiz lesson).
+- Factory footgun: the final quiz MUST use `['lesson_id' => null]`; per-lesson
+  quizzes need `->for($course, 'course')->for($lesson, 'lesson')`, `QuizQuestion`
+  → `->for($quiz, 'quiz')`, `QuizOption` → `->for($q, 'question')`.
+- Filament panels auto-discover only their own `app/Filament/{Admin,Sba}/**`, so
+  widgets in `app/Filament/Widgets` (e.g. `LearningReportWidget`) structurally
+  cannot reach `/panel-sba` — no extra guard needed.
 
 ## Verify before completion
 

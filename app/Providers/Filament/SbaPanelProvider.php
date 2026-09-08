@@ -6,6 +6,7 @@ use App\Filament\Sba\Pages\CourseDetailPage;
 use App\Filament\Sba\Pages\LessonViewPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
 use App\Filament\Sba\Pages\QuizViewPage;
+use App\Filament\Sba\Pages\MemberReportPage;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -42,12 +43,14 @@ class SbaPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Sba/Resources'), for: 'App\\Filament\\Sba\\Resources')
             ->discoverPages(in: app_path('Filament/Sba/Pages'), for: 'App\\Filament\\Sba\\Pages')
             ->discoverWidgets(in: app_path('Filament/Sba/Widgets'), for: 'App\\Filament\\Sba\\Widgets')
+
             ->pages([
                 Pages\Dashboard::class,
                 MyCoursesPage::class,
                 CourseDetailPage::class,
                 LessonViewPage::class,
                 QuizViewPage::class,
+                MemberReportPage::class,
             ])
             // (** executed: same panel-route pattern as the admin panel — see
             // AdminPanelProvider note (page-level getRoutes() does not exist
