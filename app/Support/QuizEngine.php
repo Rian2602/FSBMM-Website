@@ -14,7 +14,7 @@ class QuizEngine
      * lesson complete for this user. Final quizzes (lesson_id null) record
      * the attempt only — course completion is derived in LearningProgress.
      *
-     * @param  array<int, int>  $answers  keyed [question_id => option_id]
+     * @param  array<int, int|string>  $answers  keyed [question_id => option_id]
      * @return array{score: int, passed: bool, attempt: CourseAttempt}
      */
     public function submit(CourseQuiz $quiz, User $user, array $answers): array

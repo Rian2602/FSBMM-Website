@@ -52,7 +52,7 @@ class CourseQuiz extends Model
      * Server-side score (0–100) for a submitted MCQ answer set
      * keyed [question_id => option_id].
      *
-     * @param  array<int, int>  $answers
+     * @param  array<int, int|string>  $answers
      */
     public function score(array $answers): int
     {
