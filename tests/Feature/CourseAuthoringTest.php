@@ -639,4 +639,53 @@ class CourseAuthoringTest extends TestCase
             'pass_threshold' => null,
         ]);
     }
+
+    // (** executed: head-to-tail re-evaluation of 540245e. The RM form's
+    // pass_threshold is the F4-2 sibling of the resource form — still
+    // non-nullable default(70), so the course-default fallback can never be
+    // expressed from the Course screen. Editing an existing null-threshold
+    // final then pins it at 70. **)
+    public function test_final_quiz_edit_via_relation_manager_can_set_threshold_to_null(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['pass_threshold' => 80]);
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'pass_threshold' => null]);
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('edit', $finalQuiz->id, data: ['title' => $finalQuiz->title, 'pass_threshold' => null]);
+
+        $finalQuiz->refresh();
+        $this->assertNull($finalQuiz->pass_threshold);
+    }
+
+    // (** executed: baseline probes for the RM edit/delete paths that had no
+    // coverage (they must not regress when the RM form changes). **)
+    public function test_final_quiz_edit_via_relation_manager_keeps_null_lesson(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'title' => 'Lama']);
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('edit', $finalQuiz->id, data: ['title' => 'Revisi', 'pass_threshold' => 70]);
+
+        $finalQuiz->refresh();
+        $this->assertEquals('Revisi', $finalQuiz->title);
+        $this->assertNull($finalQuiz->lesson_id);
+    }
+
+    public function test_final_quiz_delete_via_relation_manager_removes_quiz(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('delete', $finalQuiz->id);
+
+        $this->assertDatabaseMissing('course_quizzes', ['id' => $finalQuiz->id]);
+    }
 }

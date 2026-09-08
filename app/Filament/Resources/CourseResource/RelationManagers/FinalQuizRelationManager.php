@@ -25,6 +25,13 @@ class FinalQuizRelationManager extends RelationManager
             Forms\Components\Select::make('pass_threshold')
                 ->label('Ambang Lulus')
                 ->options([50 => 50, 60 => 60, 70 => 70, 80 => 80, 90 => 90])
+                // (** executed: Task 4 re-evaluation (540245e follow-up) — the
+                // resource form was made nullable (F4-2) but this sibling RM
+                // form still pinned default(70) with no nullable(), so the
+                // course-default fallback could never be expressed from the
+                // Course screen and editing a null-threshold final here forced
+                // it to 70. Kept in sync with FinalQuizResource::form(). **)
+                ->nullable()
                 ->default(70),
         ]);
     }
