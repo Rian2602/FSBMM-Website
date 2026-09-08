@@ -1951,6 +1951,15 @@ class LearningProgress
 > attempts stay deferred); a zero-lesson course with a passed final counts as
 > complete; a stale manual `is_completed` row survives a staff member later
 > attaching a quiz to that lesson. **)
+>
+> (** 3ef8f0a re-evaluation: no half-fix found — pins verified (badge nests
+> correctly, strip in `@else`, twin parity locked, helper wiring is single
+> source of truth in both panels). One accepted deviation from §6b wording:
+> the Kursus Saya card shows the progress bar + "✓ Selesai" badge but no
+> per-course quiz status line; full quiz status lives on the detail page.
+> Completion silently degrades if a passed final quiz is later deleted
+> (attempts cascade with the quiz) — consistent with the Task 4 cascade
+> policy, already residual there. **)
 
 ### Task 8: Federation learning report (super-admin)
 
