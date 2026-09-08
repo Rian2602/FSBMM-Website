@@ -1678,6 +1678,26 @@ class QuizViewPage extends Page
 
 The Blade view renders each question's options as radio inputs bound to `wire:model="answers.{id}"`, a submit button, and, when `$this->result` is set, the score + pass/fail + an "Ulangi" link. Include validation that every question has an answer before submit. The Sba twin (`app/Filament/Sba/Pages/QuizViewPage.php`, view `filament.sba.pages.quiz-view`) is identical; both call the same `QuizEngine`.
 
+> (** executed: Task 6 evaluation (post-implementation audit) — shipped code
+> followed the snippets with two documented deviations (inline `(** executed **)`
+> notes in code): `Factory::for()` must name relations explicitly (`->for($lesson, 'lesson')`),
+> the plan's Task-6 test #2 expecting a `is_completed=false` row after a failed
+> attempt is honored via `CourseProgress::firstOrCreate` on the fail branch
+> (promote-on-pass uses `updateOrCreate`; a later failure never downgrades an
+> existing pass). Evaluation added coverage + locked semantics, no behavior
+> change:
+> - `QuizViewPage` was completely untested in the suite (the same crash class
+>   Tasks 3/4 fixed elsewhere) — now covered: live 200 on the quiz route, the
+>   admin/Sba taking flows, unanswered-submission guard (engine is not reached,
+>   no attempt row), 404 for a quiz on an unpublished course, and the
+>   pass/fail result panels ("Lulus" vs "Belum lulus" + "Ulangi kuis").
+> - Engine edge semantics: final-quiz pass records the attempt but writes no
+>   `course_progress`; pass→fail retake keeps `is_completed=true`; fail→pass
+>   upgrades the earlier `false` row. Residual notes (no action): a fully
+>   wrong/zero-option question always scores as wrong and a zero-question quiz
+>   yields score 0 / fail — both consistent with spec §7; the "final quiz after
+>   all lessons" hint is soft (not enforced), matching the spec. **)
+
 - [ ] **Step 5: Run green** — `php artisan test --filter QuizEngineTest` (now includes the new submit tests), then full suite.
 
 - [ ] **Step 6: Commit** — `feat(elearning): quiz taking engine (server-side scoring, attempts, lesson completion)`

@@ -3,12 +3,16 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\CourseDetailPage;
+use App\Filament\Admin\Pages\QuizViewPage;
 use App\Filament\Sba\Pages\CourseDetailPage as SbaCourseDetailPage;
+use App\Filament\Sba\Pages\QuizViewPage as SbaQuizViewPage;
 use App\Models\Course;
 use App\Models\CourseAttempt;
 use App\Models\CourseLesson;
 use App\Models\CourseQuiz;
 use App\Models\Organization;
+use App\Models\QuizOption;
+use App\Models\QuizQuestion;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -301,5 +305,120 @@ class LearnerAccessTest extends TestCase
             ->test(CourseDetailPage::class, ['record' => $course])
             ->call('toggleLessonCompletion', $lesson->id)
             ->assertSee('Tandai Selesai');
+    }
+
+    // (** executed: task 6 evaluation — QuizViewPage had zero coverage (the
+    // same crash class Task 3/Task 4 fixed for other pages); these lock the
+    // taking flow across both panels. **)
+    public function test_admin_can_take_and_pass_a_lesson_quiz(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-kuis']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran']);
+        $quiz = CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create(['question' => 'Siapa budak?']);
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Salah', 'is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Benar', 'is_correct' => true]);
+
+        Livewire::actingAs($editor)
+            ->test(QuizViewPage::class, ['record' => $quiz])
+            ->set('answers', [$q->id => $q->options->firstWhere('is_correct')->id])
+            ->call('submit')
+            ->assertSet('result.passed', true)
+            ->assertSet('result.score', 100)
+            ->assertSee('Lulus');
+
+        $this->assertDatabaseHas('course_attempts', [
+            'course_quiz_id' => $quiz->id,
+            'user_id' => $editor->id,
+            'score' => 100,
+            'passed' => true,
+        ]);
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $editor->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+    }
+
+    public function test_quiz_page_rejects_submission_with_unanswered_question(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create();
+        $q1 = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q1, 'question')->create(['option' => 'A', 'is_correct' => false]);
+        QuizOption::factory()->for($q1, 'question')->create(['option' => 'B', 'is_correct' => true]);
+        $q2 = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q2, 'question')->create(['option' => 'C', 'is_correct' => false]);
+        QuizOption::factory()->for($q2, 'question')->create(['option' => 'D', 'is_correct' => true]);
+
+        Livewire::actingAs($editor)
+            ->test(QuizViewPage::class, ['record' => $quiz])
+            ->set('answers', [$q1->id => $q1->options->firstWhere('is_correct')->id, $q2->id => null])
+            ->call('submit')
+            ->assertSet('result', null);
+
+        $this->assertDatabaseCount('course_attempts', 0);
+    }
+
+    public function test_quiz_page_returns_404_for_draft_course_quiz(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->unpublished()->create();
+        $quiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+
+        $this->actingAs($editor)
+            ->get('/admin/quizzes/'.$quiz->id)
+            ->assertNotFound();
+    }
+
+    public function test_sba_quiz_page_renders_and_submits(): void
+    {
+        $org = Organization::factory()->create();
+        $sba = User::factory()->sbaAdmin($org)->create();
+        $course = Course::factory()->create(['slug' => 'kursus-sba-kuis']);
+        $quiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Salah', 'is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Benar', 'is_correct' => true]);
+
+        $this->actingAs($sba)
+            ->get('/panel-sba/quizzes/'.$quiz->id)
+            ->assertOk()
+            ->assertSee('Benar');
+
+        Livewire::actingAs($sba)
+            ->test(SbaQuizViewPage::class, ['record' => $quiz])
+            ->set('answers', [$q->id => $q->options->firstWhere('is_correct')->id])
+            ->call('submit')
+            ->assertSet('result.passed', true);
+
+        $this->assertDatabaseHas('course_attempts', [
+            'course_quiz_id' => $quiz->id,
+            'user_id' => $sba->id,
+            'passed' => true,
+        ]);
+    }
+
+    public function test_quiz_result_shows_retake_when_failed(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['pass_threshold' => 90]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Bencana', 'is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['option' => 'Benar', 'is_correct' => true]);
+
+        Livewire::actingAs($editor)
+            ->test(QuizViewPage::class, ['record' => $quiz])
+            ->set('answers', [$q->id => $q->options->firstWhere('is_correct', false)->id])
+            ->call('submit')
+            ->assertSet('result.passed', false)
+            ->assertSee('Belum lulus')
+            ->assertSee('Ulangi kuis');
     }
 }

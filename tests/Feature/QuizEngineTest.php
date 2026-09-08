@@ -176,4 +176,81 @@ class QuizEngineTest extends TestCase
 
         $this->assertSame(2, $quiz->attempts()->where('user_id', $user->id)->count());
     }
+
+    // (** executed: task 6 evaluation — final-quiz path (lesson_id null) must
+    // record the attempt only; lesson progress / course completion stay
+    // derived in LearningProgress. **)
+    public function test_passing_final_quiz_records_attempt_but_no_lesson_progress(): void
+    {
+        $course = Course::factory()->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($finalQuiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => true]);
+        $user = User::factory()->create(['role' => User::ROLE_EDITOR]);
+
+        $result = app(QuizEngine::class)->submit($finalQuiz, $user, [$q->id => $q->options->first()->id]);
+
+        $this->assertTrue($result['passed']);
+        $this->assertDatabaseHas('course_attempts', [
+            'course_quiz_id' => $finalQuiz->id,
+            'user_id' => $user->id,
+            'passed' => true,
+        ]);
+        $this->assertDatabaseMissing('course_progress', ['user_id' => $user->id, 'course_id' => $course->id]);
+    }
+
+    // (** executed: task 6 evaluation — completion must be sticky: a failed
+    // retake never downgrades a lesson that was already passed
+    // (firstOrCreate no-ops on the existing row), matching spec §6b. **)
+    public function test_later_failed_attempt_does_not_downgrade_completion(): void
+    {
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course)->for($lesson, 'lesson')->create(['pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => true]);
+        $user = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $right = $q->options->firstWhere('is_correct')->id;
+        $wrong = $q->options->where('is_correct', false)->first()->id;
+
+        app(QuizEngine::class)->submit($quiz, $user, [$q->id => $right]);
+        app(QuizEngine::class)->submit($quiz, $user, [$q->id => $wrong]);
+
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+    }
+
+    // (** executed: task 6 evaluation — a first failed attempt leaves a
+    // is_completed=false row; a later pass must upgrade it (updateOrCreate). **)
+    public function test_later_pass_promotes_previously_failed_lesson(): void
+    {
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $quiz = CourseQuiz::factory()->for($course)->for($lesson, 'lesson')->create(['pass_threshold' => 50]);
+        $q = QuizQuestion::factory()->for($quiz, 'quiz')->create();
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => false]);
+        QuizOption::factory()->for($q, 'question')->create(['is_correct' => true]);
+        $user = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $right = $q->options->firstWhere('is_correct')->id;
+        $wrong = $q->options->where('is_correct', false)->first()->id;
+
+        app(QuizEngine::class)->submit($quiz, $user, [$q->id => $wrong]);
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $user->id, 'course_id' => $course->id, 'lesson_id' => $lesson->id, 'is_completed' => false,
+        ]);
+
+        app(QuizEngine::class)->submit($quiz, $user, [$q->id => $right]);
+
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+    }
 }
