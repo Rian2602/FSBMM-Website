@@ -2106,6 +2106,15 @@ Blade `resources/views/filament/widgets/learning-report.blade.php`: a heading "L
 > every account (staff, the viewing super_admin) appears as a "Peserta" row;
 > a user who attempted but failed every quiz with no manual lesson completion
 > reads as "Belum". All accepted. **)
+>
+> (** 8cb91fc re-evaluation: no half-fix — `userCourseStatus()` is
+> bug-for-bug consistent with `isCourseComplete()` (identical lesson loop +
+> final-attempt check, zero-lesson course vacuously complete, report rows
+> still sorted by user name, `lessons_done`/counts derive from the eager
+> `lessons` collection, no extra query). Fresh suite 243/805. Minor leftover:
+> `forUser()` still derives is_complete + lessons_done in two passes
+> (`isCourseComplete()` then a separate `filter`) vs `report()`'s single pass
+> — irrelevant at per-course page scale, left as-is. **)
 
 ---
 
