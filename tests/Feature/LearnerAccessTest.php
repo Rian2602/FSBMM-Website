@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Filament\Admin\Pages\CourseDetailPage;
+use App\Filament\Sba\Pages\CourseDetailPage as SbaCourseDetailPage;
 use App\Models\Course;
 use App\Models\CourseAttempt;
 use App\Models\CourseLesson;
@@ -234,5 +235,71 @@ class LearnerAccessTest extends TestCase
             ->get('/admin/courses/kursus-konten/lessons/'.$lesson->id)
             ->assertOk()
             ->assertSee('Header Bab');
+    }
+
+    // (** executed: 88299e2 self-evaluation — the quiz-less toggle guard was
+    // installed on the Admin twin only; the Sba CourseDetailPage still had the
+    // unguarded method, so sba_admin could forge completion of a quiz-bearing
+    // lesson. Parity probes below. **)
+    public function test_sba_admin_can_toggle_quiz_less_lesson_from_course_detail(): void
+    {
+        $org = Organization::factory()->create();
+        $sba = User::factory()->sbaAdmin($org)->create();
+        $course = Course::factory()->create(['slug' => 'kursus-sba-toggle']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran Manual']);
+
+        Livewire::actingAs($sba)
+            ->test(SbaCourseDetailPage::class, ['record' => $course])
+            ->call('toggleLessonCompletion', $lesson->id);
+
+        $this->assertDatabaseHas('course_progress', [
+            'user_id' => $sba->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+            'is_completed' => true,
+        ]);
+    }
+
+    public function test_sba_admin_cannot_toggle_quiz_bearing_lesson(): void
+    {
+        $this->withoutExceptionHandling();
+
+        $org = Organization::factory()->create();
+        $sba = User::factory()->sbaAdmin($org)->create();
+        $course = Course::factory()->create(['slug' => 'kursus-sba-guard']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Berkuis']);
+        CourseQuiz::factory()->for($course, 'course')->for($lesson, 'lesson')->create(['title' => 'Kuis 1']);
+
+        $this->assertThrows(
+            fn () => Livewire::actingAs($sba)
+                ->test(SbaCourseDetailPage::class, ['record' => $course])
+                ->call('toggleLessonCompletion', $lesson->id),
+            HttpException::class
+        );
+
+        $this->assertDatabaseMissing('course_progress', [
+            'user_id' => $sba->id,
+            'course_id' => $course->id,
+            'lesson_id' => $lesson->id,
+        ]);
+    }
+
+    // (** executed: 88299e2 self-evaluation — the toggle must flip the
+    // rendered state on the re-render, not just write the DB row. **)
+    public function test_toggle_updates_rendered_completion_state(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['slug' => 'kursus-rerender']);
+        $lesson = CourseLesson::factory()->for($course)->create(['title' => 'Pelajaran Manual']);
+
+        Livewire::actingAs($editor)
+            ->test(CourseDetailPage::class, ['record' => $course])
+            ->call('toggleLessonCompletion', $lesson->id)
+            ->assertSee('Batal Selesai');
+
+        Livewire::actingAs($editor)
+            ->test(CourseDetailPage::class, ['record' => $course])
+            ->call('toggleLessonCompletion', $lesson->id)
+            ->assertSee('Tandai Selesai');
     }
 }

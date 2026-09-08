@@ -1362,7 +1362,10 @@ Register it: in `CourseResource::getRelations()`, add both `LessonsRelationManag
 >   mark a quiz-bearing lesson done without passing its quiz, and — because
 >   `lessonStatus()` prefers a `course_progress` row over quiz attempts — also
 >   flip course completion (spec §6b integrity). Now guarded server-side with
->   `abort_unless($lesson->quizzes->isEmpty(), 403)`.
+>   `abort_unless($lesson->quizzes->isEmpty(), 403)`. (88299e2 self-evaluation:
+>   the guard first landed on the Admin twin only; the Sba `CourseDetailPage`
+>   still had the bare method, so `sba_admin` kept the same forge path — parity
+>   guard added and covered with Sba toggle probes.)
 > - Course-detail linked only `$lesson->quizzes->first()`, so lessons with
 >   several quizzes (allowed by Task 3 authoring) exposed just the first; the
 >   view now renders one "Kerjakan Kuis" button per quiz.

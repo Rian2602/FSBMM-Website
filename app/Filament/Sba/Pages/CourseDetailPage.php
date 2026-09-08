@@ -40,10 +40,16 @@ class CourseDetailPage extends Page
         return app(LearningProgress::class)->forCourse(auth()->user(), $this->record);
     }
 
-    // (** executed: spec §6b toggle for lessons without a quiz (see Admin twin). **)
+    // (** executed: spec §6b toggle for lessons without a quiz (see Admin twin).
+    // 88299e2 self-evaluation: the Admin twin got the server-side guard but
+    // this class kept the bare method, so sba_admin could still forge a
+    // quiz-bearing lesson as complete; matching guard added. **)
     public function toggleLessonCompletion(int $lessonId): void
     {
         $lesson = $this->record->lessons()->findOrFail($lessonId);
+
+        abort_unless($lesson->quizzes->isEmpty(), 403);
+
         $progress = app(LearningProgress::class);
         $user = auth()->user();
         $nowDone = $progress->lessonStatus($user, $this->record, $lesson);
