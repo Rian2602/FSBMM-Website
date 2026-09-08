@@ -27,11 +27,21 @@
                         </thead>
                         <tbody>
                             @forelse ($item['rows'] as $row)
+                                @php
+                                    // spec: sudah (Selesai) / sedang (in-progress) / belum
+                                    $status = $row['is_complete'] ? 'Selesai'
+                                        : ($row['lessons_done'] > 0 ? 'Sedang' : 'Belum');
+                                    $pill = $row['is_complete']
+                                        ? 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300'
+                                        : ($row['lessons_done'] > 0
+                                            ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'
+                                            : 'bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400');
+                                @endphp
                                 <tr class="border-b border-gray-100 dark:border-white/5">
                                     <td class="py-2 pr-3">{{ $row['user']->name }}</td>
                                     <td class="py-2">
-                                        <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium {{ $row['is_complete'] ? 'bg-lime-100 text-lime-700 dark:bg-lime-500/10 dark:text-lime-300' : 'bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400' }}">
-                                            {{ $row['is_complete'] ? 'Selesai' : 'Belum' }}
+                                        <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium {{ $pill }}">
+                                            {{ $status }}
                                         </span>
                                     </td>
                                 </tr>

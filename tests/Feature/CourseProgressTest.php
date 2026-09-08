@@ -199,5 +199,7 @@ class CourseProgressTest extends TestCase
         $byId = $report->first()['rows']->keyBy(fn (array $row) => $row['user']->id);
         $this->assertTrue($byId[$learner->id]['is_complete']);
         $this->assertFalse($byId[$super->id]['is_complete']);
+        $this->assertSame(1, $byId[$learner->id]['lessons_done']);
+        $this->assertSame(0, $byId[$super->id]['lessons_done']);
     }
 }

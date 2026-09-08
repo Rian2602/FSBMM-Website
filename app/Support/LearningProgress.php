@@ -98,6 +98,27 @@ class LearningProgress
         ];
     }
 
+    /** Completion + lesson-done count for one user/course report row (single pass over lessons). */
+    private function userCourseStatus(User $user, Course $course): array
+    {
+        $done = 0;
+
+        foreach ($course->lessons as $lesson) {
+            if ($this->lessonStatus($user, $course, $lesson)) {
+                $done++;
+            }
+        }
+
+        $finalQuiz = $course->finalQuiz();
+
+        return [
+            'is_complete' => $done === $course->lessons->count()
+                && $finalQuiz !== null
+                && $finalQuiz->attempts()->where('user_id', $user->id)->where('passed', true)->exists(),
+            'lessons_done' => $done,
+        ];
+    }
+
     /** Course × user status summary for the federation report. */
     public function report(): Collection // (** executed: map() yields an Illuminate\Support\Collection, not Eloquent. **)
     {
@@ -107,10 +128,15 @@ class LearningProgress
 
         return $courses->map(fn (Course $course) => [
             'course' => $course,
-            'rows' => $users->map(fn (User $user) => [
-                'user' => $user,
-                'is_complete' => $this->isCourseComplete($user, $course),
-            ])->values(),
+            // (** executed: Task 8 evaluation — a per-user row also carries
+            // lessons_done so the widget can show the spec's third "sedang"
+            // (in-progress) state; userCourseStatus() computes is_complete +
+            // lessons_done in one pass instead of isCourseComplete then a
+            // separate count. **)
+            'rows' => $users->map(fn (User $user) => array_merge(
+                ['user' => $user],
+                $this->userCourseStatus($user, $course)
+            ))->values(),
         ])->values();
     }
 }
