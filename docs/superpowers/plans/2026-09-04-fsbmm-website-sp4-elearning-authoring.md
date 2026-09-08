@@ -2229,6 +2229,28 @@ Expected: every SP1+SP2+SP3 test plus all new SP4 tests pass; Pint clean; build 
 
 - [ ] **Step 5: Commit** — `feat(elearning): demo seed data + README docs for SP4`
 
+> (** executed in `1ed1384`: shipped CourseContentSeeder, `DatabaseSeeder`
+> wiring (after `SbaAccountSeeder`) and README updates as planned. Seeder uses
+> direct `Model::create` (as in the plan) with explicit course_id/lesson_id;
+> `pass_threshold` is validated fillable + int cast. The auto-generated
+> deviances (title/description wording, README prose) are cosmetic. **)
+>
+> (** db7ac23 Task 9 self-evaluation — CourseContentSeeder had ZERO coverage
+> (SP3's MemberDataSeeder got MemberDataSeedTest, the course seeder never did,
+> and the plan has no seeder-test step). Added `CourseContentSeedTest` (5
+> tests, member-data pattern): structure (published + threshold 70 + 2 lessons
+> order 1,2 + lesson-1 quiz 1q/2op + final quiz null-lesson 1q/2op), idempotent
+> rerun (1 course / 2 lessons / 2 quizzes), exactly one final quiz per course
+> (locks the Task 4 guard invariant for the seeder's raw creates), learner
+> reachability (editor /admin + sba /panel-sba both list the demo course), and
+> public /e-learning catalog listing (plan Step-4 smokes made automatable).
+> Suite 248/825. **)
+>
+> (** Residuals: a reseed will NOT re-publish the demo course if a staff
+> member unpublishes it (`firstOrCreate` attributes apply only on create) —
+> deliberately non-clobbering; and a pre-existing slug-shell course with zero
+> lessons receives the demo content on reseed. Both by design. **)
+
 ---
 
 ## Final Verification
