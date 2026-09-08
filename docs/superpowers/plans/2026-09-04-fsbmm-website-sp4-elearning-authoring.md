@@ -2250,6 +2250,17 @@ Expected: every SP1+SP2+SP3 test plus all new SP4 tests pass; Pint clean; build 
 > member unpublishes it (`firstOrCreate` attributes apply only on create) —
 > deliberately non-clobbering; and a pre-existing slug-shell course with zero
 > lessons receives the demo content on reseed. Both by design. **)
+>
+> (** fa01e91 re-evaluation: added a sixth probe locking the seeded course is
+> actually COMPLETABLE end-to-end (manual lesson + pass lesson quiz + pass
+> final → `isCourseComplete`), proving the demo data's correct answers and
+> reachable thresholds. First attempt used `lessons()->orderByDesc('sort_order')`
+> to pick the no-quiz lesson, but the relation already adds
+> `orderBy('sort_order')` → ambiguous double ORDER BY returned SQLite rows in
+> arbitrary order and the test silently targeted the QUIZ-bearing lesson.
+> Fixed with deterministic `whereDoesntHave('quizzes')->first()`. Not a
+> product bug — a housekeeping note that LessonQueryBuilder-ish relation
+> ordering should stay single-column. Suite 249/826. **)
 
 ---
 
