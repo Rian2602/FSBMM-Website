@@ -1119,6 +1119,35 @@ class OptionsRelationManager extends RelationManager
 - Consumes: Task 1 model `CourseQuiz` (with `lesson_id null` = final), Task 3 `QuestionsRelationManager` pattern.
 - Produces: a course-level final quiz (a `course_quizzes` row with `lesson_id = null`) editable from the Course resource.
 
+> (** executed: Task 4 evaluation (post-implementation audit) — shipped code
+> already deviated from the plan's snippets: `FinalQuizRelationManager` used
+> `modifyQueryUsing()` instead of the dead `getTableQuery()` and
+> `mutateFormDataUsing` (the real name — `mutateDataUsing` does not exist in
+> Filament v3.3.55), and `FinalQuizResource`'s own Questions RM is an explicit
+> separate copy per the repo convention.
+>
+> Same evaluation found and fixed (this annotation round):
+> - F4-1 (integrity): authoring allowed unlimited `lesson_id`-null quizzes per
+>   course, but completion resolves via `Course::finalQuiz()->first()`, so any
+>   second final is dead weight. Enforced "at most one final quiz per course"
+>   on both Task 4 authoring surfaces — `FinalQuizRelationManager` create now
+>   runs a guarded `->action()` (danger notification + halt) like the Task 3
+>   options guard, and `FinalQuizResource.course_id` gained a conditional rule
+>   (skipped while `isDisabled()` on edit, since disabled fields still
+>   validate with their existing value — the rule fires on create only).
+>   Residual (documented, not guarded): the same final can still be created
+>   via `CourseQuizResource`'s blank-lesson escape hatch, and deleting a quiz
+>   cascades `course_attempts` (learner history and derived completion regress).
+> - F4-2 (spec §6a): `FinalQuizResource.pass_threshold` was `default(70)`
+>   without `->nullable()`, so the course-default fallback could never apply
+>   to a final quiz; made nullable to match `CourseQuizResource`.
+> - F4-3 (coverage): `FinalQuizResource` pages and its Questions RM were
+>   completely untested (the same crash class Task 3's C-T3-3 fixed for the
+>   quiz/question resources) — added render smokes, standalone create/edit
+>   flows, the scoped-query boundary (GET `/admin/final-quizzes/{lessonQuiz}/edit`
+>   → 404), list/RM filters, and a Questions-RM create test (40 tests in
+>   `CourseAuthoringTest`). **)
+
 - [ ] **Step 1: Add failing test** (append to `CourseAuthoringTest.php`):
 
 ```php

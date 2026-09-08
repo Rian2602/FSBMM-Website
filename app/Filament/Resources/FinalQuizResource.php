@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\FinalQuizResource\Pages;
 use App\Filament\Resources\FinalQuizResource\RelationManagers\QuestionsRelationManager;
 use App\Models\CourseQuiz;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -38,11 +39,36 @@ class FinalQuizResource extends Resource
                 ->relationship('course', 'title')
                 ->required()
                 ->searchable()
-                ->disabledOn('edit'),
+                ->disabledOn('edit')
+                // (** executed: Task 4 evaluation (F4-1) — the authoring rule
+                // "at most one final quiz per course" (the RM create is
+                // guarded in FinalQuizRelationManager). Course::finalQuiz()
+                // takes the first lesson_id-null row, so a second is dead
+                // weight. The rule only fires on create — the field is
+                // disabled on edit. **)
+                ->rules(
+                    fn (): array => [
+                        function (string $attribute, mixed $value, Closure $fail): void {
+                            if (CourseQuiz::query()->where('course_id', $value)->whereNull('lesson_id')->exists()) {
+                                $fail('Kursus ini sudah punya kuis akhir.');
+                            }
+                        },
+                    ],
+                    // (** executed: disabled-on-edit fields still validate with
+                    // their existing value, so the rule must not fire while
+                    // editing the course's own final quiz. **)
+                    fn (Forms\Components\Field $component): bool => ! $component->isDisabled(),
+                ),
             Forms\Components\TextInput::make('title')->label('Judul')->required()->maxLength(255),
             Forms\Components\Select::make('pass_threshold')
                 ->label('Ambang Lulus')
                 ->options([50 => 50, 60 => 60, 70 => 70, 80 => 80, 90 => 90])
+                // (** executed: Task 4 evaluation (F4-2) — spec §6a keeps the
+                // course default as the fallback; the field must be nullable so
+                // an author can defer to course->pass_threshold like
+                // CourseQuizResource (default(70) alone would pin every final
+                // at 70). **)
+                ->nullable()
                 ->default(70),
         ]);
     }

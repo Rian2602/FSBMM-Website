@@ -11,6 +11,10 @@ use App\Filament\Resources\CourseQuizResource\RelationManagers\QuestionsRelation
 use App\Filament\Resources\CourseResource\Pages\EditCourse;
 use App\Filament\Resources\CourseResource\RelationManagers\FinalQuizRelationManager;
 use App\Filament\Resources\CourseResource\RelationManagers\LessonsRelationManager;
+use App\Filament\Resources\FinalQuizResource\Pages\CreateFinalQuiz;
+use App\Filament\Resources\FinalQuizResource\Pages\EditFinalQuiz;
+use App\Filament\Resources\FinalQuizResource\Pages\ListFinalQuizzes;
+use App\Filament\Resources\FinalQuizResource\RelationManagers\QuestionsRelationManager as FinalQuizQuestionsRelationManager;
 use App\Filament\Resources\QuizQuestionResource\Pages\EditQuizQuestion;
 use App\Filament\Resources\QuizQuestionResource\RelationManagers\OptionsRelationManager;
 use App\Models\Course;
@@ -285,6 +289,74 @@ class CourseAuthoringTest extends TestCase
         $this->assertDatabaseHas('quiz_options', ['option' => 'Kunci Baru', 'is_correct' => true]);
     }
 
+    // (** executed: evaluation probes closing the remaining guard
+    // branches of C-T3-1: edit-other-to-correct must halt (ignore-id path with
+    // a conflicting key), and wrong-option create/delete must stay allowed. **)
+    public function test_cannot_mark_an_edited_option_correct_while_another_key_exists(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $question = QuizQuestion::factory()->create();
+        QuizOption::factory()->create(['quiz_question_id' => $question->id, 'is_correct' => true]);
+        $other = QuizOption::factory()->create(['quiz_question_id' => $question->id, 'is_correct' => false]);
+
+        Livewire::actingAs($editor)
+            ->test(OptionsRelationManager::class, ['ownerRecord' => $question, 'pageClass' => EditQuizQuestion::class])
+            ->callTableAction('edit', $other->id, data: ['option' => $other->option, 'is_correct' => true]);
+
+        $this->assertDatabaseHas('quiz_options', ['id' => $other->id, 'is_correct' => false]);
+    }
+
+    public function test_deleting_a_non_key_option_is_allowed(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $question = QuizQuestion::factory()->create();
+        $key = QuizOption::factory()->create(['quiz_question_id' => $question->id, 'is_correct' => true]);
+        $other = QuizOption::factory()->create(['quiz_question_id' => $question->id, 'is_correct' => false]);
+
+        Livewire::actingAs($editor)
+            ->test(OptionsRelationManager::class, ['ownerRecord' => $question, 'pageClass' => EditQuizQuestion::class])
+            ->callTableAction('delete', $other->id)
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseCount('quiz_options', 1);
+        $this->assertDatabaseHas('quiz_options', ['id' => $key->id, 'is_correct' => true]);
+    }
+
+    public function test_creating_a_wrong_option_when_a_key_exists_is_allowed(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $question = QuizQuestion::factory()->create();
+        QuizOption::factory()->create(['quiz_question_id' => $question->id, 'is_correct' => true]);
+
+        Livewire::actingAs($editor)
+            ->test(OptionsRelationManager::class, ['ownerRecord' => $question, 'pageClass' => EditQuizQuestion::class])
+            ->callTableAction('create', data: ['option' => 'Opsi Pengecoh', 'is_correct' => false])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseCount('quiz_options', 2);
+        $this->assertDatabaseHas('quiz_options', ['option' => 'Opsi Pengecoh', 'is_correct' => false]);
+    }
+
+    // (** executed: evaluation probe for C-T3-2's reverse transition — turning
+    // a lesson quiz into a final quiz (lesson_id → null) must keep the course,
+    // since mutateFormDataBeforeSave only re-derives when a lesson is set. **)
+    public function test_editing_a_quiz_to_blank_lesson_keeps_its_course(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $quiz = CourseQuiz::factory()->create();
+        $originalCourseId = $quiz->course_id;
+
+        Livewire::actingAs($editor)
+            ->test(EditCourseQuiz::class, ['record' => $quiz->id])
+            ->fillForm(['lesson_id' => null])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $quiz->refresh();
+        $this->assertNull($quiz->lesson_id);
+        $this->assertEquals($originalCourseId, $quiz->course_id);
+    }
+
     // (** executed: Task 3 evaluation (C-T3-2) — CourseQuizResource disables
     // course_id on edit but leaves lesson_id editable, so without re-deriving
     // on save an editor could move a quiz to a lesson of another course and
@@ -396,5 +468,175 @@ class CourseAuthoringTest extends TestCase
         $question = QuizQuestion::factory()->create();
 
         $this->actingAs($editor)->get("/admin/quiz-questions/{$question->id}/edit")->assertSuccessful();
+    }
+
+    // (** executed: Task 4 evaluation (F4-1) — authoring allowed unlimited
+    // lesson_id-null quizzes per course, but completion resolves via
+    // Course::finalQuiz()->first(), making any second final dead weight. Keep
+    // at most one final per course at both Task 4 authoring surfaces. **)
+    public function test_cannot_create_a_second_final_quiz_via_relation_manager(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->callTableAction('create', data: ['title' => 'Kuis Akhir Kedua', 'pass_threshold' => 70]);
+
+        $this->assertDatabaseMissing('course_quizzes', ['title' => 'Kuis Akhir Kedua']);
+    }
+
+    public function test_cannot_create_a_second_final_quiz_via_standalone_resource(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+
+        Livewire::actingAs($editor)
+            ->test(CreateFinalQuiz::class)
+            ->fillForm(['title' => 'Kuis Akhir Kedua', 'course_id' => $course->id])
+            ->call('create')
+            ->assertHasFormErrors(['course_id']);
+    }
+
+    // (** executed: Task 4 evaluation (F4-3) — FinalQuizResource pages and its
+    // own Questions RM were completely untested (the crash class d4c5bc5/C-T3-3
+    // fixed in Task 3); these smoke the full standalone surface plus the
+    // scoped-query boundary (a lesson quiz must NOT be editable as a final). **)
+    public function test_final_quiz_list_page_renders_for_editor(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        CourseQuiz::factory()->for(Course::factory()->create())->create(['lesson_id' => null]);
+
+        $this->actingAs($editor)->get('/admin/final-quizzes')->assertSuccessful();
+    }
+
+    public function test_final_quiz_create_page_renders_for_editor(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+
+        $this->actingAs($editor)->get('/admin/final-quizzes/create')->assertSuccessful();
+    }
+
+    public function test_final_quiz_edit_page_renders_for_editor(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+
+        $this->actingAs($editor)->get("/admin/final-quizzes/{$finalQuiz->id}/edit")->assertSuccessful();
+    }
+
+    public function test_lesson_quiz_is_not_editable_as_final_quiz(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $lessonQuiz = CourseQuiz::factory()->for(CourseLesson::factory(), 'lesson')->create();
+
+        $this->actingAs($editor)->get("/admin/final-quizzes/{$lessonQuiz->id}/edit")->assertNotFound();
+    }
+
+    public function test_creating_a_final_quiz_via_standalone_resource_forces_null_lesson(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+
+        Livewire::actingAs($editor)
+            ->test(CreateFinalQuiz::class)
+            ->fillForm(['title' => 'Evaluasi Akhir', 'course_id' => $course->id])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('course_quizzes', [
+            'title' => 'Evaluasi Akhir',
+            'course_id' => $course->id,
+            'lesson_id' => null,
+        ]);
+    }
+
+    public function test_editing_a_final_quiz_keeps_null_lesson_and_course(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null, 'title' => 'Lama']);
+
+        Livewire::actingAs($editor)
+            ->test(EditFinalQuiz::class, ['record' => $finalQuiz->id])
+            ->fillForm(['title' => 'Evaluasi Akhir Revisi'])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $finalQuiz->refresh();
+        $this->assertEquals('Evaluasi Akhir Revisi', $finalQuiz->title);
+        $this->assertNull($finalQuiz->lesson_id);
+        $this->assertEquals($course->id, $finalQuiz->course_id);
+    }
+
+    public function test_final_quiz_list_shows_only_course_level_quizzes(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+        $lessonQuiz = CourseQuiz::factory()->for(CourseLesson::factory(), 'lesson')->create();
+
+        Livewire::actingAs($editor)
+            ->test(ListFinalQuizzes::class)
+            ->assertOk()
+            ->assertCanSeeTableRecords([$finalQuiz])
+            ->assertCanNotSeeTableRecords([$lessonQuiz]);
+    }
+
+    public function test_final_quiz_relation_manager_shows_only_final_quizzes(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create();
+        $lesson = CourseLesson::factory()->for($course)->create();
+        $finalQuiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
+        $lessonQuiz = CourseQuiz::factory()->for($lesson, 'lesson')->create();
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizRelationManager::class, ['ownerRecord' => $course, 'pageClass' => EditCourse::class])
+            ->assertOk()
+            ->assertCanSeeTableRecords([$finalQuiz])
+            ->assertCanNotSeeTableRecords([$lessonQuiz]);
+    }
+
+    public function test_editor_can_create_a_question_on_a_final_quiz(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $finalQuiz = CourseQuiz::factory()->for(Course::factory()->create())->create(['lesson_id' => null]);
+
+        Livewire::actingAs($editor)
+            ->test(FinalQuizQuestionsRelationManager::class, ['ownerRecord' => $finalQuiz, 'pageClass' => EditFinalQuiz::class])
+            ->callTableAction('create', data: ['question' => 'Syarat kursus selesai?'])
+            ->assertHasNoTableActionErrors();
+
+        $this->assertDatabaseHas('quiz_questions', [
+            'course_quiz_id' => $finalQuiz->id,
+            'question' => 'Syarat kursus selesai?',
+        ]);
+    }
+
+    // (** executed: Task 4 evaluation (F4-2) — the resource form pinned
+    // pass_threshold with default(70) but no nullable(), so the spec's
+    // "nilai per-kuis menimpa bila diisi" fallback to course->pass_threshold
+    // could never apply to a final quiz (CourseQuizResource allows it). **)
+    public function test_final_quiz_can_use_course_default_threshold(): void
+    {
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+        $course = Course::factory()->create(['pass_threshold' => 80]);
+
+        Livewire::actingAs($editor)
+            ->test(CreateFinalQuiz::class)
+            ->fillForm(['title' => 'Evaluasi Akhir', 'course_id' => $course->id, 'pass_threshold' => null])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $this->assertDatabaseHas('course_quizzes', [
+            'title' => 'Evaluasi Akhir',
+            'course_id' => $course->id,
+            'lesson_id' => null,
+            'pass_threshold' => null,
+        ]);
     }
 }
