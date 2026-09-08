@@ -891,6 +891,36 @@ lessons (default 0 + RM reorder) and the `pass_threshold` Select default-70 UX
 - Consumes: Task 1 models (`CourseQuiz`, `QuizQuestion`, `QuizOption`), Task 2 resources.
 - Produces: CRUD for quiz questions and their MCQ options in `/admin`; `QuestionsRelationManager` on `CourseQuizResource`; `OptionsRelationManager` on `QuizQuestionResource`.
 
+> (** executed: Task 3 evaluation (post-implementation audit) — three bugs were
+> fixed in commit `d4c5bc5` *before* this annotation: (1) the plan's
+> `course.name` column does not exist — `CourseQuizResource` form/filter use
+> `course.title`; (2) `mutateFormDataBeforeCreate` was written as a static
+> Resource hook, which Filament v3 never calls — it lives as an instance
+> method on `CreateCourseQuiz`; (3) `QuizQuestionResource`'s Select is named
+> `course_quiz_id` (relationship `quiz`, option label
+> `course?.title.' — '.title`), not `quiz_id` — a `quiz_id` Select writes to a
+> non-existent column and trips NOT NULL on insert. The plan's
+> `orderColumn('sort_order')` snippets do not exist in Filament v3.3.55 and
+> shipped as `reorderable('sort_order')`.
+>
+> Same evaluation found and fixed (this annotation round):
+> - Spec §7's "exactly one correct option per question" authoring guard was
+>   missing (`firstWhere('is_correct', true)` silently ignores a second key
+>   and a correct-less question scores as permanent wrong). `OptionsRelationManager`
+>   actions now reject a second key and block deleting the only key
+>   (danger notification + `halt()`). A question created with zero options is
+>   still deliberately allowed (authoring-only guarantee; the author is
+>   expected to add options immediately).
+> - `EditCourseQuiz` left `lesson_id` editable while `course_id` is
+>   `disabledOn('edit')` — a quiz could be moved to another course's lesson,
+>   breaking the course-from-lesson invariant. Added
+>   `mutateFormDataBeforeSave()` re-deriving `course_id` from the lesson.
+> - The standalone quiz/question pages (list, create, edit) and the standalone
+>   `CreateCourseQuiz` course-from-lesson derivation had zero test coverage —
+>   the exact crash class `d4c5bc5` fixed. Render smokes + two standalone
+>   create tests + the cross-course edit regression were added to
+>   `CourseAuthoringTest` (24 tests). **)
+
 - [ ] **Step 1: Add authoring tests** (append to `CourseAuthoringTest.php`):
 
 ```php
@@ -907,6 +937,10 @@ lessons (default 0 + RM reorder) and the `pass_threshold` Select default-70 UX
 ```
 
 > **(** executed note for the implementer: the above is a stub. The real, load-bearing tests are the Question/Options relation managers. Write them as full Livewire relation-manager tests mirroring SP3 `SbaEventAttendanceTest` (`callTableAction('create', data: [...])` against the owner record), which are the canonical form in this repo. Replace the stub with concrete cases before committing Task 3. **)**
+
+> (** executed: stub replaced — the live coverage is the Question/Options
+> relation-manager tests below plus the evaluation tests described in the
+> Task 3 header annotation. **)
 
 Because relation-manager create flows (Question on a Quiz, Option on a Question) are the real deliverable, the tests must exercise `QuestionsRelationManager` and `OptionsRelationManager` directly via their `create` table actions — exactly how SP3 tests `AttendancesRelationManager`. Provide those now:
 
