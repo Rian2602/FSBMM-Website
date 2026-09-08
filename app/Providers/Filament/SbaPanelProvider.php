@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Sba\Pages\CourseDetailPage;
+use App\Filament\Sba\Pages\LessonViewPage;
+use App\Filament\Sba\Pages\MyCoursesPage;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -16,6 +19,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class SbaPanelProvider extends PanelProvider
@@ -39,7 +43,19 @@ class SbaPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Sba/Widgets'), for: 'App\\Filament\\Sba\\Widgets')
             ->pages([
                 Pages\Dashboard::class,
+                MyCoursesPage::class,
+                CourseDetailPage::class,
+                LessonViewPage::class,
             ])
+            // (** executed: same panel-route pattern as the admin panel — see
+            // AdminPanelProvider note (page-level getRoutes() does not exist
+            // in Filament v3.3.55). **)
+            ->authenticatedRoutes(function (): array {
+                return [
+                    Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
+                    Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
+                ];
+            })
             ->widgets([
                 Widgets\AccountWidget::class,
             ])
