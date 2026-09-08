@@ -1915,7 +1915,42 @@ class LearningProgress
 
 - [ ] **Step 6: Commit** — `feat(elearning): progress semantics + derived course completion`
 
----
+> (** executed in `0409877`: shipped `LearningProgress` with the plan's
+> `Illuminate\Database\Eloquent\Collection` return type replaced by
+> `Illuminate\Support\Collection` (`map()` yields that — annotated in-code),
+> and the plan's `with(['lessons.quizzes', 'finalQuiz'])` replaced by
+> `with('lessons.quizzes')` because `finalQuiz` is a query method, not a
+> relation, and eager-loading it crashes (finding surfaced during Task 5
+> evaluation). `forCourse()` hoists `$course->finalQuiz()` once (a third
+> call existed in the snippet's `final_quiz_passed`). `report()` lives in
+> this file but is the Task 8 surface (widget + LearningReportTest). **)
+>
+> (** cfc96b0 Task 7 self-evaluation — coverage-lock, 7 new probes (12/27
+> CourseProgressTest): per-user isolation (a second user's progress never
+> leaks, nor flips the other's course), final-quiz pass alone does NOT mark
+> lessons complete, course without a final quiz is never complete (spec §6b:
+> final quiz is a hard requirement — locked), mixed path (manual + quiz-passed
+> lesson + final) is complete, `forCourse()` shape & `sort_order` lesson
+> ordering + `final_quiz => null`, undo reflects in `forUser()`, and
+> `report()` shape: published courses × ALL users ordered by name. No code
+> change to `LearningProgress` was needed. **)
+>
+> (** cfc96b0 UI findings — DEV-1: spec §6b requires a "Selesai" badge in
+> "Kursus Saya" when the course is complete, but both `my-courses` blades
+> computed `is_complete` and never rendered it; badge added (admin + Sba,
+> `$row['is_complete']`). DEV-2: the no-final-quiz course was a silent UX
+> dead-end (the detail page's `final_quiz` block rendered nothing and the
+> course can never show complete) — added an info strip to both
+> `course-detail` blades ("Kuis akhir belum tersedia — kursus dinilai selesai
+> setelah kuis akhir lulus."). 4 UI locks added in LearnerAccessTest (badge
+> admin + Sba, strip admin + Sba); suite 238/790. **)
+>
+> (** Residuals for Task 8 evaluation: `report()` maps ALL `users` (staff
+> accounts included, not just learners) and costs O(courses × users) with
+> per-lesson quiz/attempt queries (`with('lessons')` only — quizzes and
+> attempts stay deferred); a zero-lesson course with a passed final counts as
+> complete; a stale manual `is_completed` row survives a staff member later
+> attaching a quiz to that lesson. **)
 
 ### Task 8: Federation learning report (super-admin)
 
