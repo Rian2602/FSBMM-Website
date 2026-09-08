@@ -200,16 +200,16 @@ All collection routes (`/berita`, `/sba`, `/e-resource`, `/e-learning`), sitemap
 
 Create `tests/Feature/Sp5SecurityTest.php`:
 
-- [ ] Test: SBA A cannot access SBA B members
-- [ ] Test: SBA A cannot access SBA B reports
-- [ ] Test: SBA A cannot export SBA B data
-- [ ] Test: SBA A cannot create/revoke/print card for SBA B member
-- [ ] Test: Anonymous cannot access SBA reports
-- [ ] Test: Anonymous cannot access exports
-- [ ] Test: Anonymous can access card verification (minimal data)
-- [ ] Test: Editor cannot access individual member PII
-- [ ] Test: Editor cannot access federation aggregate reporting
-- [ ] Test: SBA admin cannot access federation reports
+- [x] Test: SBA A cannot access SBA B members
+- [x] Test: SBA A cannot access SBA B reports
+- [x] Test: SBA A cannot export SBA B data
+- [x] Test: SBA A cannot create/revoke/print card for SBA B member
+- [x] Test: Anonymous cannot access SBA reports
+- [x] Test: Anonymous cannot access exports
+- [x] Test: Anonymous can access card verification (minimal data)
+- [x] Test: Editor cannot access individual member PII
+- [x] Test: Editor cannot access federation aggregate reporting
+- [x] Test: SBA admin cannot access federation reports
 
 ### Task 1.2: Authorization Guards
 
