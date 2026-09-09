@@ -78,4 +78,36 @@ class FederationReportingTest extends TestCase
         $isLazy = (new ReflectionClass(FederationOperationsWidget::class))->getStaticPropertyValue('isLazy');
         $this->assertFalse($isLazy);
     }
+
+    public function test_per_sba_breakdown_is_aggregate_only(): void
+    {
+        $this->seedOperationalData();
+
+        auth()->login(User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]));
+
+        $breakdown = (new FederationOperationsWidget)->getPerSbaBreakdown();
+
+        $this->assertCount(3, $breakdown);
+        $this->assertSame('SPM Alpha', $breakdown[0]['name']);
+        $this->assertSame(2, $breakdown[0]['active_members']);
+        $this->assertSame(100000.0, $breakdown[0]['current_dues']);
+        $this->assertSame(2, $breakdown[0]['events']);
+        $this->assertSame(1, $breakdown[0]['open_complaints']);
+        $this->assertSame(0, $breakdown[0]['active_cards']);
+
+        $this->assertSame('SPM Beta', $breakdown[1]['name']);
+        $this->assertSame(1, $breakdown[1]['active_members']);
+        $this->assertSame(25000.0, $breakdown[1]['current_dues']);
+        $this->assertSame(1, $breakdown[1]['events']);
+        $this->assertSame(0, $breakdown[1]['open_complaints']);
+
+        $this->assertSame('SPM Gamma', $breakdown[2]['name']);
+        $this->assertSame([0, 0.0, 0, 0, 0], [
+            $breakdown[2]['active_members'],
+            $breakdown[2]['current_dues'],
+            $breakdown[2]['events'],
+            $breakdown[2]['open_complaints'],
+            $breakdown[2]['active_cards'],
+        ]);
+    }
 }

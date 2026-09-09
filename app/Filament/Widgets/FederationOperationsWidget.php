@@ -45,6 +45,46 @@ class FederationOperationsWidget extends Widget
         ];
     }
 
+    public function getPerSbaBreakdown(): array
+    {
+        $duesByOrg = Due::where('period', now()->format('Y-m'))
+            ->selectRaw('organization_id, sum(amount) as total')
+            ->groupBy('organization_id')
+            ->get()
+            ->mapWithKeys(fn ($row) => [(int) $row->organization_id => (float) $row->total]);
+
+        $eventsByOrg = Event::selectRaw('organization_id, count(*) as c')
+            ->groupBy('organization_id')
+            ->get()
+            ->mapWithKeys(fn ($row) => [(int) $row->organization_id => (int) $row->c]);
+
+        $openComplaintsByOrg = Complaint::where('status', '!=', 'selesai')
+            ->selectRaw('organization_id, count(*) as c')
+            ->groupBy('organization_id')
+            ->get()
+            ->mapWithKeys(fn ($row) => [(int) $row->organization_id => (int) $row->c]);
+
+        $activeCardsByOrg = $this->hasMemberCards()
+            ? DB::table('member_cards')->where('status', 'aktif')
+                ->selectRaw('organization_id, count(*) as c')
+                ->groupBy('organization_id')
+                ->get()
+                ->mapWithKeys(fn ($row) => [(int) $row->organization_id => (int) $row->c])
+            : collect();
+
+        return Organization::orderBy('name')
+            ->get()
+            ->map(fn (Organization $org) => [
+                'name' => $org->name,
+                'active_members' => (int) $org->member_count,
+                'current_dues' => (float) ($duesByOrg[$org->id] ?? 0),
+                'events' => (int) ($eventsByOrg[$org->id] ?? 0),
+                'open_complaints' => (int) ($openComplaintsByOrg[$org->id] ?? 0),
+                'active_cards' => (int) ($activeCardsByOrg[$org->id] ?? 0),
+            ])
+            ->all();
+    }
+
     private function hasMemberCards(): bool
     {
         return Schema::hasTable('member_cards');
