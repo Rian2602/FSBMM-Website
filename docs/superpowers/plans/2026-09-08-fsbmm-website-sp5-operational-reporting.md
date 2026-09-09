@@ -314,6 +314,8 @@ Create `tests/Feature/FederationReportingTest.php`:
 
 (** executed @2026-09-09 follow-up: complaint-content leak guard — `FederationReportingTest` grown to 8 tests with `test_admin_dashboard_never_leaks_complaint_content` (seeds an open complaint with a distinctive token in reporter_name/title/description; asserts the token + full reporter string absent from /admin HTML while the widget still counts it, and `Ringkasan Operasional Federasi` still renders — guards the 5th PII class per spec §7.2). **)
 
+(** executed @2026-09-09 post-evaluation (independent audit): 0 Critical / 0 Important / 3 Minor — fixes applied for F1 + F3: (F1) `Schema::hasTable('member_cards')` memoized once per render via `private ?bool $memberCardsTableExists` (was 3 schema introspections/render; method unchanged); (F3) `test_super_admin_dashboard_shows_operations_widget` now also asserts the rendered Alpha dues row `assertSee('100.000', false)` (was: only grand total `125.000`). F2 (member_cards positive-path coverage) stays deferred to Phase 5 Task 5.2. **)
+
 ---
 
 ## PHASE 4 — Secure Export
