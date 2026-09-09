@@ -110,4 +110,55 @@ class FederationReportingTest extends TestCase
             $breakdown[2]['active_cards'],
         ]);
     }
+
+    public function test_super_admin_dashboard_shows_operations_widget(): void
+    {
+        $this->seedOperationalData();
+
+        $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($admin)->get('/admin')
+            ->assertOk()
+            ->assertSee('Ringkasan Operasional Federasi')
+            ->assertSee('125.000', false);
+    }
+
+    public function test_editor_dashboard_hides_operations_widget(): void
+    {
+        $this->seedOperationalData();
+
+        $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);
+
+        $this->actingAs($editor)->get('/admin')
+            ->assertOk()
+            ->assertDontSee('Ringkasan Operasional Federasi');
+    }
+
+    public function test_anonymous_cannot_access_admin_dashboard(): void
+    {
+        $this->get('/admin')->assertRedirect('/admin/login');
+    }
+
+    public function test_admin_dashboard_never_leaks_member_pii(): void
+    {
+        $org = Organization::factory()->create(['name' => 'SPM PII', 'member_count' => 0]);
+
+        Member::factory()->for($org)->create([
+            'name' => 'Nama Sangat Rahasia',
+            'nik' => '9876543210',
+            'address' => 'Jl. Rahasia No. 13',
+            'birthdate' => '1990-01-01',
+            'basic_salary' => 12345678,
+        ]);
+
+        $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($admin)->get('/admin')
+            ->assertOk()
+            ->assertDontSee('Nama Sangat Rahasia')
+            ->assertDontSee('9876543210')
+            ->assertDontSee('Jl. Rahasia No. 13')
+            ->assertDontSee('1990-01-01')
+            ->assertDontSee('12345678');
+    }
 }
