@@ -347,9 +347,27 @@ panel → `test_anonymous_cannot_access_exports` otomatis hijau. XLSX via opensp
 
 Create `app/Exports/DuesExport.php`:
 
-- [ ] Column whitelist (nama anggota, periode, nominal, tanggal pembayaran, pencatat)
-- [ ] Tenant-scoped
-- [ ] CSV + XLSX
+- [x] Column whitelist (nama anggota, periode, nominal, tanggal pembayaran, pencatat)
+- [x] Tenant-scoped
+- [x] CSV + XLSX
+
+(** executed @2026-09-09: Task 4.2 complete — commits 5fe68b2 (test) +
+169be3e (feat): `DuesExport` stream CSV/XLSX + 5 tests baru di `ExportTest`
+(9 total lintas Task 4.1+4.2: 4 member + 5 dues). Meniru struktur
+`MemberExport` (stream temp-file + `deleteFileAfterSend(true)`); skeleton
+duplikat sengaja dibiarkan utuh — konsolidasi ke helper bersama dijadwalkan
+saat Task 4.3 (exporter ke-3). Deviations dari spec: (1) `fputcsv` tidak
+me-quote sel header pendek tanpa spasi — header CSV riil
+`"Nama Anggota",Periode,Nominal,"Tanggal Pembayaran",Pencatat` (keluarga
+quoting sama dgn Task 4.1), jadi test meng-assert bentuk itu; (2) fixture test
+plan membuat user `Bendahara Beta` yang tak terpakai sebagai pencatat —
+`recorded_by` riil adalah `sba_admin` yang mengekspor (`$user->id`), jadi
+content assertion memakai `$user->name` dan fixture mati dibuang. `amount`
+string decimal (`50000.00`), `paid_at` `Y-m-d`, filter
+`period`/`period_start`/`period_end` identik `DuesReportPage` (string
+`YYYY-MM`). Route di `SbaPanelProvider::authenticatedRoutes()`; query param
+`organization_id` tak dibaca (spoof diabaikan). Anonim export iuran di-assert
+via `ExportTest` (redirect `/panel-sba/login`). **)
 
 ### Task 4.3: Attendance Export
 
@@ -381,7 +399,7 @@ Create `tests/Feature/ExportTest.php`:
 
 - [x] Test: CSV member export generates correct file
 - [x] Test: XLSX member export generates correct file
-- [ ] Test: CSV/XLSX dues export
+- [x] Test: CSV/XLSX dues export
 - [ ] Test: Attendance export
 - [ ] Test: Complaint export
 - [x] Test: Export contains correct columns (whitelist)
