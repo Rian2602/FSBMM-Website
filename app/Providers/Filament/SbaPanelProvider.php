@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Exports\DuesExport;
+
 use App\Filament\Sba\Pages\CourseDetailPage;
 use App\Filament\Sba\Pages\LessonViewPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
@@ -69,6 +71,13 @@ class SbaPanelProvider extends PanelProvider
                             request()->string('format', 'csv')->toString(),
                         );
                     })->name('member-report.export'),
+                    Route::get('/dues-report/export', function (): BinaryFileResponse {
+                        return DuesExport::streamFor(
+                            auth()->user()->organization_id,
+                            request()->only(['period', 'period_start', 'period_end']),
+                            request()->string('format', 'csv')->toString(),
+                        );
+                    })->name('dues-report.export'),
                 ];
             })
             ->widgets([
