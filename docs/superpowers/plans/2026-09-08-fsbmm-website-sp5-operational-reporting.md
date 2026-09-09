@@ -289,11 +289,11 @@ Create `tests/Feature/ReportingTest.php`:
 
 Create `app/Filament/Widgets/FederationOperationsWidget.php`:
 
-- [ ] Metrics: jumlah SBA, active members, current dues, kegiatan, peserta, open complaints, active cards, revoked cards
-- [ ] Per-SBA breakdown table (aggregate only, no PII)
-- [ ] `canView()`: `isSuperAdmin()` only
-- [ ] `$isLazy = false` (for testing)
-- [ ] Register in `AdminPanelProvider`
+- [x] Metrics: jumlah SBA, active members, current dues, kegiatan, peserta, open complaints, active cards, revoked cards
+- [x] Per-SBA breakdown table (aggregate only, no PII)
+- [x] `canView()`: `isSuperAdmin()` only
+- [x] `$isLazy = false` (for testing)
+- [x] Register in `AdminPanelProvider`
 
 (** executed @2026-09-09 task-3.1-federation-operations-widget: `FederationOperationsWidget` (+ `filament.widgets.federation-operations` blade). Registration = auto-discovery via `AdminPanelProvider->discoverWidgets(... app/Filament/Widgets)` — matches MemberDataOverviewWidget/LearningReportWidget precedent; no explicit `->widgets()` entry needed (deviation note). `canView()` = `isSuperAdmin()`; `$isLazy = false`. Metrics: jumlah SBA (`organizations.count`), total anggota aktif (`SUM(organizations.member_count)` — never queries `members`), iuran bulan berjalan (`dues` where `period = now()->format('Y-m')`, same as MemberDataOverviewWidget), jumlah kegiatan (`events.count`), peserta hadir (`attendances` status `hadir` count), pengaduan terbuka (`complaints` status != `selesai`). Kartu aktif/dicabut + breakdown "Kartu Aktif" column: kept now via `Schema::hasTable('member_cards')` guard (`DB::table('member_cards')`) returning 0, per user decision — replace with `MemberCard` queries and delete `hasMemberCards()` when Task 5.2 lands. Per-SBA breakdown keyed by int org id (`mapWithKeys`) so zero-record orgs default 0; all GROUP BY queries MySQL `ONLY_FULL_GROUP_BY`-safe. **)
 
@@ -301,14 +301,14 @@ Create `app/Filament/Widgets/FederationOperationsWidget.php`:
 
 Create `tests/Feature/FederationReportingTest.php`:
 
-- [ ] Test: aggregate shows correct totals across all SBA
-- [ ] Test: no NIK in response
-- [ ] Test: no member name in response
-- [ ] Test: no address in response
-- [ ] Test: no birthdate in response
-- [ ] Test: no salary in response
-- [ ] Test: editor cannot access widget (super_admin only, per spec §5)
-- [ ] Test: anonymous cannot access widget
+- [x] Test: aggregate shows correct totals across all SBA
+- [x] Test: no NIK in response
+- [x] Test: no member name in response
+- [x] Test: no address in response
+- [x] Test: no birthdate in response
+- [x] Test: no salary in response
+- [x] Test: editor cannot access widget (super_admin only, per spec §5)
+- [x] Test: anonymous cannot access widget
 
 (** executed @2026-09-09 task-3.2-federation-reporting-tests: `tests/Feature/FederationReportingTest.php` — 7 tests: metric aggregates across orgs, per-SBA breakdown incl. zero-data org, canView gating (editor + unauthenticated) + `$isLazy=false` reflection, super admin /admin render asserts totals + heading, editor dashboard hides widget, anonymous /admin redirect, no-PII assertions (name/NIK/address/birthdate/salary not in /admin HTML). **)
 
