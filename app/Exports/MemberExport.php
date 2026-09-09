@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Models\Member;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\XLSX\Writer;
@@ -80,7 +81,7 @@ class MemberExport
 
     private static function writeXlsx(Builder $query, string $path): void
     {
-        $writer = new Writer();
+        $writer = new Writer;
         $writer->openToFile($path);
         $writer->addRow(Row::fromValues(array_values(self::COLUMNS)));
         static::rows($query)->each(function (Member $member) use ($writer): void {
@@ -89,7 +90,7 @@ class MemberExport
         $writer->close();
     }
 
-    private static function rows(Builder $query): \Illuminate\Support\LazyCollection
+    private static function rows(Builder $query): LazyCollection
     {
         return $query->cursor();
     }
