@@ -21,8 +21,10 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use App\Exports\MemberExport;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class SbaPanelProvider extends PanelProvider
 {
@@ -60,6 +62,13 @@ class SbaPanelProvider extends PanelProvider
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
                     Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
+                    Route::get('/member-report/export', function (): BinaryFileResponse {
+                        return MemberExport::streamFor(
+                            auth()->user()->organization_id,
+                            request()->only(['status', 'department', 'position', 'education', 'gender', 'join_date_start', 'join_date_end']),
+                            request()->string('format', 'csv')->toString(),
+                        );
+                    })->name('member-report.export'),
                 ];
             })
             ->widgets([
