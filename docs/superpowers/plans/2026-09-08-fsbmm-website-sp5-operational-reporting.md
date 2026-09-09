@@ -324,10 +324,24 @@ Create `tests/Feature/FederationReportingTest.php`:
 
 Create `app/Exports/MemberExport.php`:
 
-- [ ] Explicit column whitelist (nama, NIK, jenis kelamin, tempat lahir, tanggal lahir, alamat, departemen, jabatan, upah dasar, tanggal bergabung, pendidikan, status)
-- [ ] Tenant-scoped query
-- [ ] CSV format (native `fputcsv`)
-- [ ] XLSX format (openspout streaming)
+- [x] Explicit column whitelist (nama, NIK, jenis kelamin, tempat lahir, tanggal lahir, alamat, departemen, jabatan, upah dasar, tanggal bergabung, pendidikan, status)
+- [x] Tenant-scoped query
+- [x] CSV format (native `fputcsv`)
+- [x] XLSX format (openspout streaming)
+
+(** executed @2026-09-09: stream branch spec §8.4 (
+`MemberExport::streamFor()` → `response()->download(...)->deleteFileAfterSend(true)`),
+bukan private-disk + TTL — file temp auto-hapus, tanpa job cleanup; flow storage
+Task 4.5 tetap untuk download kartu Phase 6. Tenancy murni dari
+`auth()->user()->organization_id`; query param `organization_id` sengaja tidak
+dibaca (spoof diabaikan) — `test_sba_a_cannot_export_sba_b_data` di
+`Sp5SecurityTest` di-update sesuai perilaku riil (sebelumnya assert 404 "route
+belum ada"). Route di `SbaPanelProvider::authenticatedRoutes()` + middleware auth
+panel → `test_anonymous_cannot_access_exports` otomatis hijau. XLSX via openspout
+`openToFile` (bukan `openToBrowser` — output tak terbaca test client Laravel).
+`gender` diekspor sebagai label (`L`→Laki-laki, `P`→Perempuan); tanggal
+`Y-m-d`; `basic_salary` string decimal. Filename `anggota-{orgId}-{Ymd}`
+(tanpa NIK, §8.4). **)
 
 ### Task 4.2: Dues Export
 
@@ -365,15 +379,15 @@ Create `app/Exports/ComplaintExport.php`:
 
 Create `tests/Feature/ExportTest.php`:
 
-- [ ] Test: CSV member export generates correct file
-- [ ] Test: XLSX member export generates correct file
+- [x] Test: CSV member export generates correct file
+- [x] Test: XLSX member export generates correct file
 - [ ] Test: CSV/XLSX dues export
 - [ ] Test: Attendance export
 - [ ] Test: Complaint export
-- [ ] Test: Export contains correct columns (whitelist)
-- [ ] Test: Export SBA A doesn't contain SBA B data
-- [ ] Test: Anonymous cannot export
-- [ ] Test: SBA admin cannot export other SBA
+- [x] Test: Export contains correct columns (whitelist)
+- [x] Test: Export SBA A doesn't contain SBA B data
+- [x] Test: Anonymous cannot export
+- [x] Test: SBA admin cannot export other SBA
 
 ---
 
