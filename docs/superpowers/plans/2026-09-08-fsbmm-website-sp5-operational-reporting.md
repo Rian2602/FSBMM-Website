@@ -238,38 +238,48 @@ Create `app/Filament/Sba/Pages/MemberReportPage.php`:
 
 Create `app/Filament/Sba/Pages/DuesReportPage.php`:
 
-- [ ] Filter: period (single month), date range
-- [ ] Summary: payment count, total amount, average, active members, members without dues
-- [ ] Derived "unpaid" calculation: `active members - members with dues record`
-- [ ] Tenant-scoped queries
+- [x] Filter: period (single month), date range
+- [x] Summary: payment count, total amount, average, active members, members without dues
+- [x] Derived "unpaid" calculation: `active members - members with dues record`
+- [x] Tenant-scoped queries
+
+(** executed @2026-09-09 task-2.2-dues-report: `DuesReportPage` + `dues-report-page.blade.php` + `SbaPanelProvider->pages([...])` registration (nav "Laporan" → "Iuran", slug `dues-report`). Filters: single `period` + `period_start`/`period_end` range (YYYY-MM, regex-validated, live form). Summary cards: payment count, total nominal, average nominal, active members, and "belum tercatat membayar" = `active members (status=aktif) − distinct member_id with a dues record in the filtered scope`, clamped with `max(0, ...)` because dues rows from non-active members can exceed the active count. Table: member, period, amount (Rp format), paid_at, recorded_by. All queries tenant-scoped via `auth()->user()->organization_id`; no `dues` schema change. **)
 
 ### Task 2.3: Attendance Report Page
 
 Create `app/Filament/Sba/Pages/AttendanceReportPage.php`:
 
-- [ ] Filter: event, date range
-- [ ] Summary: event count, participant count, hadir/izin/tidak hadir, attendance rate
-- [ ] Tenant-scoped queries
+- [x] Filter: event, date range
+- [x] Summary: event count, participant count, hadir/izin/tidak hadir, attendance rate
+- [x] Tenant-scoped queries
+
+(** executed @2026-09-09 task-2.3-attendance-report: `AttendanceReportPage` + `attendance-report-page.blade.php` + `SbaPanelProvider->pages([...])` registration (nav "Laporan" → "Kegiatan & Absensi", slug `attendance-report`). Filters: single `event_id` (searchable Select, own org's events only) + `event_date_start`/`event_date_end` (date range on `events.event_date`). Attendance query is scoped to the org AND to the filtered event ids via `whereIn('event_id', ...)` subquery, so a spoofed foreign `event_id` matches nothing (server-side safe); the WHERE columns are qualified (`attendances.organization_id`, `attendances.event_id`) because the per-event breakdown JOINs `events` (unqualified `organization_id` threw an ambiguous-column error — caught by smoke test). Summary: event count, total participant records, hadir/izin/tidak_hadir counts, attendance rate = `hadir / total records` (0 when none). Extra: per-event rekap breakdown (event date formatted via `Carbon::parse(...)->format('d M Y')` since the joined column lands uncast on `Attendance` models) + detail table (event, member, status badge, note). **)
+
+(** executed @2026-09-09 follow-up (post-Phase-2 evaluation, rekap vs event-count consistency): `getBreakdownByEvent()` previously inner-JOINed `events` onto `attendances`, so a filtered event with ZERO attendance rows counted in the "Jumlah Kegiatan" card but vanished from the per-event rekap. It now drives from `getFilteredEventQuery()` with a tenant-scoped `leftJoin` on `attendances` (join keys qualified: `attendances.event_id`, `attendances.organization_id`), `count(attendances.id)` so empty events group to one NULL-status row that every status falls through to 0, and the event query's WHERE/date filters got qualified (`events.organization_id`, `events.event_date`) to avoid the ambiguous-column trap the join introduced. `getFilteredEventQuery()` itself also had its `where('organization_id', …)` qualified (same ambiguity). New regression test `test_attendance_report_rekap_includes_events_without_attendance` in `ReportingTest` covers the empty-event case; suite 16 passed / 76 assertions for the report suite. **)
 
 ### Task 2.4: Complaint Report Page
 
 Create `app/Filament/Sba/Pages/ComplaintReportPage.php`:
 
-- [ ] Filter: status, date range
-- [ ] Summary: total, per status breakdown
-- [ ] No complaint detail on federation aggregate
+- [x] Filter: status, date range
+- [x] Summary: total, per status breakdown
+- [x] No complaint detail on federation aggregate
+
+(** executed @2026-09-09 task-2.4-complaint-report: `ComplaintReportPage` + `complaint-report-page.blade.php` + `SbaPanelProvider->pages([...])` registration (nav "Laporan" → "Pengaduan", slug `complaint-report`). Filters: `status` (baru/diproses/selesai, placeholder = all) + `submitted_start`/`submitted_end` (date range on `submitted_at`, the complaint intake date). Summary cards ARE the per-status breakdown: total, baru, diproses, selesai, plus "belum selesai (open)" = `status != selesai` within the filtered scope. Table shows reporter, title, status badge, submitted_at, resolved_at (placeholder for null) — SBA admins own ComplaintResource so details are allowed in this panel; the "no detail on federation aggregate" rule belongs to Phase 3's `FederationOperationsWidget`, not this tenant-scoped page. **)
 
 ### Task 2.5: Reporting Tests
 
 Create `tests/Feature/ReportingTest.php`:
 
-- [ ] Test: SBA member report shows correct counts
-- [ ] Test: SBA dues report shows correct aggregates
-- [ ] Test: SBA attendance report shows correct aggregates
-- [ ] Test: SBA complaint report shows correct counts
-- [ ] Test: Filters work server-side
-- [ ] Test: Pagination works
-- [ ] Test: Tenant isolation (SBA A doesn't see SBA B data)
+- [x] Test: SBA member report shows correct counts
+- [x] Test: SBA dues report shows correct aggregates
+- [x] Test: SBA attendance report shows correct aggregates
+- [x] Test: SBA complaint report shows correct counts
+- [x] Test: Filters work server-side
+- [x] Test: Pagination works
+- [x] Test: Tenant isolation (SBA A doesn't see SBA B data)
+
+(** executed @2026-09-09 task-2.5-reporting-tests: `tests/Feature/ReportingTest.php` — 15 tests covering all 4 report pages (counts/aggregates, server-side filters incl. period/date/event/status, member breakdowns + attendance per-event rekap, Livewire pagination via `gotoPage` (default per page = 10, first pagination option — page 3 holds records 21-30), and tenant isolation for each report (stats + Livewire assertDontSee). All green; suite at 272 passed with only the 2 known forward-looking SP5 failures (export/verification routes). **)
 
 ---
 
@@ -285,6 +295,8 @@ Create `app/Filament/Widgets/FederationOperationsWidget.php`:
 - [ ] `$isLazy = false` (for testing)
 - [ ] Register in `AdminPanelProvider`
 
+(** executed @2026-09-09 task-3.1-federation-operations-widget: `FederationOperationsWidget` (+ `filament.widgets.federation-operations` blade). Registration = auto-discovery via `AdminPanelProvider->discoverWidgets(... app/Filament/Widgets)` — matches MemberDataOverviewWidget/LearningReportWidget precedent; no explicit `->widgets()` entry needed (deviation note). `canView()` = `isSuperAdmin()`; `$isLazy = false`. Metrics: jumlah SBA (`organizations.count`), total anggota aktif (`SUM(organizations.member_count)` — never queries `members`), iuran bulan berjalan (`dues` where `period = now()->format('Y-m')`, same as MemberDataOverviewWidget), jumlah kegiatan (`events.count`), peserta hadir (`attendances` status `hadir` count), pengaduan terbuka (`complaints` status != `selesai`). Kartu aktif/dicabut + breakdown "Kartu Aktif" column: kept now via `Schema::hasTable('member_cards')` guard (`DB::table('member_cards')`) returning 0, per user decision — replace with `MemberCard` queries and delete `hasMemberCards()` when Task 5.2 lands. Per-SBA breakdown keyed by int org id (`mapWithKeys`) so zero-record orgs default 0; all GROUP BY queries MySQL `ONLY_FULL_GROUP_BY`-safe. **)
+
 ### Task 3.2: Federation Reporting Tests
 
 Create `tests/Feature/FederationReportingTest.php`:
@@ -297,6 +309,8 @@ Create `tests/Feature/FederationReportingTest.php`:
 - [ ] Test: no salary in response
 - [ ] Test: editor cannot access widget (super_admin only, per spec §5)
 - [ ] Test: anonymous cannot access widget
+
+(** executed @2026-09-09 task-3.2-federation-reporting-tests: `tests/Feature/FederationReportingTest.php` — 7 tests: metric aggregates across orgs, per-SBA breakdown incl. zero-data org, canView gating (editor + unauthenticated) + `$isLazy=false` reflection, super admin /admin render asserts totals + heading, editor dashboard hides widget, anonymous /admin redirect, no-PII assertions (name/NIK/address/birthdate/salary not in /admin HTML). **)
 
 ---
 
