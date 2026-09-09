@@ -120,7 +120,8 @@ class FederationReportingTest extends TestCase
         $this->actingAs($admin)->get('/admin')
             ->assertOk()
             ->assertSee('Ringkasan Operasional Federasi')
-            ->assertSee('125.000', false);
+            ->assertSee('125.000', false)
+            ->assertSee('100.000', false);
     }
 
     public function test_editor_dashboard_hides_operations_widget(): void
