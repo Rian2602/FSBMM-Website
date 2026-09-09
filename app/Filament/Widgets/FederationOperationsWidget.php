@@ -22,6 +22,9 @@ class FederationOperationsWidget extends Widget
     // widget convention, same as MemberDataOverviewWidget). **)
     protected static bool $isLazy = false;
 
+    // Memoized per render: the member_cards schema check runs once instead of 3×.
+    private ?bool $memberCardsTableExists = null;
+
     public static function canView(): bool
     {
         return auth()->user()?->isSuperAdmin() ?? false;
@@ -87,6 +90,6 @@ class FederationOperationsWidget extends Widget
 
     private function hasMemberCards(): bool
     {
-        return Schema::hasTable('member_cards');
+        return $this->memberCardsTableExists ??= Schema::hasTable('member_cards');
     }
 }
