@@ -51,15 +51,17 @@ class Sp5SecurityTest extends TestCase
         [$sbaA, $orgA] = $this->createSbaAdmin('SBA A');
         [$sbaB, $orgB] = $this->createSbaAdmin('SBA B');
 
-        // Assumed export endpoint or action. Let's assume a route with org_id spoofing
-        // We will just test that if they hit the export endpoint, it exports their own data only.
-        // For now, let's just make a stub route request that we expect to return 403 or 404 if they try to pass an ID,
-        // or just asserts the export doesn't contain SBA B's data.
-        // I will just make an explicit spoofing test:
-        $response = $this->actingAs($sbaA)->get('/panel-sba/member-report/export?organization_id=' . $orgB->id);
-        // It should either ignore the parameter or block it. We can assert it does not return SBA B's data or returns 403.
-        // We'll leave it as assertForbidden or assertNotFound for now, we can adapt it when building the export.
-        $response->assertStatus(404); // assuming route doesn't exist yet, we'll fix the assertion later if needed
+        Member::factory()->for($orgA)->create(['name' => 'Member SBA A']);
+        Member::factory()->for($orgB)->create(['name' => 'Member SBA B']);
+
+        $response = $this->actingAs($sbaA)
+            ->get('/panel-sba/member-report/export?organization_id='.$orgB->id)
+            ->assertOk();
+
+        $csv = file_get_contents((string) $response->baseResponse->getFile());
+
+        $this->assertStringContainsString('Member SBA A', $csv);
+        $this->assertStringNotContainsString('Member SBA B', $csv);
     }
 
     public function test_sba_a_cannot_create_revoke_print_card_for_sba_b_member(): void
