@@ -312,6 +312,8 @@ Create `tests/Feature/FederationReportingTest.php`:
 
 (** executed @2026-09-09 task-3.2-federation-reporting-tests: `tests/Feature/FederationReportingTest.php` — 7 tests: metric aggregates across orgs, per-SBA breakdown incl. zero-data org, canView gating (editor + unauthenticated) + `$isLazy=false` reflection, super admin /admin render asserts totals + heading, editor dashboard hides widget, anonymous /admin redirect, no-PII assertions (name/NIK/address/birthdate/salary not in /admin HTML). **)
 
+(** executed @2026-09-09 follow-up: complaint-content leak guard — `FederationReportingTest` grown to 8 tests with `test_admin_dashboard_never_leaks_complaint_content` (seeds an open complaint with a distinctive token in reporter_name/title/description; asserts the token + full reporter string absent from /admin HTML while the widget still counts it, and `Ringkasan Operasional Federasi` still renders — guards the 5th PII class per spec §7.2). **)
+
 ---
 
 ## PHASE 4 — Secure Export
