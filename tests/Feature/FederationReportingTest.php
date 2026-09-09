@@ -161,4 +161,26 @@ class FederationReportingTest extends TestCase
             ->assertDontSee('1990-01-01')
             ->assertDontSee('12345678');
     }
+
+    public function test_admin_dashboard_never_leaks_complaint_content(): void
+    {
+        $org = Organization::factory()->create(['name' => 'SPM PII', 'member_count' => 0]);
+
+        $member = Member::factory()->for($org)->create();
+
+        Complaint::factory()->for($org, 'organization')->for($member, 'member')->create([
+            'reporter_name' => 'Pelapor Rahasia ZZ-7781',
+            'title' => 'Keluhan Rahasia ZZ-7781',
+            'description' => 'Isi keluhan super rahasia yang memuat rincian pribadi ZZ-7781-24680.',
+            'status' => 'baru',
+        ]);
+
+        $admin = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);
+
+        $this->actingAs($admin)->get('/admin')
+            ->assertOk()
+            ->assertDontSee('ZZ-7781')
+            ->assertDontSee('Pelapor Rahasia ZZ-7781')
+            ->assertSee('Ringkasan Operasional Federasi');
+    }
 }
