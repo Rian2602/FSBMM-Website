@@ -19,12 +19,15 @@ authoring in `/admin` (staff only), a "Kursus Saya" learner surface in both
 panels, and a super-admin-only learning report. Skipping a spec/plan is how
 this repo breaks — read the relevant one before touching an area.
 
-**SP5 (operational reporting / secure export / kartu anggota) is not started.**
-Its draft spec + plan live untracked in `docs/superpowers/`
-(`...2026-09-08-fsbmm-website-sp5-operational-reporting.{md}`) — read them
-before touching SBA reporting, exports, or member-cards. Federation reporting
-is `super_admin`-only and `/verifikasi/kartu/{token}` must be declared ABOVE
-the `{page:slug}` catch-all (spec §9.10).
+**SP5 (operational reporting / secure export / kartu anggota) is in progress.**
+Spec + plan committed in `docs/superpowers/`; Phases 0–2 are done in a
+work-in-progress branch: 4 tenant-scoped SBA report pages (`MemberReportPage`,
+`DuesReportPage`, `AttendanceReportPage`, `ComplaintReportPage`, nav group
+`Laporan`, registered explicitly in `SbaPanelProvider->pages([...])`) + a
+`ReportingTest` suite. Some of these files may be uncommitted — read the SP5
+spec/plan before touching SBA reporting, exports, or member-cards. Federation
+reporting is `super_admin`-only and `/verifikasi/kartu/{token}` must be
+declared ABOVE the `{page:slug}` catch-all (spec §9.10).
 
 Every plan records every deviation from spec/snippets as inline
 `(** executed: ... **)` annotations. Preserve/append these when you change
@@ -89,6 +92,8 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
   drift (unused imports) — run before committing.
 - Frontend: `npm run dev` (dev) / `npm run build` (prod).
 - Fresh install + seed + build: `composer setup`.
+- Full dev with hot reload + queue + logs: `composer dev` (concurrently runs
+  `php artisan serve`, `queue:listen`, `pail`, `npm run dev`).
 
 ## Env gotchas
 
@@ -106,6 +111,9 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
   A stale `public/build/manifest.json` missing the `site.js` entry makes EVERY
   public page throw `ViteException` (mass 500s across tests). Fix: `npm run build`
   (`public/build` is gitignored — rebuild after branch switches too).
+- `php artisan storage:link` is needed locally for uploaded logos/covers/PDFs.
+- SP5 deps are already installed for later phases: `openspout` (CSV/XLSX
+  export), `laravel-snappy` (print/PDF), `bacon-qr-code` (member-card QR).
 
 ## Routing
 
@@ -128,6 +136,18 @@ The public design pass (multi-color `--color-vivid-*` palette, gradients, blobs,
 **committed** — don't revert or re-theme it. Only the `--color-brand-*` token
 VALUES (Swiss-Brutalist Green family, `resources/css/app.css:3`) are still
 placeholder: swap them when official brand assets arrive, nothing else.
+
+## Public-site interactivity (`resources/js/site.js`)
+
+Dependency-free, Vite-bundled, **progressive enhancement** — content must render
+fine without JS; site.js only arms it. Available hooks: `data-reveal`
+(scroll-reveal via IntersectionObserver), `data-counter` (+ `data-counter-target`/
+`data-counter-suffix`), `data-live-search` (+ `data-live-search-input`/
+`data-live-search-item`/`data-live-search-empty`), `data-copy-link`,
+`data-download-feedback`, `#reading-progress`, `window.FSBMM.toast(msg, type)`.
+Back-to-top lives inline in `layouts/public.blade.php`, **not** in site.js — don't
+duplicate. Accent arrays in index views hold FULL Tailwind class strings — use
+them directly, never concatenate a `border-`/`text-` prefix onto them.
 
 ## Security conventions
 
@@ -198,6 +218,21 @@ placeholder: swap them when official brand assets arrive, nothing else.
 - Filament panels auto-discover only their own `app/Filament/{Admin,Sba}/**`, so
   widgets in `app/Filament/Widgets` (e.g. `LearningReportWidget`) structurally
   cannot reach `/panel-sba` — no extra guard needed.
+- `Sp5SecurityTest` has **expected failures** for SP5 routes that later phases
+  haven't built yet (e.g. `/panel-sba/member-report/export`, `/verifikasi/kartu/{token}`).
+  Don't "fix" them early.
+- `tests/TestCase.php` normalizes `APP_ENV=testing` before the app boots — a
+  host-shell `APP_ENV` export would otherwise shadow `phpunit.xml`. Keep that
+  guard.
+- Filament 3.3.55 traps: `Table::orderColumn()` doesn't exist (use
+  `->reorderable('sort_order')`); `CreateAction::mutateDataUsing()` doesn't
+  exist (use `mutateFormDataUsing()`); custom pages get a single slug route, so
+  record URLs need `Panel::authenticatedRoutes()` + page `mount(?Model $record)`;
+  page `$view` must be `protected static string`.
+- `Factory::for()` infers the relation from the class name — relations here are
+  non-conventional (`lesson()`, `quiz()`, `question()`), so PASS the explicit
+  name: `->for($lesson, 'lesson')`. Same for non-conventional FKs
+  (`course_quiz_id`, `quiz_question_id`).
 
 ## Verify before completion
 

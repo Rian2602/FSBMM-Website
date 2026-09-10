@@ -5,12 +5,15 @@ namespace App\Providers\Filament;
 use App\Exports\AttendanceExport;
 use App\Exports\ComplaintExport;
 use App\Exports\DuesExport;
-
+use App\Exports\MemberExport;
+use App\Filament\Sba\Pages\AttendanceReportPage;
+use App\Filament\Sba\Pages\ComplaintReportPage;
 use App\Filament\Sba\Pages\CourseDetailPage;
+use App\Filament\Sba\Pages\DuesReportPage;
 use App\Filament\Sba\Pages\LessonViewPage;
+use App\Filament\Sba\Pages\MemberReportPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
 use App\Filament\Sba\Pages\QuizViewPage;
-use App\Filament\Sba\Pages\MemberReportPage;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -23,12 +26,11 @@ use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
-use App\Exports\MemberExport;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Http\RedirectResponse;
 
 class SbaPanelProvider extends PanelProvider
 {
@@ -56,7 +58,10 @@ class SbaPanelProvider extends PanelProvider
                 CourseDetailPage::class,
                 LessonViewPage::class,
                 QuizViewPage::class,
+                AttendanceReportPage::class,
+                ComplaintReportPage::class,
                 MemberReportPage::class,
+                DuesReportPage::class,
             ])
             // (** executed: same panel-route pattern as the admin panel — see
             // AdminPanelProvider note (page-level getRoutes() does not exist

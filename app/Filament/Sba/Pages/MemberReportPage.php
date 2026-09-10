@@ -3,15 +3,15 @@
 namespace App\Filament\Sba\Pages;
 
 use App\Models\Member;
-use Filament\Pages\Page;
+use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
+use Filament\Pages\Page;
+use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Filament\Tables;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -27,6 +27,7 @@ class MemberReportPage extends Page implements HasForms, HasTable
     protected static ?string $navigationLabel = 'Anggota';
 
     protected static ?string $title = 'Laporan Anggota';
+
     protected static ?string $slug = 'member-report';
 
     protected static string $view = 'filament.sba.pages.member-report-page';
@@ -70,7 +71,7 @@ class MemberReportPage extends Page implements HasForms, HasTable
                         ->label('Tanggal Bergabung (Dari)'),
                     Forms\Components\DatePicker::make('join_date_end')
                         ->label('Tanggal Bergabung (Sampai)'),
-                ])
+                ]),
             ])
             ->statePath('data')
             ->live();
@@ -82,25 +83,25 @@ class MemberReportPage extends Page implements HasForms, HasTable
 
         $data = $this->data;
 
-        if (!empty($data['status'])) {
+        if (! empty($data['status'])) {
             $query->where('status', $data['status']);
         }
-        if (!empty($data['department'])) {
-            $query->where('department', 'like', '%' . $data['department'] . '%');
+        if (! empty($data['department'])) {
+            $query->where('department', 'like', '%'.$data['department'].'%');
         }
-        if (!empty($data['position'])) {
-            $query->where('position', 'like', '%' . $data['position'] . '%');
+        if (! empty($data['position'])) {
+            $query->where('position', 'like', '%'.$data['position'].'%');
         }
-        if (!empty($data['education'])) {
-            $query->where('education', 'like', '%' . $data['education'] . '%');
+        if (! empty($data['education'])) {
+            $query->where('education', 'like', '%'.$data['education'].'%');
         }
-        if (!empty($data['gender'])) {
+        if (! empty($data['gender'])) {
             $query->where('gender', $data['gender']);
         }
-        if (!empty($data['join_date_start'])) {
+        if (! empty($data['join_date_start'])) {
             $query->whereDate('join_date', '>=', $data['join_date_start']);
         }
-        if (!empty($data['join_date_end'])) {
+        if (! empty($data['join_date_end'])) {
             $query->whereDate('join_date', '<=', $data['join_date_end']);
         }
 
@@ -128,11 +129,11 @@ class MemberReportPage extends Page implements HasForms, HasTable
             ])
             ->paginated([10, 25, 50]);
     }
-    
+
     public function getStats(): array
     {
         $query = $this->getFilteredQuery();
-        
+
         $total = (clone $query)->count();
         $active = (clone $query)->where('status', 'aktif')->count();
         $inactive = (clone $query)->where('status', 'nonaktif')->count();
