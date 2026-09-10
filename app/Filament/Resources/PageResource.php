@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PageResource\Pages;
 use App\Models\Page;
+use App\Support\UploadedImageOptimizer;
 use Filament\Forms;
 use Filament\Forms\Components\Builder;
 use Filament\Forms\Form;
@@ -66,7 +67,15 @@ class PageResource extends Resource
                                 Forms\Components\TextInput::make('eyebrow')->label('Label kecil (opsional)')->maxLength(60),
                                 Forms\Components\TextInput::make('title')->label('Judul utama')->required(),
                                 Forms\Components\TextInput::make('subtitle')->label('Subjudul (opsional)'),
-                                Forms\Components\FileUpload::make('image_path')->label('Gambar (opsional)')->image()->directory('pages'),
+                                Forms\Components\FileUpload::make('image_path')
+                                    ->label('Gambar (opsional)')
+                                    ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096)
+                                    ->directory('pages')
+                                    ->imageEditor()
+                                    ->saveUploadedFileUsing(fn ($file) => UploadedImageOptimizer::store($file, 'pages', maxWidth: 1920))
+                                    ->helperText('JPEG/PNG/WEBP, maks 4 MB. Otomatis dikompres & diperkecil ke lebar ≤1920px.'),
                                 Forms\Components\TextInput::make('cta_label')->label('Teks tombol (opsional)'),
                                 Forms\Components\TextInput::make('cta_url')->label('Alamat tombol (opsional)'),
                             ]),
@@ -78,7 +87,16 @@ class PageResource extends Resource
                         Builder\Block::make('image')
                             ->label('Gambar')
                             ->schema([
-                                Forms\Components\FileUpload::make('image_path')->label('Gambar')->image()->directory('pages')->required(),
+                                Forms\Components\FileUpload::make('image_path')
+                                    ->label('Gambar')
+                                    ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096)
+                                    ->directory('pages')
+                                    ->imageEditor()
+                                    ->saveUploadedFileUsing(fn ($file) => UploadedImageOptimizer::store($file, 'pages', maxWidth: 1920))
+                                    ->helperText('JPEG/PNG/WEBP, maks 4 MB. Otomatis dikompres & diperkecil ke lebar ≤1920px.')
+                                    ->required(),
                                 Forms\Components\TextInput::make('caption')->label('Keterangan (opsional)'),
                             ]),
                         Builder\Block::make('stats')

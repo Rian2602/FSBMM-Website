@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrganizationResource\Pages;
 use App\Models\Organization;
+use App\Support\UploadedImageOptimizer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -60,8 +61,12 @@ class OrganizationResource extends Resource
                 Forms\Components\FileUpload::make('logo_path')
                     ->label('Logo')
                     ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(2048) // 2 MB hard cap — rejected before any server-side processing.
                     ->directory('organizations')
                     ->imageEditor()
+                    ->saveUploadedFileUsing(fn ($file) => UploadedImageOptimizer::store($file, 'organizations', maxWidth: 512))
+                    ->helperText('JPEG/PNG/WEBP, maks 2 MB. Otomatis dikompres & diperkecil ke lebar ≤512px.')
                     ->columnSpanFull(),
                 Forms\Components\RichEditor::make('description')
                     ->label('Deskripsi')

@@ -4,6 +4,7 @@ namespace App\Filament\Sba\Resources;
 
 use App\Filament\Sba\Resources\OrganizationResource\Pages;
 use App\Models\Organization;
+use App\Support\UploadedImageOptimizer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -51,7 +52,15 @@ class OrganizationResource extends Resource
             Forms\Components\TextInput::make('name')->label('Nama')->required()->maxLength(200),
             Forms\Components\TextInput::make('company')->label('Perusahaan')->maxLength(200),
             Forms\Components\FileUpload::make('logo_path')
-                ->label('Logo')->image()->directory('organizations')->imageEditor()->columnSpanFull(),
+                ->label('Logo')
+                ->image()
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->maxSize(2048)
+                ->directory('organizations')
+                ->imageEditor()
+                ->saveUploadedFileUsing(fn ($file) => UploadedImageOptimizer::store($file, 'organizations', maxWidth: 512))
+                ->helperText('JPEG/PNG/WEBP, maks 2 MB. Otomatis dikompres & diperkecil ke lebar ≤512px.')
+                ->columnSpanFull(),
             Forms\Components\RichEditor::make('description')->label('Deskripsi')->columnSpanFull(),
             Forms\Components\TextInput::make('website')->url()->maxLength(255),
             Forms\Components\TextInput::make('location')->label('Lokasi')->maxLength(200),

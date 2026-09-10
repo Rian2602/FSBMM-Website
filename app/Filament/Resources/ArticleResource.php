@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ArticleResource\Pages;
 use App\Models\Article;
+use App\Support\UploadedImageOptimizer;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -51,7 +52,12 @@ class ArticleResource extends Resource
                 Forms\Components\FileUpload::make('cover_image_path')
                     ->label('Gambar sampul')
                     ->image()
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                    ->maxSize(4096) // 4 MB hard cap before any processing.
                     ->directory('articles')
+                    ->imageEditor()
+                    ->saveUploadedFileUsing(fn ($file) => UploadedImageOptimizer::store($file, 'articles', maxWidth: 1600))
+                    ->helperText('JPEG/PNG/WEBP, maks 4 MB. Otomatis dikompres & diperkecil ke lebar ≤1600px.')
                     ->columnSpanFull(),
                 Forms\Components\Select::make('category_id')
                     ->label('Kategori')
