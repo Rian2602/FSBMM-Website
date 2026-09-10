@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Exports\AttendanceExport;
+use App\Exports\ComplaintExport;
 use App\Exports\DuesExport;
 
 use App\Filament\Sba\Pages\CourseDetailPage;
@@ -86,6 +87,13 @@ class SbaPanelProvider extends PanelProvider
                             request()->string('format', 'csv')->toString(),
                         );
                     })->name('attendance-report.export'),
+                    Route::get('/complaint-report/export', function (): BinaryFileResponse {
+                        return ComplaintExport::streamFor(
+                            auth()->user()->organization_id,
+                            request()->only(['status', 'submitted_start', 'submitted_end', 'include_description']),
+                            request()->string('format', 'csv')->toString(),
+                        );
+                    })->name('complaint-report.export'),
                 ];
             })
             ->widgets([
