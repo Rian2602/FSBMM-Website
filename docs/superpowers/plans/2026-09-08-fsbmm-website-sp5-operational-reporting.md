@@ -747,6 +747,54 @@ revoke eksplisit → 3 row, 2 dicabut. Pengujian tanpa factory (array langsung
 di test, YAGNI). Verifikasi: suite **325 passed / 1 failed** (placeholder
 Phase-6 saja), pint bersih. **)
 
+### PHASE 5 VALIDATION GATE (TASK 5.1–5.4)
+
+Status: **PASS** @2026-09-10 — evaluasi berbasis bukti; lingkup = data model +
+lifecycle service Phase 5 (bukan fitur verification/PDF fase berikut).
+
+- [x] `member_cards` table + model — 5.1 (`6ee7d31`) + 5.2 (`f0aa153`)
+- [x] Issue, revoke, reissue — 5.4 (`6214778`): `MemberCardService` + test
+- [x] Card history retained — `MemberCardTest::test_card_history_retained`
+- [x] Unique card number + collision (max-3 retry + DB unique 5.1) — service + `test_card_number_is_unique`
+- [x] Unique verification token — `test_verification_token_is_unique` + DB unique
+- [x] Satu kartu aktif per member (auto-revoke saat issue) — spec §9.6; `test_only_one_active_card_per_member`
+- [x] Cross-tenant denial (guard issue + revoke) — `test_sba_admin_cannot_issue_for_other_sba_member`
+- [x] Inactive member guard — `DomainException`; `test_inactive_member_cannot_receive_new_card`
+- [x] Token secrecy — token 64-hex opaque; tidak dipajang di output scope 5.x
+- [x] PII boundary — seeder nama fiktif (SP1 §8); kartu mereferensi org/member id saja
+- [x] Seeder demo (1 aktif + 1 dicabut) terdaftar di `DatabaseSeeder`; idempotency via guard org/member (Lihat Minor #1 untuk koreksi)
+- [ ] Print/PDF (snappy) — **Phase 9 (deferral)**
+- [ ] QR verification endpoint (bacon-qr) — **Phase 8 (deferral)**
+- [ ] Manual smoke seluruh critical flow — **Phase 10 Final Verification**
+
+(** executed @2026-09-10: Phase 5 gate evaluation. Bukti audit: fixture
+`MemberCardTest` + `MemberDataSeedTest` → 16 passed / 45 assertions; pint clean
+atas seluruh file-inti Phase 5 committed (migrasi, model, seeder,
+DatabaseSeeder, MemberCardTest); `php artisan migrate:fresh --seed` sukses →
+2 kartu (1 aktif / 1 dicabut). Review independent subagent (general) terhadap
+snapshot committed `6ee7d31..6214778` → **Verdict: Yes — ready**; 0 Critical,
+0 Important; 4 Minor di-journal di bawah. CATATAN TREE: saat evaluasi berjalan,
+working tree berisi kerja paralel UNCOMMITTED Phase 7/8 (milik session lain —
+response Ya oleh user) yang menambahkan `validateToken`/`getCardHistory` di
+MemberCardService, MemberCardPage UI, CardVerificationController + route
+`/verifikasi/kartu/{token}` (menonaktifkan placeholder expected-failure) serta
+beberapa widget/generator/blades/css. Evaluasi ini TIDAK menilai file paralel;
+gate berlaku untuk artifact committed 5.1–5.4. Re-verify pasca milestone
+paralel di-commit (dan placeholder `Sp5SecurityTest` perlu dihapus saat route
+yang sah dikomit). Minor findings (di-journal, TIDAK diperbaiki di sini — fix
+dijadwalkan task implementasi): (1) `MemberCardSeeder::firstOrCreate` — kunci
+`['card_number'=>Str::random]` tak akan pernah cocok dengan baris lama → re-run
+`php artisan db:seed` MENDUPLIKASI kartu demo; idempotency aktual terletak pada
+guard org/member, sehingga klaim anotasi 5.3 "firstOrCreate aman untuk rerun"
+KELIRU. Fix di Task 6.1 (service menyerap seeder) dengan guard
+`MemberCard::where('organization_id',$org->id)->exists()`. (2) `created_by`
+nullable di migrasi vs spec §4 non-nullable — keputusan dijalankan 5.1
+(org legacy), kosmetik, service selalu mengisi. (3) Reviewer menyebut
+`index('organization_id')` redundan dgn FK — KELIRU pada SQLite: FK tidak
+auto-index; index eksplisit dipertahankan. (4) Inverse `hasMany(MemberCard)`
+di Member/Organization/User belum ada — YAGNI untuk fase ini; ditambah saat
+Phase 7 menuntut. **)
+
 ---
 
 ## PHASE 6 — Card Lifecycle + Service
