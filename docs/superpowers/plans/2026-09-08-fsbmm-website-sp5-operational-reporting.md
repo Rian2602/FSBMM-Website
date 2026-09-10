@@ -373,9 +373,31 @@ via `ExportTest` (redirect `/panel-sba/login`). **)
 
 Create `app/Exports/AttendanceExport.php`:
 
-- [ ] Column whitelist (nama anggota, kegiatan, tanggal, status, catatan)
-- [ ] Tenant-scoped
-- [ ] CSV + XLSX
+- [x] Column whitelist (nama anggota, kegiatan, tanggal, status, catatan)
+- [x] Tenant-scoped
+- [x] CSV + XLSX
+
+(** executed @2026-09-10: Task 4.3 complete — commits 8a6696b (test) +
+cab5684 (refactor) + a3ed381 (feat) + docs (commit yang memuat anotasi
+ini): `AttendanceExport` stream CSV/XLSX + 5 tests baru di `ExportTest`
+(14 total lintas Task 4.1–4.3: 4 member + 5 dues + 5 attendance).
+Konsolidasi skeleton terealisasi: `ReportExport` abstract base memuat
+seluruh boilerplate (`streamFor`/`writeCsv`/`writeXlsx`; temp-file +
+`deleteFileAfterSend(true)`); tiap subclass hanya mengimplementasi
+`columns()`/`filenamePrefix()`/`scopedQuery()`/`row()`. `MemberExport` +
+`DuesExport` dimigrasi ke base, output byte-identical (9 tes existing
+hijau sebelum attendance ditambahkan). Whitelist attendance {nama anggota,
+kegiatan, tanggal (`event.event_date` `Y-m-d`), status (label
+Hadir/Izin/Tidak Hadir — sama dgn badge `AttendanceReportPage`), catatan};
+filename `kehadiran-{org}-{Y-m-d}`; filter `event_id`/`event_date_start`/
+`event_date_end` identik `AttendanceReportPage` (Event discope org + rows
+discope via `whereIn attendances.event_id` subquery → spoof foreign
+`event_id` kosong). Deviations dari spec: `fputcsv` tidak me-quote sel
+header pendek tanpa spasi — header CSV riil `"Nama Anggota",Kegiatan,Tanggal,
+Status,Catatan` (keluarga quoting sama dgn Task 4.1/4.2), test meng-assert
+bentuk itu. Route di `SbaPanelProvider::authenticatedRoutes()`; query param
+`organization_id` tak dibaca (spoof diabaikan). Anonim + isolasi tenant
+di-assert via `ExportTest` (redirect `/panel-sba/login`). **)
 
 ### Task 4.4: Complaint Export
 
@@ -400,7 +422,7 @@ Create `tests/Feature/ExportTest.php`:
 - [x] Test: CSV member export generates correct file
 - [x] Test: XLSX member export generates correct file
 - [x] Test: CSV/XLSX dues export
-- [ ] Test: Attendance export
+- [x] Test: Attendance export
 - [ ] Test: Complaint export
 - [x] Test: Export contains correct columns (whitelist)
 - [x] Test: Export SBA A doesn't contain SBA B data
