@@ -101,6 +101,12 @@ Kredensial demo (sandi dari `FSBMM_SBA_PASSWORD`, fallback dev `password`):
 - Ganti `.env` produksi ke blok MySQL (lihat `.env.example`), lalu
   `php artisan migrate --seed` + `php artisan storage:link` + `npm run build`
   (atau jalankan skrip `composer setup`).
+- **Cek `post_max_size` dan `upload_max_filesize` di php.ini cPanel** —
+  aplikasi memvalidasi upload gambar hingga 4 MB (lihat "Catatan keamanan"),
+  tapi kalau nilai php.ini di hosting lebih kecil dari itu, PHP menolak upload
+  *sebelum* Laravel sempat memproses request sama sekali (form akan terlihat
+  gagal tanpa pesan error yang jelas). Pastikan minimal
+  `post_max_size >= 8M` dan `upload_max_filesize >= 4M`.
 
 ## Menjalankan test
 
@@ -120,6 +126,11 @@ php artisan test          # seluruh suite feature (PHPUnit)
   percobaan + penyelesaian pelajaran
 - `app/Support/LearningProgress.php` — progres per pengguna, kelengkapan
   kursus (semua pelajaran + kuis akhir), dan laporan federasi
+- `app/Support/UploadedImageOptimizer.php` — downscale + rekompresi gambar
+  upload (logo organisasi, sampul artikel, gambar page-block) via ekstensi GD
+  bawaan PHP (tanpa dependency baru), dipasang lewat
+  `FileUpload::saveUploadedFileUsing()`; graceful degradation kalau GD tidak
+  tersedia
 - `app/Filament/Admin/Pages/` + `app/Filament/Sba/Pages/` — area belajar
   "Kursus Saya" (daftar kursus, detail, materi, kuis) di kedua panel
 - `app/Filament/Resources/` — CRUD admin per entitas; `PageResource` memakai
@@ -147,6 +158,13 @@ php artisan test          # seluruh suite feature (PHPUnit)
   dikirim ke browser; skor + kelulusan dihitung di `QuizEngine`.
 - Laporan pembelajaran federasi (kursus × peserta) hanya untuk super admin
   (`LearningReportWidget::canView()`).
+- **Upload gambar dibatasi & dikompres di server** — logo (maks 2 MB, lebar
+  ≤512px), sampul artikel & gambar page-block (maks 4 MB, lebar ≤1600-1920px),
+  MIME whitelist eksplisit (JPEG/PNG/WEBP, bukan generic `image/*`). Batas ini
+  ditolak *sebelum* diproses (validasi Livewire) — mencegah upload raksasa
+  (foto kamera HP 10-20MB) membebani memori PHP atau storage. Lihat
+  `app/Support/UploadedImageOptimizer.php`. E-resource (PDF) tetap dibatasi
+  10 MB sejak SP1, terpisah dari mekanisme ini.
 
 ## Roadmap
 
