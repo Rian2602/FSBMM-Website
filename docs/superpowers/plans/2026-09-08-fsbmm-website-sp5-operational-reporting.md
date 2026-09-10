@@ -762,9 +762,9 @@ lifecycle service Phase 5 (bukan fitur verification/PDF fase berikut).
 - [x] Inactive member guard — `DomainException`; `test_inactive_member_cannot_receive_new_card`
 - [x] Token secrecy — token 64-hex opaque; tidak dipajang di output scope 5.x
 - [x] PII boundary — seeder nama fiktif (SP1 §8); kartu mereferensi org/member id saja
-- [x] Seeder demo (1 aktif + 1 dicabut) terdaftar di `DatabaseSeeder`; idempotency via guard org/member (Lihat Minor #1 untuk koreksi)
+- [x] Seeder demo (1 aktif + 1 dicabut) terdaftar di `DatabaseSeeder`; idempotency via guard `exists()` by organization_id (Minor #1 FIXED — closure Phase 6–8 di bawah)
 - [ ] Print/PDF (snappy) — **Phase 9 (deferral)**
-- [ ] QR verification endpoint (bacon-qr) — **Phase 8 (deferral)**
+- [x] QR verification endpoint — route `/verifikasi/kartu/{token}` LIVE (Phase 8 `692652a`); QR *code* (bacon-qr rendering) tetap **Phase 9 (deferral)**
 - [ ] Manual smoke seluruh critical flow — **Phase 10 Final Verification**
 
 (** executed @2026-09-10: Phase 5 gate evaluation. Bukti audit: fixture
@@ -786,8 +786,10 @@ dijadwalkan task implementasi): (1) `MemberCardSeeder::firstOrCreate` — kunci
 `['card_number'=>Str::random]` tak akan pernah cocok dengan baris lama → re-run
 `php artisan db:seed` MENDUPLIKASI kartu demo; idempotency aktual terletak pada
 guard org/member, sehingga klaim anotasi 5.3 "firstOrCreate aman untuk rerun"
-KELIRU. Fix di Task 6.1 (service menyerap seeder) dengan guard
-`MemberCard::where('organization_id',$org->id)->exists()`. (2) `created_by`
+KELIRU. ► FIXED di closure Phase 6–8 (komit fix di bawah): guard
+`MemberCard::where('organization_id',$org->id)->exists()` ditambahkan di
+`MemberCardSeeder` sebelum kedua firstOrCreate → re-seed idempotent (verified:
+re-run seed → tetap 2 kartu). (2) `created_by`
 nullable di migrasi vs spec §4 non-nullable — keputusan dijalankan 5.1
 (org legacy), kosmetik, service selalu mengisi. (3) Reviewer menyebut
 `index('organization_id')` redundan dgn FK — KELIRU pada SQLite: FK tidak
@@ -803,27 +805,41 @@ Phase 7 menuntut. **)
 
 Create `app/Support/MemberCardService.php`:
 
-- [ ] `issue(Member $member, User $creator): MemberCard`
-- [ ] `revoke(MemberCard $card, string $reason, User $actor): MemberCard`
-- [ ] `reissue(MemberCard $oldCard, User $actor): MemberCard`
-- [ ] `generateCardNumber(): string` — format `FSBMM-YYYY-XXXXXXXX` (8 random alphanumeric)
-- [ ] `generateVerificationToken(): string` — random 64-char hex
-- [ ] `resolveCurrentCard(Member $member): ?MemberCard`
-- [ ] `validateToken(string $token): ?MemberCard`
-- [ ] Collision handling: max 3 retries for card_number uniqueness
-- [ ] Business rule: one active card per member (revoke old before issue new)
+- [x] `issue(Member $member, User $creator): MemberCard`
+- [x] `revoke(MemberCard $card, string $reason, User $actor): MemberCard`
+- [x] `reissue(MemberCard $oldCard, User $actor): MemberCard`
+- [x] `generateCardNumber(): string` — format `FSBMM-YYYY-XXXXXXXX` (8 random alphanumeric)
+- [x] `generateVerificationToken(): string` — random 64-char hex
+- [x] `resolveCurrentCard(Member $member): ?MemberCard`
+- [x] `validateToken(string $token): ?MemberCard`
+- [x] Collision handling: max 3 retries for card_number uniqueness
+- [x] Business rule: one active card per member (revoke old before issue new)
+
+(** executed @2026-09-10: Task 6.1 complete. Service `app/Support/MemberCardService.php`
+ditulis secara pull-forward saat Task 5.4 (`6214778`, disetujui user) — `issue`,
+`revoke`, `reissue`, `generateCardNumber`, `generateVerificationToken`,
+`resolveCurrentCard`, collision max-3 (RuntimeException), one-active auto-revoke,
+guards eligible (member aktif, cross-tenant). `validateToken` + `getCardHistory`
+ditambahkan oleh kerja paralel milestone `692652a`. Semua item checklist terpenuhi. **)
 
 ### Task 6.2: Service Tests
 
-- [ ] Test: generateCardNumber returns correct format
-- [ ] Test: generateVerificationToken returns unique tokens
-- [ ] Test: issue creates card with correct fields
-- [ ] Test: issue revokes existing active card
-- [ ] Test: revoke sets status, revoked_at, revocation_reason
-- [ ] Test: reissue creates new card and revokes old
-- [ ] Test: validateToken returns card for valid token
-- [ ] Test: validateToken returns null for invalid token
-- [ ] Test: cross-tenant issue is denied
+- [x] Test: generateCardNumber returns correct format
+- [x] Test: generateVerificationToken returns unique tokens
+- [x] Test: issue creates card with correct fields
+- [x] Test: issue revokes existing active card
+- [x] Test: revoke sets status, revoked_at, revocation_reason
+- [x] Test: reissue creates new card and revokes old
+- [x] Test: validateToken returns card for valid token
+- [x] Test: validateToken returns null for invalid token
+- [x] Test: cross-tenant issue is denied
+
+(** executed @2026-09-10: Task 6.2 complete — `tests/Feature/MemberCardTest.php`.
+9/9 item prioritas utama sejak `6214778` (issue/revoke/reissue/one-active/
+cross-tenant/history/inactive-guard); `validateToken` 3 test ditambah milestone
+`692652a`; item generate format + token-unique ditutup di closure ini (komit test
+berikutnya) dengan `test_generate_card_number_returns_correct_format` +
+`test_generate_verification_token_returns_unique_tokens`. Suite per file: 14 test. **)
 
 ---
 
@@ -833,25 +849,51 @@ Create `app/Support/MemberCardService.php`:
 
 Create `app/Filament/Sba/Pages/MemberCardPage.php`:
 
-- [ ] List cards for current SBA members
-- [ ] Issue card action (per member)
-- [ ] View card details
-- [ ] Revoke card action (with confirmation)
-- [ ] Reissue card action
-- [ ] Print action (triggers PDF generation)
-- [ ] Card history visible (show revoked + active)
-- [ ] Verification token NOT displayed by default (security credential)
-- [ ] Register in `SbaPanelProvider` → `->pages([...])`
-- [ ] Add navigation item: "Kartu Anggota"
+- [x] List cards for current SBA members
+- [x] Issue card action (per member)
+- [x] View card details
+- [x] Revoke card action (with confirmation)
+- [x] Reissue card action
+- [x] Print action (triggers PDF generation)
+- [x] Card history visible (show revoked + active)
+- [x] Verification token NOT displayed by default (security credential)
+- [x] Register in `SbaPanelProvider` → `->pages([...])`
+- [x] Add navigation item: "Kartu Anggota"
+
+(** executed @2026-09-10: Task 7.1 complete — `app/Filament/Sba/Pages/MemberCardPage.php`
+ditulis oleh kerja paralel milestone `692652a` dan diverifikasi di closure ini.
+List org-scoped via `getFilteredQuery()` (where organization_id auth); kolom:
+member.name (searchable), card_number (mono+copyable), status (badge,
+aktif→success/dicabut→danger), issued_at, revoked_at, revocation_reason;
+filter member_id + card_status via form select. Aksi tabel: print (→ route
+`card.print` `/panel-sba/kartu-anggota/cetak/{record}` di
+`SbaPanelProvider->authenticatedRoutes()`, hanya status aktif), revoke
+(confirmation + reason form modal), reissue (confirmation, hanya dicabut),
+issue (confirmation, hanya dicabut); header action `issueNew` (select member
+aktif org sendiri; catch DomainException/AuthorizationException →
+Notification). Nav: groupe 'Data Anggota', label 'Kartu Anggota', slug
+'member-cards', sort 60. Terdaftar eksplisit di `->pages([...])` SbaPanelProvider
+baris 67 (panel-layer scoping). CATATAN checklist: item "triggers PDF generation"
+dinilai terpenuhi minimal — print action memuat view cetak (HTML `public.cards.print`);
+PDF snappy penuh tetap Task 9.1. Token kredensial: tidak pernah tampil di tabel
+(ditest: `test_verification_token_not_displayed_by_default`). **)
 
 ### Task 7.2: Card UI Tests
 
-- [ ] Test: SBA admin can see own cards
-- [ ] Test: SBA admin cannot see other SBA cards
-- [ ] Test: issue action works
-- [ ] Test: revoke action works
-- [ ] Test: reissue action works
-- [ ] Test: verification token not in default view
+- [x] Test: SBA admin can see own cards
+- [x] Test: SBA admin cannot see other SBA cards
+- [x] Test: issue action works
+- [x] Test: revoke action works
+- [x] Test: reissue action works
+- [x] Test: verification token not in default view
+
+(** executed @2026-09-10: Task 7.2 complete — `tests/Feature/MemberCardPageTest.php`
+(komiten di closure ini). 6 test: see-own / dont-see-other (HTTP `/panel-sba/member-cards`),
+issue via table header action `issueNew` (Livewire `callTableAction` — header action
+di table page, bukan page action), revoke + reissue via `callTableAction` +
+`callMountedTableAction` (confirmation modal), token tidak di view. Mengikuti
+konvensi AGENTS.md: panel di-set `Filament::setCurrentPanel('sba')`, page memakai
+`auth()->user()` (anti-gotcha Filament::auth null di Livewire). **)
 
 ---
 
@@ -867,50 +909,82 @@ Route::get('/verifikasi/kartu/{token}', [CardVerificationController::class, 'ver
     ->name('cards.verify');
 ```
 
-- [ ] Add route before catch-all
-- [ ] Test: route is accessible
+- [x] Add route before catch-all
+- [x] Test: route is accessible
+
+(** executed @2026-09-10: Task 8.1 complete — `routes/web.php:83`
+`Route::get('/verifikasi/kartu/{token}', ...)` DIPASANG di atas catch-all
+`{page:slug}` (baris ~86), ditulis oleh milestone `692652a`; test
+`test_route_is_above_catch_all` hijau. **)
 
 ### Task 8.2: Controller
 
 Create `app/Http/Controllers/CardVerificationController.php`:
 
-- [ ] Lookup token via `MemberCardVerificationService`
-- [ ] Return minimal public-safe data (nama, SBA, status, full card number)
-- [ ] Invalid token: generic error message
-- [ ] Revoked card: "Kartu tidak aktif"
-- [ ] No NIK, no address, no salary, no complaint, no dues
-- [ ] No member enumeration
+- [x] Lookup token via `MemberCardVerificationService`
+- [x] Return minimal public-safe data (nama, SBA, status, full card number)
+- [x] Invalid token: generic error message
+- [x] Revoked card: "Kartu tidak aktif"
+- [x] No NIK, no address, no salary, no complaint, no dues
+- [x] No member enumeration
+
+(** executed @2026-09-10: Task 8.2 complete — controller milik milestone `692652a`.
+Delegasi lookup ke `MemberCardVerificationService`; view branch untuk
+null/inactive/revoked/active. Item no-complaint/no-dues ditest di closure ini
+(`test_no_complaint_in_response` + `test_no_dues_in_response`, item 8.5). **)
 
 ### Task 8.3: Verification Service
 
 Create `app/Support/MemberCardVerificationService.php`:
 
-- [ ] `lookup(string $token): ?array` — returns public-safe DTO
-- [ ] Validates card status + member status
-- [ ] Returns only: nama, organization name, card status, full card number
+- [x] `lookup(string $token): ?array` — returns public-safe DTO
+- [x] Validates card status + member status
+- [x] Returns only: nama, organization name, card status, full card number
+
+(** executed @2026-09-10: Task 8.3 complete. Service milik `692652a`; closure ini
+(`(** executed **)` berikut) MEMPERBAIKI dua menyimpang: (a) hapus `valid_until`
+(issued_at+1tahun) — inventasi, bukan spec §11.5; return sekarang persis
+nama/organisasi/status/card_number/issued_at. (b) validasi MEMBER STATUS: status
+precedence `revoked` → `member.status !== aktif` → `inactive` → `active`
+(match(true) + konstanta `MemberCard::STATUS_REVOKED`/`Member::STATUS_ACTIVE`),
+menutup gap spec §11.5 "Inactive member → card verification tidak aktif" yang
+sebelumnya hanya cek status kartu. View branch `inactive` baru di verify.blade
+(teks "Kartu Tidak Aktif / status anggota tidak aktif", tanpa valid_until).
+Test: `CardVerificationTest::test_inactive_member_card_shows_inactive`. **)
 
 ### Task 8.4: View
 
 Create `resources/views/public/cards/verify.blade.php`:
 
-- [ ] Extends `layouts.public`
-- [ ] Shows verification result (valid/invalid/revoked)
-- [ ] Mobile-friendly
-- [ ] Professional, simple design
+- [x] Extends `layouts.public`
+- [x] Shows verification result (valid/invalid/revoked)
+- [x] Mobile-friendly
+- [x] Professional, simple design
+
+(** executed @2026-09-10: Task 8.4 complete — view milik `692652a`; closure ini
+menambah branch `inactive` (status member non-aktif) dan menghapus markup
+`valid_until` (card visual footer + baris "Berlaku Hingga") konsisten dengan
+service 8.3. **)
 
 ### Task 8.5: Verification Tests
 
 Create `tests/Feature/CardVerificationTest.php`:
 
-- [ ] Test: valid token shows minimal data
-- [ ] Test: invalid token shows generic error
-- [ ] Test: revoked card shows "Kartu tidak aktif"
-- [ ] Test: no NIK in response
-- [ ] Test: no address in response
-- [ ] Test: no salary in response
-- [ ] Test: no complaint in response
-- [ ] Test: no dues in response
-- [ ] Test: no member enumeration possible
+- [x] Test: valid token shows minimal data
+- [x] Test: invalid token shows generic error
+- [x] Test: revoked card shows "Kartu tidak aktif"
+- [x] Test: no NIK in response
+- [x] Test: no address in response
+- [x] Test: no salary in response
+- [x] Test: no complaint in response
+- [x] Test: no dues in response
+- [x] Test: no member enumeration possible
+
+(** executed @2026-09-10: Task 8.5 complete — file milik `692652a` (8 test);
+closure ini menambah `test_no_complaint_in_response`, `test_no_dues_in_response`,
+`test_inactive_member_card_shows_inactive` → 11 test. Catatan: `test_route_is_above_catch_all`
+memakai token acak (path valid, bukan pencarian DB) sehingga selalu return view;
+assert NIK memakai konvensi `assertDontSee($member->nik)`.**)
 
 ---
 
