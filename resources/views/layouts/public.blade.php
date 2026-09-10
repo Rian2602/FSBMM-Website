@@ -29,6 +29,22 @@
                 <a href="{{ route('courses.index') }}" aria-current="{{ request()->routeIs('courses.*') ? 'page' : 'false' }}" class="nav-link py-1 transition-colors hover:text-vivid-rose {{ request()->routeIs('courses.*') ? 'text-vivid-rose' : '' }}">E-Learning</a>
             </nav>
 
+            @auth
+                <a
+                    href="{{ auth()->user()->role === 'sba_admin' ? route('filament.sba.pages.dashboard') : route('filament.admin.pages.dashboard') }}"
+                    class="btn-vivid hidden !px-4 !py-2 text-xs md:inline-flex"
+                >
+                    Dashboard
+                </a>
+            @endauth
+
+            @guest
+                <div class="hidden items-center gap-2 md:flex">
+                    <a href="{{ route('filament.sba.auth.login') }}" class="btn-vivid !px-4 !py-2 text-xs">Masuk Pengurus</a>
+                    <a href="{{ route('filament.admin.auth.login') }}" class="btn-vivid !px-4 !py-2 text-xs">Masuk Admin</a>
+                </div>
+            @endguest
+
             {{-- Dark mode toggle --}}
             <button
                 type="button"
@@ -67,6 +83,13 @@
             <a href="{{ route('organizations.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-lime" style="transition-delay: 40ms">SBA</a>
             <a href="{{ route('eresources.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-sky" style="transition-delay: 80ms">E-Resource</a>
             <a href="{{ route('courses.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-rose" style="transition-delay: 120ms">E-Learning</a>
+            @auth
+                <a href="{{ auth()->user()->role === 'sba_admin' ? route('filament.sba.pages.dashboard') : route('filament.admin.pages.dashboard') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-amber" style="transition-delay: 160ms">Dashboard</a>
+            @endauth
+            @guest
+                <a href="{{ route('filament.sba.auth.login') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-amber" style="transition-delay: 160ms">Masuk Pengurus</a>
+                <a href="{{ route('filament.admin.auth.login') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-sky" style="transition-delay: 200ms">Masuk Admin</a>
+            @endguest
         </nav>
     </header>
 
