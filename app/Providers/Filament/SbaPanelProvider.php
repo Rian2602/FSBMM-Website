@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Exports\AttendanceExport;
 use App\Exports\DuesExport;
 
 use App\Filament\Sba\Pages\CourseDetailPage;
@@ -78,6 +79,13 @@ class SbaPanelProvider extends PanelProvider
                             request()->string('format', 'csv')->toString(),
                         );
                     })->name('dues-report.export'),
+                    Route::get('/attendance-report/export', function (): BinaryFileResponse {
+                        return AttendanceExport::streamFor(
+                            auth()->user()->organization_id,
+                            request()->only(['event_id', 'event_date_start', 'event_date_end']),
+                            request()->string('format', 'csv')->toString(),
+                        );
+                    })->name('attendance-report.export'),
                 ];
             })
             ->widgets([
