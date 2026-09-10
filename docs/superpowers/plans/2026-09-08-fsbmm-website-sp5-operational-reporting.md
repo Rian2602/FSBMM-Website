@@ -435,10 +435,45 @@ Route `/panel-sba/complaint-report/export` di
 
 ### Task 4.5: Export Storage
 
-- [ ] Private storage: use existing default `local` disk (root `storage_path('app/private')`) — no new disk config needed
-- [ ] Temporary file with TTL (1 hour)
-- [ ] Authorized download (signed URL or stream)
-- [ ] Auto-cleanup
+- [x] Private storage: use existing default `local` disk (root `storage_path('app/private')`) — no new disk config needed
+- [x] Temporary file with TTL (1 hour)
+- [x] Authorized download (signed URL or stream)
+- [x] Auto-cleanup
+
+(** executed @2026-09-10: Task 4.5 complete — commits 24e22ec (test) + 7613ab4
+(feat) + docs (commit yang memuat anotasi ini): flow export 4.1–4.4 beralih
+dari direct-stream ke spec §8.4 (private-disk storage). `ReportExport::streamFor()`
+diganti `generate()` yang menulis `storage/app/private/exports/{prefix}-{org}-{Y-m-d}.{ext}`
+ke `Storage::disk('local')` (root `app/private` — tanpa perubahan konfigurasi;
+file tak pernah jadi public asset, nama tanpa NIK) lalu mengembalikan
+`URL::temporarySignedRoute('exports.download', +1 jam, ['file', 'org'])`.
+Route panel `/panel-sba/*-report/export` kini `redirect()->to(...)`. Controller
+baru `ExportDownloadController` melayani route publik `/exports/download`
+(+ `middleware('signed')`) yang dideclare DI ATAS catch-all `/{page:slug}`
+di `routes/web.php`; guard: realpath traversal → exists → TTL
+(`lastModified` < 1 jam → 404) → `response()->download(...)->deleteFileAfterSend(true)`.
+
+PII-hardening (deviation HARD dari Task 4.1–4.4 & pola e-resource): signed URL
+murni cukup untuk PDF institusional tapi TIDAK untuk file berisi NIK/gaji/alamat —
+if signed URL bocor, siapa pun bisa unduh PII tanpa login. Maka guard tambahan di
+controller: `abort_unless(Auth::check(), 403)` + org match dengan param tersign
+`org` (`abort_unless((int) auth()->user()->organization_id === (int) org, 403)`)
+→ anonim dan admin SBA org-lain mendapat 403 (bukan 302; route sengaja TANPA
+auth-middleware agar anonymous ditolak 403, bukan redirect login). Param `org`
+ikut ditandatangani, jadi tidak bisa dipalsukan. Tenant isolation dengan sendirinya
+lebih ketat: ekspor hanya bisa diunduh oleh org pemilik.
+
+Auto-cleanup = lazy sweep di tiap `generate()` (file `exports/*` dengan
+`lastModified` < 1 jam dihapus) + `deleteFileAfterSend` saat unduh — tanpa cron
+baru. Queue job untuk dataset besar DI-DEFER (spec §8.4 menyebutnya untuk dataset
+besar; data per-SBA kecil dan `cursor()` sudah lazy — barulah jika ada export
+federation-wide). Ekspektasi test: `ExportTest` 20 → 27 (17 pola di-rewrite jadi
+2-hop via `followExport()`; +5 storage/ttl/sweep; +2 PII-guard
+`signed export url rejects anonymous/different organization session`),
+`test_sba_a_cannot_export_sba_b_data` di-update ikuti redirect (assert konten
+tetap); `test_export_stored_in_private_disk_not_public` memakai assertion
+`Storage` bersih (tanpa probe traversal). Karena flow 2-hop, kontrak unduhan
+final (whitelist/konten/filter) tidak berubah. **)
 
 ### Task 4.6: Export Tests
 
