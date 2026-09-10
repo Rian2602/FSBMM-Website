@@ -11,11 +11,21 @@ use DomainException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
+use InvalidArgumentException;
+use RuntimeException;
 use Tests\TestCase;
 
 class MemberCardTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function tearDown(): void
+    {
+        Str::createRandomStringsUsing(null);
+
+        parent::tearDown();
+    }
 
     public function test_generate_card_number_returns_correct_format(): void
     {
@@ -120,6 +130,48 @@ class MemberCardTest extends TestCase
         $this->assertSame(MemberCard::STATUS_REVOKED, $card->status);
         $this->assertTrue($card->revoked_at !== null);
         $this->assertSame('Kartu rusak', $card->revocation_reason);
+    }
+
+    public function test_card_number_collision_exhaustion_throws_runtime_exception(): void
+    {
+        [$member, $creator] = $this->fixture();
+
+        $conflictingSuffix = 'AQWERTY8';
+        MemberCard::create([
+            'organization_id' => $member->organization_id,
+            'member_id' => $member->id,
+            'card_number' => 'FSBMM-'.now()->format('Y').'-'.$conflictingSuffix,
+            'verification_token' => str_repeat('e', 64),
+            'status' => MemberCard::STATUS_ACTIVE,
+            'issued_at' => now(),
+            'created_by' => $creator->id,
+        ]);
+
+        Str::createRandomStringsUsing(fn (int $length): string => $conflictingSuffix);
+
+        $this->expectException(RuntimeException::class);
+
+        (new MemberCardService)->issue($member, $creator);
+    }
+
+    public function test_validate_token_returns_null_for_inactive_member(): void
+    {
+        [$member, $creator] = $this->fixture();
+        $card = (new MemberCardService)->issue($member, $creator);
+
+        $member->update(['status' => Member::STATUS_INACTIVE]);
+
+        $this->assertNull((new MemberCardService)->validateToken($card->verification_token));
+    }
+
+    public function test_revoke_requires_non_empty_reason(): void
+    {
+        [$member, $creator] = $this->fixture();
+        $card = (new MemberCardService)->issue($member, $creator);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        (new MemberCardService)->revoke($card, '', $creator);
     }
 
     public function test_reissue_card(): void
