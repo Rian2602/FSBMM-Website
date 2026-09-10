@@ -403,10 +403,35 @@ di-assert via `ExportTest` (redirect `/panel-sba/login`). **)
 
 Create `app/Exports/ComplaintExport.php`:
 
-- [ ] Column whitelist (ID, judul, status, tanggal pengajuan, tanggal penyelesaian)
-- [ ] Description only with explicit permission
-- [ ] Tenant-scoped
-- [ ] CSV + XLSX
+- [x] Column whitelist (ID, judul, status, tanggal pengajuan, tanggal penyelesaian)
+- [x] Description only with explicit permission
+- [x] Tenant-scoped
+- [x] CSV + XLSX
+
+(** executed @2026-09-10: Task 4.4 complete — commits 3cae1f4 (refactor) +
+89dc627 (test) + d9720da (feat) + docs (commit yang memuat anotasi ini):
+`ComplaintExport` stream CSV/XLSX + 6 tests baru di `ExportTest` (20 total
+lintas Task 4.1–4.4: 4 member + 5 dues + 5 attendance + 6 complaint).
+Base `ReportExport` (commit cab5684, Task 4.3) kini me-thread filter opsional:
+`columns(array $filters = [])` / `row($model, array $filters = [])` →
+`writeCsv`/`writeXlsx` meneruskan `$filters`; `MemberExport`/`DuesExport`/
+`AttendanceExport` hanya melebarkan signature (param diabaikan, output
+byte-identical — 14 tes existing hijau sebelum feat). Whitelist complaint
+{ID, judul, status (label Baru/Diproses/Selesai — sama dgn badge
+`ComplaintReportPage`), tanggal pengajuan, tanggal penyelesaian (`Y-m-d`,
+`resolved_at` nullable → cell kosong)}; `description` TIDAK auto-export —
+hanya saat query param eksplisit `include_description` (diverifikasi
+server-side; isi pengaduan tetap zona SBA, tidak pernah publik/federation,
+spec §10); header CSV riil `ID,Judul,Status,"Tanggal Pengajuan",
+"Tanggal Penyelesaian"` (+`,Deskripsi` saat flag — keluarga quoting fputcsv
+sama dgn Task 4.1–4.3). Filename `pengaduan-{org}-{Y-m-d}`;
+`id` diekspor (kolom whitelist kanonik; bukan NIK, §8.4). Filter
+`status`/`submitted_start`/`submitted_end` identik `ComplaintReportPage`.
+Route `/panel-sba/complaint-report/export` di
+`SbaPanelProvider::authenticatedRoutes()`; tenancy murni dari
+`auth()->user()->organization_id`; query param `organization_id` tak dibaca
+(spoof diabaikan). Anonim + isolasi tenant di-assert via `ExportTest`
+(redirect `/panel-sba/login`). **)
 
 ### Task 4.5: Export Storage
 
@@ -423,7 +448,7 @@ Create `tests/Feature/ExportTest.php`:
 - [x] Test: XLSX member export generates correct file
 - [x] Test: CSV/XLSX dues export
 - [x] Test: Attendance export
-- [ ] Test: Complaint export
+- [x] Test: Complaint export
 - [x] Test: Export contains correct columns (whitelist)
 - [x] Test: Export SBA A doesn't contain SBA B data
 - [x] Test: Anonymous cannot export
