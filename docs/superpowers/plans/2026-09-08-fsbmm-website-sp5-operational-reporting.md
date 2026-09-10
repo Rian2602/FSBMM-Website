@@ -858,6 +858,27 @@ berikutnya) dengan `test_generate_card_number_returns_correct_format` +
 `test_generate_verification_token_returns_unique_tokens`. Suite per file: 14 test.
 Gap-closure audit Task 6.1 (G1–G4) di anotasi 6.1; suite per file kini 18 test. **)
 
+(** AUDIT @2026-09-10: plan verifikasi + gap analysis Task 6.2 vs checklist kanonik
+& spec §11.4 — KONKLUSI NO-GAP, TANPA perubahan kode/test (audit-only, komit docs
+berikutnya). Mapping item→test (baris file terkini): generate format →
+`test_generate_card_number_returns_correct_format` (:30) + regex
+`/^FSBMM-\d{4}-[A-Z0-9]{8}$/` di `test_issue_card_for_active_member` (:51);
+token unique → `test_generate_verification_token_returns_unique_tokens` (:39,
+hex64 + 2 panggilan berbeda) + `test_verification_token_is_unique` (:88, DB
+constraint); issue fields → `test_issue_card_for_active_member` (:51, org/member/
+card_number/status/created_by/issued_at); issue revokes existing active →
+`test_only_one_active_card_per_member` (:106, first revoked 'Digantikan kartu
+baru'); revoke status/revoked_at/reason → `test_revoke_card` (:121); reissue →
+`test_reissue_card` (:177); validateToken valid → `test_validate_token_returns_card_for_valid_token`
+(:232); invalid → `test_validate_token_returns_null_for_invalid_token` (:243);
+cross-tenant issue denied → `test_sba_admin_cannot_issue_for_other_sba_member`
+(:219, AuthorizationException). Item §11.4 di luar checklist 6.2 yang sudah
+tercakup: histori kartu (:190), inactive member no-issue (:208),
+validateToken revoked (:250), getCardHistory (:263), collision-exhaustion (:135),
+validateToken inactive-service (:157), revoke empty-reason (:167, guard dari 6.1).
+Bukti: `php artisan test tests/Feature/MemberCardTest.php` → 18 passed / 37
+assertions; suite penuh 351 passed / 0 failed. **)
+
 ---
 
 ## PHASE 7 — Card Management UI
