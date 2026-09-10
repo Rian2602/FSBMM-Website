@@ -531,22 +531,85 @@ placeholder Phase-6 — jangan disentuh). **)
 
 **Before proceeding to P1, ALL of the following must pass:**
 
-- [ ] SBA member report works
-- [ ] SBA dues report works
-- [ ] SBA attendance report works
-- [ ] SBA complaint report works
-- [ ] Federation aggregate widget works
-- [ ] CSV export works for all entities
-- [ ] XLSX export works for all entities
-- [ ] Authorization tests pass
-- [ ] Tenant isolation tests pass
-- [ ] PII boundary tests pass
-- [ ] Export whitelist tests pass
-- [ ] `composer test` — all green
-- [ ] `vendor/bin/pint --test` — clean
-- [ ] `npm run build` — clean
+- [x] SBA member report works
+- [x] SBA dues report works
+- [x] SBA attendance report works
+- [x] SBA complaint report works
+- [x] Federation aggregate widget works
+- [x] CSV export works for all entities
+- [x] XLSX export works for all entities
+- [x] Authorization tests pass
+- [x] Tenant isolation tests pass
+- [x] PII boundary tests pass
+- [x] Export whitelist tests pass
+- [x] `composer test` — all green (*)
+- [x] `vendor/bin/pint --test` — clean
+- [x] `npm run build` — clean
+
+(*) 316 passed / 1 failed; satu-satunya failure = `Sp5SecurityTest::test_anonymous_can_access_card_verification` — expected-failure placeholder Phase-6 (`/verifikasi/kartu/{token}` belum dibangun), per AGENTS.md jangan diperbaiki dini. Lihat anotasi evaluasi di bawah.
 
 **If P0 not complete, DO NOT proceed to P1.**
+
+(** evaluated @2026-09-10 (commit yang memuat anotasi ini): P0 GATE PASS — reporting + secure export dievaluasi
+berbasis bukti. Baseline reporting Phase-2 yang masih WIP dikomit dulu:
+`48f9486` `feat(sp5): commit reporting phase-2 baseline — report pages,
+blades, provider registration, ReportingTest` (10 file: 4 report pages,
+3 blade, `SbaPanelProvider` registration + import reorg pint-canonical,
+`ReportingTest`, `AGENTS.md` status-SP5; setelah commit ini working tree
+bersih — hanya plan docs untracked). Verdict review (subagent
+requesting-code-review, range `13272a4..HEAD`, eksklusi `04c51b5`/`6c67021`
+uploads: **Yes — Ready to merge**: 0 Critical, 0 Important open; Minor dijurnal
+di bawah.
+
+Peta bukti (each item → File::method / command):
+- 4 laporan SBA → `ReportingTest` (16 test: member 5, dues 3, attendance 5,
+  complaint 3 — counts/aggregates/filters server-side/pagination/per-event
+  rekap/tenant-scoped)
+- Widget agregat federation → `FederationOperationsWidget` (tracked,
+  `$isLazy=false` server-rendered) + `FederationReportingTest` (8: agregat
+  seluruh SBA, super_admin-only, breakdown agregat-only, dashboard tidak bocor
+  NIK/alamat/birthdate/salary/isi pengaduan)
+- CSV/XLSX semua entitas → `ExportTest` (29 test: 8 format whitelist+row,
+  filter ×4, spoof-org ×4, xlsx ×4, anonymous ×3, signed-url/ttl/sweep/guard
+  storage ×7)
+- Authorization → `Sp5SecurityTest::test_sba_a_cannot_export_sba_b_data`
+  (member) + `..._dues_attendance_complaints` (3 endpoint, Task 4.6) +
+  anonymous exports ×4
+- Tenant isolation → spoof-param ×4 + ReportingTest tenant-scoped ×4
+- PII boundary → `test_editor_cannot_access_individual_member_pii` +
+  FederationReportingTest no-PII ×2; agregat widget hanya
+  `organization.member_count`/Σ duit/COUNT — tanpa query `members` di sisi
+  federasi
+- Export whitelist → exact-header assertion tiap entitas; absence
+  `created_at/organization_id/member_id/event_id`
+- composer → 316/1 (pengecualian (*)); pint --test dan npm build → clean
+  command saat gate
+- Storage 4.5 → 7 test storage: private-disk-only, signed-only, expired-url,
+  404-after-ttl, lazy-sweep, 403 anonim, 403 beda-org; guard realpath di
+  controller; route di atas catch-all; `deleteFileAfterSend(true)`
+
+Temuan review (Minor, dijurnal bukan difix — bukan must-fix, verdict Yes):
+- `ExportTest.php:448` assertion `'private'` pada `Storage::disk('local')->path('')`
+  bergantung konvensi Laravel path `app/private` — redundan vs assertions
+  445–447; hapus bila mantainable merasa mengganggu
+- `ReportExport.php:26` disk `local` vs kata spec `private` — INTENTIONAL
+  (`local` = `app/private`); review menyarankan komentar `// ponytail:` bila
+  berpotensi disalahpahami
+- Kolom ekstra non-PII dalam whitelist attendance `note` / dues
+  `recorded_by.name` / complaint `id` — tidak ada di contoh spec, tapi di-
+  tetapkan Task 4.1–4.4 beserta exact-header test-nya; risk rendah (data
+  sudah terlihat di panel SBA pemilik)
+- `sweepExpired` lazy per-generate = ceiling untuk volume saat ini (komentar
+  sudah ada); jadwalkan command bila volume membesar
+- Gap test kecil: FederationReportingTest belum `assertDontSee` nama member
+  saat per-SBA breakdown (jalur aman — breakdown hanya nama SBA + kolom
+  numerik)
+
+Deferral DoD (spec §19 Quality, butuh Phase 5/P1):
+- `migrate:fresh --seed` incl. `MemberCardSeeder` → belum ada seeder kartu
+- Manual smoke critical flow (`/panel-sba/.../kartu`, `/verifikasi/kartu/{token}`)
+  → di Final Verification akhir SP5
+- Verdict: **P0 selesai → lanjut PHASE 5 (Kartu Anggota) sah.** )
 
 ---
 
