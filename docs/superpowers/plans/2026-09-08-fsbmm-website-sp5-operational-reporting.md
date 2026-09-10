@@ -653,10 +653,26 @@ perilaku kartu; Task 5.3 seeder menyusul. **)**
 
 Create `app/Models/MemberCard.php`:
 
-- [ ] Fillable: organization_id, member_id, card_number, verification_token, status, issued_at, revoked_at, revocation_reason, created_by
-- [ ] Casts: issued_at datetime, revoked_at datetime
-- [ ] Relations: member(), organization(), creator()
-- [ ] Status constants: STATUS_ACTIVE = 'aktif', STATUS_REVOKED = 'dicabut'
+- [x] Fillable: organization_id, member_id, card_number, verification_token, status, issued_at, revoked_at, revocation_reason, created_by
+- [x] Casts: issued_at datetime, revoked_at datetime
+- [x] Relations: member(), organization(), creator()
+- [x] Status constants: STATUS_ACTIVE = 'aktif', STATUS_REVOKED = 'dicabut'
+
+(** executed @2026-09-10: Task 5.2 complete — commits f0aa153 (feat, model)
++ docs (commit yang memuat anotasi ini). `app/Models/MemberCard.php` dibuat
+dengan gaya konvensi repo: `casts()` method-style (bukan properti `$casts`,
+pola Laravel 11/12), relasi `belongsTo` polos, `use HasFactory;`, fillable
+array 9 field = kolom migrasi 5.1 (1:1). `creator()` memakai
+`belongsTo(User::class, 'created_by')` — pola `Due::recordedBy()`/
+`Complaint::handled_by`, karena Nama relasi `creator` berbeda dari kolom.
+Konstanta `STATUS_ACTIVE`/`STATUS_REVOKED` sesuai rencana (dipakai seeder 5.3
+& `MemberCardService` 6.1). Cast `datetime` untuk `issued_at`/`revoked_at`
+(kolom `dateTime`, bukan `date`). Inverse `hasMany` (`User.cards()`,
+`Member.cards()`, dll.) TIDAK dibuat — belum diminta checklist (YAGNI; service
+bisa query via join/Member bila perlu Task 6.1+). Verifikasi: `composer test`
+→ **316 passed / 1 failed** (placeholder Phase-6 saja; RefreshDatabase memakai
+migrasi 5.1 + model ini bersamaan); `pint --test` bersih (auto-fix EOF
+newline). Task 5.3 seeder, Task 5.4 kartu tests menyusul. **)
 
 ### Task 5.3: Seeder
 
