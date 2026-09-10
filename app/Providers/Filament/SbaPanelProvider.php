@@ -28,7 +28,7 @@ use Illuminate\Session\Middleware\StartSession;
 use App\Exports\MemberExport;
 use Illuminate\Support\Facades\Route;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Illuminate\Http\RedirectResponse;
 
 class SbaPanelProvider extends PanelProvider
 {
@@ -66,33 +66,33 @@ class SbaPanelProvider extends PanelProvider
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
                     Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
-                    Route::get('/member-report/export', function (): BinaryFileResponse {
-                        return MemberExport::streamFor(
+                    Route::get('/member-report/export', function (): RedirectResponse {
+                        return redirect()->to(MemberExport::generate(
                             auth()->user()->organization_id,
                             request()->only(['status', 'department', 'position', 'education', 'gender', 'join_date_start', 'join_date_end']),
                             request()->string('format', 'csv')->toString(),
-                        );
+                        ));
                     })->name('member-report.export'),
-                    Route::get('/dues-report/export', function (): BinaryFileResponse {
-                        return DuesExport::streamFor(
+                    Route::get('/dues-report/export', function (): RedirectResponse {
+                        return redirect()->to(DuesExport::generate(
                             auth()->user()->organization_id,
                             request()->only(['period', 'period_start', 'period_end']),
                             request()->string('format', 'csv')->toString(),
-                        );
+                        ));
                     })->name('dues-report.export'),
-                    Route::get('/attendance-report/export', function (): BinaryFileResponse {
-                        return AttendanceExport::streamFor(
+                    Route::get('/attendance-report/export', function (): RedirectResponse {
+                        return redirect()->to(AttendanceExport::generate(
                             auth()->user()->organization_id,
                             request()->only(['event_id', 'event_date_start', 'event_date_end']),
                             request()->string('format', 'csv')->toString(),
-                        );
+                        ));
                     })->name('attendance-report.export'),
-                    Route::get('/complaint-report/export', function (): BinaryFileResponse {
-                        return ComplaintExport::streamFor(
+                    Route::get('/complaint-report/export', function (): RedirectResponse {
+                        return redirect()->to(ComplaintExport::generate(
                             auth()->user()->organization_id,
                             request()->only(['status', 'submitted_start', 'submitted_end', 'include_description']),
                             request()->string('format', 'csv')->toString(),
-                        );
+                        ));
                     })->name('complaint-report.export'),
                 ];
             })

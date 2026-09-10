@@ -3,10 +3,10 @@
 namespace App\Exports;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Writer\XLSX\Writer;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 abstract class ReportExport
 {
@@ -19,17 +19,29 @@ abstract class ReportExport
 
     abstract protected static function row($model, array $filters = []): array;
 
-    public static function streamFor(int $organizationId, array $filters, string $format = 'csv'): BinaryFileResponse
+    public static function generate(int $organizationId, array $filters, string $format = 'csv'): string
     {
         $format = $format === 'xlsx' ? 'xlsx' : 'csv';
-        $path = sys_get_temp_dir().'/fsbmm_'.Str::random(8).'.'.$format;
+        $name = sprintf('%s-%s-%s.%s', static::filenamePrefix(), $organizationId, now()->format('Y-m-d'), $format);
+        $disk = Storage::disk('local');
+        $disk->makeDirectory('exports');
+        static::sweepExpired($disk); // ponytail: lazy sweep per generate; hourly-command only if files accumulate
         $query = static::scopedQuery($organizationId, $filters);
 
-        $format === 'xlsx' ? static::writeXlsx($query, $path, $filters) : static::writeCsv($query, $path, $filters);
+        $format === 'xlsx'
+            ? static::writeXlsx($query, $disk->path('exports/'.$name), $filters)
+            : static::writeCsv($query, $disk->path('exports/'.$name), $filters);
 
-        return response()
-            ->download($path, sprintf('%s-%s-%s.%s', static::filenamePrefix(), $organizationId, now()->format('Y-m-d'), $format))
-            ->deleteFileAfterSend(true);
+        return URL::temporarySignedRoute('exports.download', now()->addHour(), ['file' => 'exports/'.$name, 'org' => $organizationId]);
+    }
+
+    private static function sweepExpired($disk): void
+    {
+        foreach ($disk->files('exports') as $file) {
+            if ($disk->lastModified($file) < now()->subHour()->timestamp) {
+                $disk->delete($file);
+            }
+        }
     }
 
     private static function writeCsv(Builder $query, string $path, array $filters): void

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Public\ArticleController;
 use App\Http\Controllers\Public\CourseController;
 use App\Http\Controllers\Public\EresourceController;
+use App\Http\Controllers\Public\ExportDownloadController;
 use App\Http\Controllers\Public\OrganizationController;
 use App\Http\Controllers\Public\PageController;
 use App\Models\Article;
@@ -69,6 +70,10 @@ Route::get('/sba/{organization:slug}', [OrganizationController::class, 'show'])-
 Route::get('/e-resource', [EresourceController::class, 'index'])->name('eresources.index');
 Route::get('/e-resource/{eresource:slug}/download', [EresourceController::class, 'download'])
     ->name('eresources.download')
+    ->middleware('signed');
+
+Route::get('/exports/download', [ExportDownloadController::class, 'download'])
+    ->name('exports.download')
     ->middleware('signed');
 
 Route::get('/e-learning', [CourseController::class, 'index'])->name('courses.index');
