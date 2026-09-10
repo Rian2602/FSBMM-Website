@@ -619,10 +619,35 @@ Deferral DoD (spec §19 Quality, butuh Phase 5/P1):
 
 Create `database/migrations/2026_09_08_000001_create_member_cards_table.php`:
 
-- [ ] Table: `member_cards`
-- [ ] Columns: `id`, `organization_id` (FK, index), `member_id` (FK, index), `card_number` (unique), `verification_token` (unique), `status` (enum: aktif/dicabut, index), `issued_at`, `revoked_at` (nullable), `revocation_reason` (nullable), `created_by` (FK), timestamps
-- [ ] **`organization_id` is mandatory** — required for tenant scoping, federation aggregate, and consistency with SP3 tables
-- [ ] Indexes: unique(card_number), unique(verification_token), index(member_id), index(organization_id), index(status)
+- [x] Table: `member_cards`
+- [x] Columns: `id`, `organization_id` (FK, index), `member_id` (FK, index), `card_number` (unique), `verification_token` (unique), `status` (enum: aktif/dicabut, index), `issued_at`, `revoked_at` (nullable), `revocation_reason` (nullable), `created_by` (FK), timestamps
+- [x] **`organization_id` is mandatory** — required for tenant scoping, federation aggregate, and consistency with SP3 tables
+- [x] Indexes: unique(card_number), unique(verification_token), index(member_id), index(organization_id), index(status)
+
+(** executed @2026-09-10: Task 5.1 complete — commits 6ee7d31 (feat,
+migration) + docs (commit yang memuat anotasi ini). Tabel `member_cards`
+dibuat di `database/migrations/2026_09_08_000001_create_member_cards_table.php`
+(nama literal plan — urutan aman: tanggal 09_08 > batch 09_04). Konvensi SP3
+yang dipakai: `foreignId()->constrained()` untuk FK; `organization_id`
+`restrictOnDelete`, `member_id` `cascadeOnDelete` (pola dues), `created_by`
+nullable `constrained('users')->nullOnDelete` (pola `recorded_by`/`handled_by`
+— histori kartu tak hilang bila pelaku terhapus). Departure terhitung dari
+kata checklist:
+- `status` pakai `string('status')->default('aktif')` + komentar
+  `// aktif | dicabut` — **bukan enum native** (konvensi repo `members.status`/
+  `complaints.status`; SQLite-safe; validasi nilai dibebankan ke
+  `MemberCardService` Task 6.1)
+- `issued_at` nullable — diisi saat `issue()` (Task 6.1); `revoked_at`/
+  `revocation_reason` nullable
+- Index eksplisit `organization_id`/`member_id`/`status` — wajib di SQLite
+  (FK tidak auto-index) dan memenuhi checklist literal
+- `card_number` & `verification_token` unique 1-level (global), format
+  `FSBMM-YYYY-XXXXXXXX` & token hex 32-byte dibebankan ke service (Task 6.1)
+Verifikasi: `php artisan migrate:fresh --seed` sukses (smoke up(): + seeders
+existing tetap jalan); `composer test` → **316 passed / 1 failed** (placeholder
+Phase-6 satu-satunya; RefreshDatabase membuktikan up()/down()); `pint --test`
+bersih (pint fix auto: class braces + EOF newline). Task 5.4 akan menguji
+perilaku kartu; Task 5.3 seeder menyusul. **)**
 
 ### Task 5.2: Model
 
