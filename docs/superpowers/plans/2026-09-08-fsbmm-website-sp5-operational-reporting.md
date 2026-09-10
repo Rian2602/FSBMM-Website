@@ -822,6 +822,22 @@ ditulis secara pull-forward saat Task 5.4 (`6214778`, disetujui user) — `issue
 guards eligible (member aktif, cross-tenant). `validateToken` + `getCardHistory`
 ditambahkan oleh kerja paralel milestone `692652a`. Semua item checklist terpenuhi. **)
 
+(** AUDIT-GAP CLOSURE @2026-09-10: plan verifikasi + gap analysis Task 6.1 vs
+checklist kanonik & spec §9.3/9.4/9.6/9.7/9.8 — 4 gap ditutup (komit feat+test
+berikutnya, suite 348→351). G1 (test): branch lelah `generateUniqueCardNumber`
+(max-3 → `RuntimeException`) tak teruji — `test_card_number_collision_exhaustion_throws_runtime_exception`
+memakai `Str::createRandomStringsUsing(fn()=>$suffix)` (bukan facade mock; kelas
+`Str` nyata, `shouldReceive` tak ada) + kartu bentrok pre-seeded; reset factory di
+`tearDown` (`Str::createRandomStringsUsing(null)` — Laravel 12 tak punya
+`flushRandomStrings`). G2 (test): spec §9.7 runtime-inactive hanya dicakup via
+route verification, belum di level service — `test_validate_token_returns_null_for_inactive_member`.
+G3 (kode 1 baris): literal `'aktif'` di `validateToken` → `Member::STATUS_ACTIVE`.
+G4 (kode): alasan revoke `required` hanya di UI Filament melanggar §9.8
+"business logic tidak boleh tersebar di Livewire/Blade" —
+`revoke()` kini throw `InvalidArgumentException` bila `trim($reason)===''`
+(SPL zero-dep; `reissue` meneruskan `Penggantian kartu` tetap valid).
+`test_revoke_requires_non_empty_reason`. **)
+
 ### Task 6.2: Service Tests
 
 - [x] Test: generateCardNumber returns correct format
@@ -839,7 +855,8 @@ ditambahkan oleh kerja paralel milestone `692652a`. Semua item checklist terpenu
 cross-tenant/history/inactive-guard); `validateToken` 3 test ditambah milestone
 `692652a`; item generate format + token-unique ditutup di closure ini (komit test
 berikutnya) dengan `test_generate_card_number_returns_correct_format` +
-`test_generate_verification_token_returns_unique_tokens`. Suite per file: 14 test. **)
+`test_generate_verification_token_returns_unique_tokens`. Suite per file: 14 test.
+Gap-closure audit Task 6.1 (G1–G4) di anotasi 6.1; suite per file kini 18 test. **)
 
 ---
 
