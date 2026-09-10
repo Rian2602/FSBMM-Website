@@ -967,6 +967,45 @@ di table page, bukan page action), revoke + reissue via `callTableAction` +
 konvensi AGENTS.md: panel di-set `Filament::setCurrentPanel('sba')`, page memakai
 `auth()->user()` (anti-gotcha Filament::auth null di Livewire). **)
 
+### PHASE 7 VALIDATION GATE (TASK 7.1–7.2)
+
+Status: **PASS** @2026-09-10 — evaluasi berbasis bukti atas artifact committed
+(card management UI; lingkup Phase 7, bukan verification route/PDF fase berikut).
+
+- [x] List kartu org-scoped — `getFilteredQuery()` where organization_id auth + `test_sba_admin_can_see_own_cards` + `test_sba_admin_cannot_see_other_sba_cards`
+- [x] Issue per member — row action `issue` + header `issueNew` (select member aktif) — `test_issue_action_works`
+- [x] Detail kartu — kolom member.name / card_number / status / issued_at / revoked_at / revocation_reason
+- [x] Revoke w/ confirmation + alasan — `requiresConfirmation()` + textarea `required` — `test_revoke_action_works`
+- [x] Reissue w/ confirmation (hanya dicabut) — `test_reissue_action_works`
+- [x] Print action (status aktif saja) → `card.print` route org-scoped — view HTML `public.cards.print` (PDF snappy deferral Task 9.1)
+- [x] History tampil (aktif + dicabut, tanpa filter status default)
+- [x] Token verifikasi TIDAK ditampilkan (kredensial) — `test_verification_token_not_displayed_by_default`
+- [x] Terdaftar eksplisit `SbaPanelProvider->pages([...])` — panel-layer scoping
+- [x] Nav item "Kartu Anggota" — group `Data Anggota`, sort 60
+- [x] Business logic terpusat di `MemberCardService`; page hanya notifikasi/findOrFail (catch DomainException/AuthorizationException → toast)
+
+(** evaluated @2026-09-10: PHASE 7 GATE PASS — evaluasi berbasis bukti; lingkup =
+artifact committed `app/Filament/Sba/Pages/MemberCardPage.php` +
+`resources/views/filament/sba/pages/member-card-page.blade.php` +
+`app/Providers/Filament/SbaPanelProvider.php` (registrasi page :67 + route
+`card.print` :110-117) + `tests/Feature/MemberCardPageTest.php` (commit
+`692652a` milestone + closure `732154d`). Bukti run saat gate:
+`php artisan test tests/Feature/MemberCardPageTest.php` → **6 passed / 32 assertions**;
+suite penuh **378 passed / 0 failed**; pint clean (4 file in-scope). Review
+independent subagent (general) terhadap artifact committed → **Verdict: READY**;
+0 Critical; 0 Important; 5 Minor — (1) route `card.print` tanpa guard status
+`STATUS_ACTIVE` lanjut; kartu dicabut org sendiri bisa dicetak via URL langsung
+(QR tetap verify-inactive — eksposur rendah, defer Task 9.2); (2) print URL di
+page hardcoded `/panel-sba/...` bukan named route `card.print` (violates konvensi
+AGENTS.md routing — defer Task 9.2); (3) revoke/reissue/issue row action tak
+catch exception (unreachable dgn scoped records; race concurrent → 500, defer);
+(4) Sp5SecurityTest:116-118 mem-assert 404 URL `/member-cards/{id}/print` yang
+tak pernah ada (pass-by-construction; org-scoping route nyata belum ditest —
+defer Task 9.3); (5) view print menampilkan NIK + emoji gender di kartu depan
+(drift spec §9.9 yang omit NIK; data anggota sendiri org-scoped, bukan leak —
+defer Task 9.1). Tidak ada temuan Critical/Important/PII-leak/cross-tenant.
+Deferral: audit mendalam print/PDF + named-route fix = Phase 9. **)
+
 ---
 
 ## PHASE 8 — Public Card Verification
