@@ -879,6 +879,40 @@ validateToken inactive-service (:157), revoke empty-reason (:167, guard dari 6.1
 Bukti: `php artisan test tests/Feature/MemberCardTest.php` → 18 passed / 37
 assertions; suite penuh 351 passed / 0 failed. **)
 
+### PHASE 6 VALIDATION GATE (TASK 6.1–6.2)
+
+Status: **PASS** @2026-09-10 — evaluasi berbasis bukti atas artifact committed
+(service + test card lifecycle; lingkup Phase 6, bukan verification/UI fase berikut).
+
+- [x] `issue` → kartu aktif, auto-revoke kartu lama, fields benar — `MemberCardService::issue()` + `test_issue_card_for_active_member` + `test_only_one_active_card_per_member`
+- [x] `revoke` → status/revoked_at/reason; guard cross-tenant + empty-reason — `test_revoke_card`, `test_sba_admin_cannot_issue_for_other_sba_member` (issue), `test_revoke_requires_non_empty_reason`
+- [x] `reissue` → revoke lama + issue baru — `test_reissue_card`
+- [x] `generateCardNumber` format `FSBMM-YYYY-XXXXXXXX` — regex test
+- [x] `generateVerificationToken` 64-hex opaque + unik — service + DB unique + 2 test
+- [x] `resolveCurrentCard` — dipakai `issue` (one-active), diuji lewat flow issue
+- [x] `validateToken` valid → card; invalid → null; revoked → card; member inactive → null (§9.7) — 4 test
+- [x] Collision card_number max-3 → `RuntimeException` — `test_card_number_collision_exhaustion_throws_runtime_exception`
+- [x] One active card per member (auto-revoke saat issue) — spec §9.6
+- [x] Cross-tenant issue denial — `AuthorizationException` (§9.8/§11.4)
+- [x] Inactive member tidak bisa terbitkan kartu baru — `DomainException` (§9.7)
+- [x] History retained (revoked tidak dihapus) — `test_card_history_retained` + `test_get_card_history_returns_all_cards`
+- [x] Business logic tersentral di service, zero di Livewire/Blade (§9.8)
+- [x] MemberCardTest 18 test / 37 assertions hijau; suite penuh 351 passed / 0 failed; pint clean; `migrate:fresh --seed` idempotent (2 kartu)
+
+(** evaluated @2026-09-10: PHASE 6 GATE PASS — evaluasi berbasis bukti; lingkup =
+artifact committed `app/Support/MemberCardService.php` + `tests/Feature/MemberCardTest.php`
+(commit `6214778` pull-forward → `692652a` milestone validateToken/getCardHistory →
+closure `17c6c93`/`732154d`/`9339594`/`0ffa7de`; anotasi audit di Task 6.1/6.2).
+Bukti run saat gate: `php artisan test tests/Feature/MemberCardTest.php` → 18 passed
+/ 37 assertions; suite penuh **351 passed / 0 failed**; pint clean; seed idempotent
+(re-seed tetap 2 kartu). Review independent subagent (general) terhadap diff committed
+`6214778..0ffa7de` → **Verdict: YES — ready**; 0 Critical; satu catatan Important
+ber-nuansa-traceability: guard empty-reason revoke (G4) adalah perubahan perilaku
+di luar checklist §11.4/§9.6 — SUDAH dianotasi di anotasi Task 6.1 (G4) dan `reissue`
+meneruskan alasan tetap (`Penggantian kartu`), sehingga tak berisiko. Tidak ada temuan
+PII/dead-code/test-smell. Deferral: validasi end-to-end verification route + UI =
+Phase 8/7 gate berikutnya. **)
+
 ---
 
 ## PHASE 7 — Card Management UI
