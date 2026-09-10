@@ -678,9 +678,30 @@ newline). Task 5.3 seeder, Task 5.4 kartu tests menyusul. **)
 
 Create `database/seeders/MemberCardSeeder.php`:
 
-- [ ] Create 1 active card for demo member
-- [ ] Create 1 revoked card for another demo member
-- [ ] Register in `DatabaseSeeder`
+- [x] Create 1 active card for demo member
+- [x] Create 1 revoked card for another demo member
+- [x] Register in `DatabaseSeeder`
+
+(** executed @2026-09-10: Task 5.3 complete — commits 65224a2 (feat) + docs
+(commit yang memuat anotasi ini). `MemberCardSeeder` menabur 2 kartu demo di
+org `spm-kecap-bango`: Yoga Pratama (member random ke-0) → `aktif`,
+Siti Rahma (ke-1) → `dicabut` + `revoked_at` (now-1wk) + reason
+'Penggantian kartu'; `created_by` = demo sba_admin org (nullable fallback).
+`DatabaseSeeder` menaruh `MemberCardSeeder::class` TEPAT setelah
+`MemberDataSeeder::class` (butuh org+member; urutan lain tak diubah).
+Dua guard idempotent: org/member demo tak ada → batal diam-diam (env produksi
+yang sudah berisi data tidak error, selaras guard `MemberDataSeeder::hasMembers()`);
+`firstOrCreate` keyed `card_number` (unique) aman untuk rerun. `card_number`
+(format `FSBMM-YYYY-` + 8 alnum) dan `verification_token`
+(`bin2hex(random_bytes(32))`) digenerate INLINE di seeder — **refactor point:
+diserap ke `MemberCardService` Task 6.1**, termasuk collision max-3 attempts
+(spec §9.3); seeder tetap pakai nilai acak tipe sama. `MemberCardFactory` TIDAK
+dibuat (YAGNI — Task 5.4 yang putuskan bila butuh). Risiko regresi suite
+memantau: member_cards butuh org/member yang pasti ada setelah
+MemberDataSeeder; suite `$this->seed()` (~20 test) tetap hijau. Verifikasi:
+`migrate:fresh --seed` smoke sukses, tinker count → 2 (1 aktif / 1 dicabut);
+`composer test` → **316 passed / 1 failed** (placeholder Phase-6 saja); pint
+bersih (auto-fix EOF newline). **)**
 
 ### Task 5.4: Card Tests
 
