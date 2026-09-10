@@ -17,6 +17,27 @@ class MemberCardTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_generate_card_number_returns_correct_format(): void
+    {
+        $service = new MemberCardService;
+
+        $number = $service->generateCardNumber();
+
+        $this->assertMatchesRegularExpression('/^FSBMM-\d{4}-[A-Z0-9]{8}$/', $number);
+    }
+
+    public function test_generate_verification_token_returns_unique_tokens(): void
+    {
+        $service = new MemberCardService;
+
+        $first = $service->generateVerificationToken();
+        $second = $service->generateVerificationToken();
+
+        $this->assertNotSame($first, $second);
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $first);
+        $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $second);
+    }
+
     public function test_issue_card_for_active_member(): void
     {
         [$member, $creator] = $this->fixture();

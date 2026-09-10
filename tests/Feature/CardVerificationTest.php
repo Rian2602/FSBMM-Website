@@ -72,6 +72,53 @@ class CardVerificationTest extends TestCase
             ->assertDontSee((string) $member->basic_salary);
     }
 
+    public function test_inactive_member_card_shows_inactive(): void
+    {
+        [$member, $creator, $card] = $this->fixture();
+
+        $member->update(['status' => Member::STATUS_INACTIVE]);
+
+        $this->get('/verifikasi/kartu/'.$card->verification_token)
+            ->assertOk()
+            ->assertSee('Kartu Tidak Aktif');
+    }
+
+    public function test_no_complaint_in_response(): void
+    {
+        [$member, $creator, $card] = $this->fixture();
+
+        $complaintTitle = 'Pengaduan internal FSBMM rahasia-'.uniqid();
+        $member->complaints()->create([
+            'organization_id' => $member->organization_id,
+            'reporter_name' => $member->name,
+            'title' => $complaintTitle,
+            'description' => 'Isi pengaduan rahasia',
+            'status' => 'open',
+            'submitted_at' => now(),
+        ]);
+
+        $this->get('/verifikasi/kartu/'.$card->verification_token)
+            ->assertOk()
+            ->assertDontSee($complaintTitle);
+    }
+
+    public function test_no_dues_in_response(): void
+    {
+        [$member, $creator, $card] = $this->fixture();
+
+        $period = '2026-09-rahasiadues-'.uniqid();
+        $member->dues()->create([
+            'organization_id' => $member->organization_id,
+            'amount' => 50000,
+            'period' => $period,
+            'paid_at' => now(),
+        ]);
+
+        $this->get('/verifikasi/kartu/'.$card->verification_token)
+            ->assertOk()
+            ->assertDontSee($period);
+    }
+
     public function test_no_member_enumeration_possible(): void
     {
         [$memberA, $creatorA, $cardA] = $this->fixture();
