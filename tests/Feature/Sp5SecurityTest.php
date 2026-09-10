@@ -131,14 +131,6 @@ class Sp5SecurityTest extends TestCase
         $this->get('/panel-sba/member-report/export')->assertRedirect('/panel-sba/login');
     }
 
-    public function test_anonymous_can_access_card_verification(): void
-    {
-        // Route: /verifikasi/kartu/{token}
-        // Minimal data assertion will be added when the view is built.
-        // For now, we expect 200 OK.
-        $this->get('/verifikasi/kartu/dummy-token-123')->assertOk();
-    }
-
     public function test_editor_cannot_access_individual_member_pii(): void
     {
         $editor = User::factory()->create(['role' => User::ROLE_EDITOR]);

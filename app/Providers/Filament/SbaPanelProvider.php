@@ -11,9 +11,11 @@ use App\Filament\Sba\Pages\ComplaintReportPage;
 use App\Filament\Sba\Pages\CourseDetailPage;
 use App\Filament\Sba\Pages\DuesReportPage;
 use App\Filament\Sba\Pages\LessonViewPage;
+use App\Filament\Sba\Pages\MemberCardPage;
 use App\Filament\Sba\Pages\MemberReportPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
 use App\Filament\Sba\Pages\QuizViewPage;
+use App\Models\MemberCard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -62,6 +64,7 @@ class SbaPanelProvider extends PanelProvider
                 ComplaintReportPage::class,
                 MemberReportPage::class,
                 DuesReportPage::class,
+                MemberCardPage::class,
             ])
             // (** executed: same panel-route pattern as the admin panel — see
             // AdminPanelProvider note (page-level getRoutes() does not exist
@@ -99,6 +102,14 @@ class SbaPanelProvider extends PanelProvider
                             request()->string('format', 'csv')->toString(),
                         ));
                     })->name('complaint-report.export'),
+                    Route::get('/kartu-anggota/cetak/{record}', function (int $record) {
+                        $card = MemberCard::where('id', $record)
+                            ->where('organization_id', auth()->user()->organization_id)
+                            ->with('member', 'organization')
+                            ->firstOrFail();
+
+                        return view('public.cards.print', ['card' => $card]);
+                    })->name('card.print'),
                 ];
             })
             ->widgets([

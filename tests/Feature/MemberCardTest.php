@@ -156,6 +156,51 @@ class MemberCardTest extends TestCase
         (new MemberCardService)->issue($memberB, $creator);
     }
 
+    public function test_validate_token_returns_card_for_valid_token(): void
+    {
+        [$member, $creator] = $this->fixture();
+        $card = (new MemberCardService)->issue($member, $creator);
+
+        $found = (new MemberCardService)->validateToken($card->verification_token);
+
+        $this->assertNotNull($found);
+        $this->assertSame($card->id, $found->id);
+    }
+
+    public function test_validate_token_returns_null_for_invalid_token(): void
+    {
+        $found = (new MemberCardService)->validateToken('nonexistent-token');
+
+        $this->assertNull($found);
+    }
+
+    public function test_validate_token_returns_revoked_card(): void
+    {
+        [$member, $creator] = $this->fixture();
+        $service = new MemberCardService;
+        $card = $service->issue($member, $creator);
+        $service->revoke($card, 'Rusak', $creator);
+
+        $found = $service->validateToken($card->verification_token);
+
+        $this->assertNotNull($found);
+        $this->assertSame(MemberCard::STATUS_REVOKED, $found->status);
+    }
+
+    public function test_get_card_history_returns_all_cards(): void
+    {
+        [$member, $creator] = $this->fixture();
+        $service = new MemberCardService;
+
+        $first = $service->issue($member, $creator);
+        $second = $service->issue($member, $creator);
+
+        $history = $service->getCardHistory($member);
+
+        $this->assertCount(2, $history);
+        $this->assertSame($second->id, $history->first()->id);
+    }
+
     private function fixture(): array
     {
         $org = Organization::factory()->create();

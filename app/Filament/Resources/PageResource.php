@@ -125,6 +125,20 @@ class PageResource extends Resource
                                 Forms\Components\Textarea::make('quote')->label('Isi kutipan')->rows(3)->required(),
                                 Forms\Components\TextInput::make('author')->label('Nama (opsional)'),
                             ]),
+                        Builder\Block::make('chart')
+                            ->label('Grafik')
+                            ->schema([
+                                Forms\Components\TextInput::make('title')->label('Judul grafik (opsional)')->maxLength(100),
+                                Forms\Components\Repeater::make('items')
+                                    ->label('Data grafik')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('label')->label('Label')->required(),
+                                        Forms\Components\TextInput::make('value')->label('Nilai (angka)')->required()->numeric(),
+                                        Forms\Components\TextInput::make('suffix')->label('Akhiran (opsional, misal: SBA)'),
+                                    ])
+                                    ->defaultItems(3)
+                                    ->columns(3),
+                            ]),
                     ])
                     ->columnSpanFull()
                     ->afterStateHydrated(function (Builder $component): void {

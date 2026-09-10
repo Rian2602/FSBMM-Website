@@ -6,7 +6,14 @@
 <x-filament-widgets::widget>
     <x-filament::section icon="heroicon-o-clipboard-document-list">
         <x-slot name="heading">
-            Ringkasan Operasional Federasi
+            <div class="flex items-center justify-between">
+                <span>Ringkasan Operasional Federasi</span>
+                <a href="{{ url('/admin/generate-report') }}"
+                   class="filament-button filament-page filament-table:inline-flex items-center gap-1 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm hover:bg-primary-500 focus:ring-2 focus:ring-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400">
+                    <x-heroicon-s-document-arrow-down class="h-3.5 w-3.5" />
+                    Unduh Laporan PDF
+                </a>
+            </div>
         </x-slot>
 
         <dl class="mb-4 grid grid-cols-2 gap-2 text-sm lg:grid-cols-4">
@@ -44,6 +51,35 @@
             </div>
         </dl>
 
+        {{-- Visual chart: Anggota per SBA --}}
+        @if ($breakdown)
+            @php
+                $maxMembers = collect($breakdown)->max('active_members') ?: 1;
+                $barColors = ['#3a86ff', '#8ac926', '#ffb703', '#ff006e', '#8338ec', '#fb5607', '#06aed5', '#2ec4b6'];
+            @endphp
+            <div class="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <p style="font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #6b7280; margin-bottom: 0.75rem;">📊 Distribusi Anggota per SBA</p>
+                <div class="space-y-2">
+                    @foreach ($breakdown as $idx => $row)
+                        @php
+                            $pct = $maxMembers > 0 ? ($row['active_members'] / $maxMembers) * 100 : 0;
+                            $color = $barColors[$idx % count($barColors)];
+                        @endphp
+                        <div>
+                            <div class="mb-1 flex items-baseline justify-between text-xs">
+                                <span class="font-medium text-gray-700">{{ $row['name'] }}</span>
+                                <span class="font-bold text-gray-900">{{ number_format($row['active_members'], 0, ',', '.') }}</span>
+                            </div>
+                            <div class="h-3 overflow-hidden rounded-full bg-gray-200">
+                                <div class="h-full rounded-full transition-all duration-500" style="width: {{ $pct }}%; background: {{ $color }};"></div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        {{-- Data table --}}
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b-2 border-gray-200 text-left text-xs text-gray-500">

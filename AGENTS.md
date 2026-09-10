@@ -218,9 +218,11 @@ them directly, never concatenate a `border-`/`text-` prefix onto them.
 - Filament panels auto-discover only their own `app/Filament/{Admin,Sba}/**`, so
   widgets in `app/Filament/Widgets` (e.g. `LearningReportWidget`) structurally
   cannot reach `/panel-sba` — no extra guard needed.
-- `Sp5SecurityTest` has **expected failures** for SP5 routes that later phases
-  haven't built yet (e.g. `/panel-sba/member-report/export`, `/verifikasi/kartu/{token}`).
-  Don't "fix" them early.
+- `Sp5SecurityTest` historically carried **expected failures** for SP5 routes
+  built in later phases (anonymous export redirect, `/verifikasi/kartu/{token}`).
+  Both are now real + green: the export guard lives in Sp5SecurityTest and card
+  verification coverage lives in `CardVerificationTest` (spec §11.5). Don't
+  reintroduce placeholder expected-failure tests for built routes.
 - `tests/TestCase.php` normalizes `APP_ENV=testing` before the app boots — a
   host-shell `APP_ENV` export would otherwise shadow `phpunit.xml`. Keep that
   guard.

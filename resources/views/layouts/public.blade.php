@@ -29,6 +29,22 @@
                 <a href="{{ route('courses.index') }}" aria-current="{{ request()->routeIs('courses.*') ? 'page' : 'false' }}" class="nav-link py-1 transition-colors hover:text-vivid-rose {{ request()->routeIs('courses.*') ? 'text-vivid-rose' : '' }}">E-Learning</a>
             </nav>
 
+            {{-- Dark mode toggle --}}
+            <button
+                type="button"
+                id="dark-toggle"
+                class="dark-toggle"
+                aria-label="Ganti mode tampilan"
+                title="Ganti mode terang/gelap"
+            >
+                <svg class="icon-sun h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="icon-moon h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+
             <button
                 type="button"
                 id="nav-toggle"
@@ -47,10 +63,10 @@
         </div>
 
         <nav id="mobile-nav" class="hidden flex-col gap-1 border-t border-white/10 px-4 pb-4 pt-2 text-sm font-semibold md:hidden">
-            <a href="{{ route('articles.index') }}" class="rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-amber">Berita</a>
-            <a href="{{ route('organizations.index') }}" class="rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-lime">SBA</a>
-            <a href="{{ route('eresources.index') }}" class="rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-sky">E-Resource</a>
-            <a href="{{ route('courses.index') }}" class="rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-rose">E-Learning</a>
+            <a href="{{ route('articles.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-amber" style="transition-delay: 0ms">Berita</a>
+            <a href="{{ route('organizations.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-lime" style="transition-delay: 40ms">SBA</a>
+            <a href="{{ route('eresources.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-sky" style="transition-delay: 80ms">E-Resource</a>
+            <a href="{{ route('courses.index') }}" class="mobile-nav-item rounded-lg px-3 py-2.5 transition-colors hover:bg-white/10 hover:text-vivid-rose" style="transition-delay: 120ms">E-Learning</a>
         </nav>
     </header>
 
@@ -103,20 +119,77 @@
 
     <script>
         (function () {
+            /* ── Mobile nav drawer with animation ── */
             var toggle = document.getElementById('nav-toggle');
             var menu = document.getElementById('mobile-nav');
             var iconOpen = document.getElementById('nav-icon-open');
             var iconClose = document.getElementById('nav-icon-close');
             if (toggle && menu) {
                 toggle.addEventListener('click', function () {
-                    var isOpen = menu.classList.toggle('flex');
-                    menu.classList.toggle('hidden');
-                    iconOpen.classList.toggle('hidden');
-                    iconClose.classList.toggle('hidden');
-                    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+                    var isOpen = menu.classList.contains('flex');
+                    if (isOpen) {
+                        /* Close: stagger items out, then collapse */
+                        var items = menu.querySelectorAll('.mobile-nav-item');
+                        items.forEach(function (item, i) {
+                            item.style.transitionDelay = ((items.length - 1 - i) * 30) + 'ms';
+                            item.style.opacity = '0';
+                            item.style.transform = 'translateX(-12px)';
+                        });
+                        setTimeout(function () {
+                            menu.classList.remove('flex');
+                            menu.classList.add('hidden');
+                            iconOpen.classList.remove('hidden');
+                            iconClose.classList.add('hidden');
+                            toggle.setAttribute('aria-expanded', 'false');
+                            /* Reset inline styles for next open */
+                            items.forEach(function (item) {
+                                item.style.transitionDelay = '';
+                                item.style.opacity = '';
+                                item.style.transform = '';
+                            });
+                        }, 180);
+                    } else {
+                        /* Open: show menu, stagger items in */
+                        menu.classList.remove('hidden');
+                        menu.classList.add('flex');
+                        iconOpen.classList.add('hidden');
+                        iconClose.classList.remove('hidden');
+                        toggle.setAttribute('aria-expanded', 'true');
+                        var items = menu.querySelectorAll('.mobile-nav-item');
+                        items.forEach(function (item, i) {
+                            item.style.opacity = '0';
+                            item.style.transform = 'translateX(-12px)';
+                            item.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                            setTimeout(function () {
+                                item.style.transitionDelay = (i * 40) + 'ms';
+                                item.style.opacity = '1';
+                                item.style.transform = 'translateX(0)';
+                            }, 10);
+                        });
+                    }
                 });
             }
 
+            /* ── Dark mode toggle ── */
+            var darkBtn = document.getElementById('dark-toggle');
+            var stored = localStorage.getItem('fsbmm_theme');
+            if (stored === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            if (darkBtn) {
+                darkBtn.addEventListener('click', function () {
+                    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                    if (isDark) {
+                        document.documentElement.removeAttribute('data-theme');
+                        localStorage.removeItem('fsbmm_theme');
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('fsbmm_theme', 'dark');
+                    }
+                });
+            }
+
+            /* ── Back-to-top ── */
             var toTop = document.getElementById('back-to-top');
             if (toTop) {
                 var shown = false;

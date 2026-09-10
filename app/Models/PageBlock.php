@@ -9,7 +9,7 @@ class PageBlock extends Model
 {
     use HasFactory;
 
-    public const TYPES = ['hero', 'rich_text', 'image', 'stats', 'cta', 'quote'];
+    public const TYPES = ['hero', 'rich_text', 'image', 'stats', 'cta', 'quote', 'chart'];
 
     protected $fillable = ['page_id', 'type', 'payload', 'sort_order'];
 

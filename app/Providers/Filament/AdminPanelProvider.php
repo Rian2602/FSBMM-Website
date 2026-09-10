@@ -6,6 +6,9 @@ use App\Filament\Admin\Pages\CourseDetailPage;
 use App\Filament\Admin\Pages\LessonViewPage;
 use App\Filament\Admin\Pages\MyCoursesPage;
 use App\Filament\Admin\Pages\QuizViewPage;
+use App\Filament\Widgets\GlobalSearchWidget;
+use App\Filament\Widgets\NotificationAlertWidget;
+use App\Support\FederationReportGenerator;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -60,12 +63,19 @@ class AdminPanelProvider extends PanelProvider
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
                     Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
+                    Route::get('/generate-report', function () {
+                        $url = FederationReportGenerator::generate();
+
+                        return redirect()->to($url);
+                    })->name('generate-report'),
                 ];
             })
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                GlobalSearchWidget::class,
+                NotificationAlertWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

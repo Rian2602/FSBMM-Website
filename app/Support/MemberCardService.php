@@ -7,6 +7,7 @@ use App\Models\MemberCard;
 use App\Models\User;
 use DomainException;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use RuntimeException;
 
@@ -71,6 +72,29 @@ class MemberCardService
     public function generateVerificationToken(): string
     {
         return bin2hex(random_bytes(32));
+    }
+
+    public function validateToken(string $token): ?MemberCard
+    {
+        $card = MemberCard::where('verification_token', $token)->first();
+
+        if (! $card) {
+            return null;
+        }
+
+        if ($card->status === MemberCard::STATUS_REVOKED) {
+            return $card;
+        }
+
+        return $card->member?->status === 'aktif' ? $card : null;
+    }
+
+    public function getCardHistory(Member $member): Collection
+    {
+        return MemberCard::where('member_id', $member->id)
+            ->with('creator')
+            ->orderByDesc('id')
+            ->get();
     }
 
     protected function generateUniqueCardNumber(): string
