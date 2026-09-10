@@ -87,6 +87,21 @@ class ExportTest extends TestCase
         $this->assertStringNotContainsString('organization_id,', $csv);
     }
 
+    public function test_export_with_no_data_returns_header_only(): void
+    {
+        [$user, $org] = $this->createSbaAdmin('SBA Kosong');
+
+        $download = $this->actingAs($user)->followExport('/panel-sba/member-report/export');
+        $download->assertOk();
+
+        $csv = file_get_contents((string) $download->baseResponse->getFile());
+
+        $this->assertSame(
+            'Nama,NIK,"Jenis Kelamin","Tempat Lahir","Tanggal Lahir",Alamat,Departemen,Jabatan,"Upah Dasar","Tanggal Bergabung",Pendidikan,Status',
+            trim($csv),
+        );
+    }
+
     public function test_export_ignores_spoofed_organization_param(): void
     {
         [$sbaA, $orgA] = $this->createSbaAdmin('SBA Alpha');

@@ -2,6 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Models\Attendance;
+use App\Models\Complaint;
+use App\Models\Due;
+use App\Models\Event;
 use App\Models\Member;
 use App\Models\Organization;
 use App\Models\User;
@@ -65,6 +69,40 @@ class Sp5SecurityTest extends TestCase
 
         $this->assertStringContainsString('Member SBA A', $csv);
         $this->assertStringNotContainsString('Member SBA B', $csv);
+    }
+
+    public function test_sba_a_cannot_export_sba_b_dues_attendance_complaints(): void
+    {
+        [$sbaA, $orgA] = $this->createSbaAdmin('SBA A');
+        [$sbaB, $orgB] = $this->createSbaAdmin('SBA B');
+
+        $memberA = Member::factory()->for($orgA)->create(['name' => 'Andi Wijaya']);
+        $memberB = Member::factory()->for($orgB)->create(['name' => 'Budi Santoso']);
+        $eventA = Event::factory()->for($orgA)->create(['title' => 'Rapat A']);
+        $eventB = Event::factory()->for($orgB)->create(['title' => 'Rapat B']);
+
+        Due::factory()->for($orgA)->for($memberA, 'member')->create(['period' => '2026-08', 'amount' => 100000]);
+        Due::factory()->for($orgB)->for($memberB, 'member')->create(['period' => '2026-08', 'amount' => 999000]);
+        Attendance::factory()->for($orgA)->for($eventA, 'event')->for($memberA, 'member')->create();
+        Attendance::factory()->for($orgB)->for($eventB, 'event')->for($memberB, 'member')->create();
+
+        Complaint::factory()->for($orgA)->create(['title' => 'Keluhan A']);
+        Complaint::factory()->for($orgB)->create(['title' => 'Keluhan B']);
+
+        foreach ([
+            'dues-report' => '999000',
+            'attendance-report' => 'Budi Santoso',
+            'complaint-report' => 'Keluhan B',
+        ] as $endpoint => $forbidden) {
+            $redirect = $this->actingAs($sbaA)
+                ->get('/panel-sba/'.$endpoint.'/export?organization_id='.$orgB->id)
+                ->assertStatus(302);
+            $downloaded = $this->get($redirect->headers->get('Location'));
+            $downloaded->assertOk();
+            $content = file_get_contents((string) $downloaded->baseResponse->getFile());
+
+            $this->assertStringNotContainsString($forbidden, $content);
+        }
     }
 
     public function test_sba_a_cannot_create_revoke_print_card_for_sba_b_member(): void
