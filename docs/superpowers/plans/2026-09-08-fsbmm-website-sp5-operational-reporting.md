@@ -489,6 +489,42 @@ Create `tests/Feature/ExportTest.php`:
 - [x] Test: Anonymous cannot export
 - [x] Test: SBA admin cannot export other SBA
 
+(** executed @2026-09-10: Task 4.6 complete — commits 3cae1f4, 89dc627, d9720da,
+70c7b55 (4.1–4.4 export implementations + tests), 24e22ec, 7613ab4, d30e3ad
+(4.5 storage rewire), e218c2e (test — Task 4.6 ini), docs (commit yang memuat
+anotasi ini): cakupan spec §11.3 terpenuhi sepenuhnya (8/8 kewajiban terpenuhi
+oleh `ExportTest` 29 tests + `Sp5SecurityTest` 2 tests yang relevan).
+Spec §11.3 dipetakan sebagai berikut:
+
+- CSV & XLSX member: `test_csv_export_has_exact_whitelist_header_and_rows`
+  + `test_xlsx_export_generates_correct_file`
+- CSV & XLSX dues: `test_csv_dues_export_has_column_whitelist_and_content`
+  + `test_xlsx_dues_export_generates_correct_file`
+- Attendance export: `test_csv_attendance_export_has_exact_whitelist_header_and_rows`
+  + `test_xlsx_attendance_export_generates_correct_file`
+- Complaint export: `test_csv_complaint_export_has_exact_whitelist_header_and_rows`
+  + `test_xlsx_complaint_export_generates_correct_file`
+- Filter export: `test_export_applies_report_filters`, `test_dues_export_applies_period_filters`,
+  `test_attendance_export_applies_filters`, `test_complaint_export_applies_submitted_date_filter`
+- Tenant isolation (server-side bg): `test_*_ignores_spoofed_organization_param`
+  (4 entitas) + `test_export_with_no_data_returns_header_only` (regression guard
+  edge-case dataset kosong = header-only CSV, SBA baru yang pertama kali export)
+- Authorization (sba_admin hanya org sendiri):
+  `Sp5SecurityTest::test_sba_a_cannot_export_sba_b_data` (member) +
+  `Sp5SecurityTest::test_sba_a_cannot_export_sba_b_dues_attendance_complaints`
+  (dues/attendance/complaint — menutup asimetri cross-tenant session-level;
+  sebelum commit ini hanya member yang punya session-level cross-tenant test,
+  3 entitas lain hanya di-cover spoof-param test yang berbeda threat-model)
+- Explicit column whitelist: tiap entitas punya exact header assertion;
+  kolom baru/fakultatif tidak otomatis masuk CSV
+- Anonymous: `test_anonymous_cannot_export_dues/attendance/complaints` (ExportTest)
+  + `Sp5SecurityTest::test_anonymous_cannot_access_exports` (member) — simetris
+- Storage & PII (Task 4.5): signed URL + auth/org guard (403 anonim & beda org),
+  TTL 1 jam, sweep lazy, `deleteFileAfterSend(true)`, private-disk-only
+
+Suite ekspektasi: **316 passed / 1 failed** (`test_anonymous_can_access_card_verification`
+placeholder Phase-6 — jangan disentuh). **)
+
 ---
 
 ## P0 VALIDATION GATE
