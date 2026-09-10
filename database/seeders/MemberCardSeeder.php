@@ -19,6 +19,10 @@ class MemberCardSeeder extends Seeder
             return;
         }
 
+        if (MemberCard::where('organization_id', $org->id)->exists()) {
+            return;
+        }
+
         $demoMembers = $org->members()->orderBy('id')->get();
         if ($demoMembers->count() < 2) {
             return;

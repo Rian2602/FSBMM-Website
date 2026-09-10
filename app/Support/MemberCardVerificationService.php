@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Member;
 use App\Models\MemberCard;
 
 class MemberCardVerificationService
@@ -16,10 +17,10 @@ class MemberCardVerificationService
             return null;
         }
 
-        $status = match ($card->status) {
-            'aktif' => 'active',
-            'dicabut' => 'revoked',
-            default => 'unknown',
+        $status = match (true) {
+            $card->status === MemberCard::STATUS_REVOKED => 'revoked',
+            $card->member?->status !== Member::STATUS_ACTIVE => 'inactive',
+            default => 'active',
         };
 
         return [
@@ -28,7 +29,6 @@ class MemberCardVerificationService
             'member_name' => $card->member->name,
             'organization_name' => $card->member->organization->name,
             'issued_at' => $card->issued_at?->format('d/m/Y'),
-            'valid_until' => $card->issued_at?->addYear()->format('d/m/Y'),
         ];
     }
 }

@@ -48,6 +48,31 @@
                 </div>
             </div>
 
+        @elseif($data['status'] === 'inactive')
+            {{-- Inactive Member --}}
+            <div class="rounded-2xl border border-gray-300 bg-white p-8 shadow-lg text-center" data-reveal>
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
+                    <svg class="h-8 w-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2 2 2m0-4l-2 2-2-2m10 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-700 mb-2">Kartu Tidak Aktif</h1>
+                <p class="text-gray-600 mb-4">Kartu anggota ini tidak dapat diverifikasi karena status anggota tidak aktif.</p>
+                <div class="rounded-lg bg-gray-50 p-4 text-left text-sm space-y-2">
+                    <div><span class="font-medium text-gray-700">Nomor Kartu:</span> <span class="font-mono text-gray-900">{{ $data['card_number'] }}</span></div>
+                    <div><span class="font-medium text-gray-700">Nama:</span> <span class="text-gray-900">{{ $data['member_name'] }}</span></div>
+                    <div><span class="font-medium text-gray-700">Organisasi:</span> <span class="text-gray-900">{{ $data['organization_name'] }}</span></div>
+                </div>
+                <div class="mt-6">
+                    <a href="/" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                        Kembali ke Beranda
+                    </a>
+                </div>
+            </div>
+
         @else
             {{-- Active Card --}}
             <div class="rounded-2xl border border-emerald-200 bg-white p-8 shadow-lg" data-reveal>
@@ -84,7 +109,6 @@
                     </div>
                     <div class="px-5 py-3 bg-black/10 flex justify-between items-center">
                         <span class="font-mono text-sm font-semibold tracking-wide">{{ $data['card_number'] }}</span>
-                        <span class="text-xs opacity-80">Berlaku s.d. {{ $data['valid_until'] }}</span>
                     </div>
                 </div>
 
@@ -109,10 +133,6 @@
                     <div class="flex justify-between">
                         <span class="font-medium text-gray-600">Diterbitkan</span>
                         <span class="text-gray-900">{{ $data['issued_at'] }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="font-medium text-gray-600">Berlaku Hingga</span>
-                        <span class="text-gray-900">{{ $data['valid_until'] }}</span>
                     </div>
                 </div>
 
