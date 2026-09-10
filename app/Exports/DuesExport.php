@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class DuesExport extends ReportExport
 {
-    protected static function columns(): array
+    protected static function columns(array $filters = []): array
     {
         return [
             'member.name' => 'Nama Anggota',
@@ -40,7 +40,7 @@ class DuesExport extends ReportExport
         return $query->orderBy('id');
     }
 
-    protected static function row($model): array
+    protected static function row($model, array $filters = []): array
     {
         $due = $model;
 

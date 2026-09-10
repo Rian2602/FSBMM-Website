@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AttendanceExport extends ReportExport
 {
-    protected static function columns(): array
+    protected static function columns(array $filters = []): array
     {
         return [
             'member.name' => 'Nama Anggota',
@@ -44,7 +44,7 @@ class AttendanceExport extends ReportExport
             ->orderBy('id');
     }
 
-    protected static function row($model): array
+    protected static function row($model, array $filters = []): array
     {
         $attendance = $model;
 

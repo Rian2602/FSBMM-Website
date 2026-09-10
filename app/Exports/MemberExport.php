@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class MemberExport extends ReportExport
 {
-    protected static function columns(): array
+    protected static function columns(array $filters = []): array
     {
         return [
             'name' => 'Nama',
@@ -59,7 +59,7 @@ class MemberExport extends ReportExport
         return $query->orderBy('id');
     }
 
-    protected static function row($model): array
+    protected static function row($model, array $filters = []): array
     {
         $member = $model;
 
