@@ -26,8 +26,8 @@ class MemberCardVerificationService
         return [
             'status' => $status,
             'card_number' => $card->card_number,
-            'member_name' => $card->member->name,
-            'organization_name' => $card->member->organization->name,
+            'member_name' => $card->member?->name,
+            'organization_name' => $card->member?->organization?->name,
             'issued_at' => $card->issued_at?->format('d/m/Y'),
         ];
     }

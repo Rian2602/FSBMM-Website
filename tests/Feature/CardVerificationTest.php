@@ -140,6 +140,17 @@ class CardVerificationTest extends TestCase
             ->assertOk(); // Should return view, not 404 from catch-all
     }
 
+    public function test_soft_deleted_member_shows_inactive_not_500(): void
+    {
+        [$member, $creator, $card] = $this->fixture();
+
+        $member->delete();
+
+        $this->get('/verifikasi/kartu/'.$card->verification_token)
+            ->assertOk()
+            ->assertSee('Kartu Tidak Aktif');
+    }
+
     private function fixture(): array
     {
         $org = Organization::factory()->create();

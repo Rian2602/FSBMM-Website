@@ -1097,6 +1097,43 @@ closure ini menambah `test_no_complaint_in_response`, `test_no_dues_in_response`
 memakai token acak (path valid, bukan pencarian DB) sehingga selalu return view;
 assert NIK memakai konvensi `assertDontSee($member->nik)`.**)
 
+### PHASE 8 VALIDATION GATE (TASK 8.1–8.5)
+
+Status: **PASS** @2026-09-10 — evaluasi berbasis bukti atas artifact committed
+(public card verification; lingkup Phase 8, bukan PDF/print Phase 9).
+
+- [x] Route `/verifikasi/kartu/{token}` ABOVE `{page:slug}` catch-all (`routes/web.php:84` vs `:92`) — `test_route_is_above_catch_all`
+- [x] Controller delegasi lookup ke service; return view dengan DTO public-safe — `CardVerificationController.php:11-12`
+- [x] `lookup(string $token): ?array` — status precedence runtime `revoked` → member non-aktif → `active` (§9.7) — `MemberCardVerificationService.php:20-24`
+- [x] DTO persis: status/card_number/member_name/organization_name/issued_at — tanpa NIK/alamat/gaji — `test_no_nik_in_response` + `test_no_address_in_response` + `test_no_salary_in_response`
+- [x] Invalid token → generic error ("Kartu Tidak Ditemukan") — `test_invalid_token_shows_generic_error`
+- [x] Revoked card → "Kartu Tidak Aktif" — `test_revoked_card_shows_not_active`
+- [x] No complaint/dues leak — `test_no_complaint_in_response` + `test_no_dues_in_response`
+- [x] No member enumeration — `test_no_member_enumeration_possible`
+- [x] View extends `layouts.public`; branch valid/invalid/revoked/inactive; mobile-friendly — `verify.blade.php`
+- [x] Null-safety soft-deleted member → "Kartu Tidak Aktif", bukan 500 — `test_soft_deleted_member_shows_inactive_not_500`
+- [x] CardVerificationTest 12 passed / 27 assertions; suite penuh 379 passed / 0 failed; pint clean; `migrate:fresh --seed` idempotent (2 kartu / 15 anggota)
+
+(** evaluated @2026-09-10: PHASE 8 GATE PASS — evaluasi berbasis bukti; lingkup =
+artifact committed `routes/web.php` + `CardVerificationController.php` +
+`MemberCardVerificationService.php` + `verify.blade.php` + `CardVerificationTest.php`
+(commit `692652a` closure + `732154d`; service/view diperbaiki closure `17c6c93`).
+Bukti run saat gate: CardVerificationTest → 12 passed / 27 assertions; suite penuh
+**379 passed / 0 failed**; pint clean; seed idempotent (re-seed tetap 2 kartu).
+Review independent subagent (general) terhadap artifact committed → **Verdict: NOT
+READY dgn 0 Critical / 1 Important / 2 Minor**; Important #1: dereference
+`$card->member->name`/`->organization->name` tanpa null-safe — `Member` SoftDeletes
+sehingga member soft-deleted ter-exclude eager-load → `lookup()` 500 padahal harus
+"Kartu Tidak Aktif". **DIPERBAIKI di gate** (`M@...` member_name/organization_name
+→ `?->`) + test regresi `test_soft_deleted_member_shows_inactive_not_500` → kini
+hijau; Minor #1 (enumeration test hanya membuktikan scoping, bukan traversal — token
+32-byte hex opaque §9.4 adalah guard sebenarnya; nama test terlalu luas, tidak
+diberi nama ulang karena sudah committed) dan Minor #2 (route test pakai token non-hex;
+posisi di atas catch-all dijamin urutan file web.php:84 > :92, bukan oleh test).
+Reviewer konfirmasi bersih: precedence status benar, PII zero-leak, route di atas
+catch-all, token lookup saja (tanpa ID), test non-tautologis. Deferral ke Phase 9:
+PDF/print + auth-z print action + enumeration-protection test PDF. **)
+
 ---
 
 ## PHASE 9 — Print/PDF
