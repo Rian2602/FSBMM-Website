@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Attendance;
+use App\Models\Complaint;
 use App\Models\Due;
 use App\Models\Event;
 use App\Models\Member;
@@ -296,5 +297,100 @@ class ExportTest extends TestCase
     public function test_anonymous_cannot_export_attendance(): void
     {
         $this->get('/panel-sba/attendance-report/export')->assertRedirect('/panel-sba/login');
+    }
+
+    public function test_csv_complaint_export_has_exact_whitelist_header_and_rows(): void
+    {
+        [$user, $org] = $this->createSbaAdmin('SBA Alpha');
+        Complaint::factory()->for($org)->create([
+            'title' => 'Fasilitas rusak', 'status' => 'baru',
+            'submitted_at' => '2026-09-05', 'resolved_at' => null,
+            'description' => 'AC kantor mati sejak seminggu',
+        ]);
+
+        $response = $this->actingAs($user)->get('/panel-sba/complaint-report/export');
+
+        $response->assertOk();
+        $csv = file_get_contents((string) $response->baseResponse->getFile());
+
+        // ponytail: fputcsv quotes only spaced cells
+        $this->assertStringStartsWith('ID,Judul,Status,"Tanggal Pengajuan","Tanggal Penyelesaian"', $csv);
+        $this->assertStringContainsString('Fasilitas rusak', $csv);
+        $this->assertStringContainsString('Baru', $csv);
+        $this->assertStringContainsString('2026-09-05', $csv);
+        $this->assertStringNotContainsString('Deskripsi', $csv);
+        $this->assertStringNotContainsString('AC kantor mati sejak seminggu', $csv);
+        $this->assertStringNotContainsString('member_id,', $csv);
+        $this->assertStringNotContainsString('organization_id,', $csv);
+    }
+
+    public function test_complaint_export_includes_description_only_with_explicit_flag(): void
+    {
+        [$user, $org] = $this->createSbaAdmin('SBA Alpha');
+        Complaint::factory()->for($org)->create([
+            'title' => 'Fasilitas rusak', 'submitted_at' => '2026-09-05',
+            'description' => 'AC kantor mati sejak seminggu',
+        ]);
+
+        $response = $this->actingAs($user)
+            ->get('/panel-sba/complaint-report/export?include_description=1')
+            ->assertOk();
+        $csv = file_get_contents((string) $response->baseResponse->getFile());
+
+        $this->assertStringContainsString('Deskripsi', $csv);
+        $this->assertStringContainsString('AC kantor mati sejak seminggu', $csv);
+    }
+
+    public function test_complaint_export_ignores_spoofed_organization_param(): void
+    {
+        [$sbaA, $orgA] = $this->createSbaAdmin('SBA Alpha');
+        [$sbaB, $orgB] = $this->createSbaAdmin('SBA Beta');
+
+        Complaint::factory()->for($orgA)->create(['title' => 'Keluhan A']);
+        Complaint::factory()->for($orgB)->create(['title' => 'Keluhan B']);
+
+        $response = $this->actingAs($sbaA)
+            ->get('/panel-sba/complaint-report/export?organization_id='.$orgB->id)
+            ->assertOk();
+        $csv = file_get_contents((string) $response->baseResponse->getFile());
+
+        $this->assertStringContainsString('Keluhan A', $csv);
+        $this->assertStringNotContainsString('Keluhan B', $csv);
+    }
+
+    public function test_xlsx_complaint_export_generates_correct_file(): void
+    {
+        [$user, $org] = $this->createSbaAdmin('SBA Alpha');
+        $complaint = Complaint::factory()->for($org)->create([
+            'title' => 'Fasilitas rusak', 'status' => 'selesai',
+            'submitted_at' => '2026-09-05', 'resolved_at' => '2026-09-08',
+        ]);
+
+        $response = $this->actingAs($user)->get('/panel-sba/complaint-report/export?format=xlsx')->assertOk();
+        $rows = $this->readXlsx((string) $response->baseResponse->getFile());
+
+        $this->assertCount(2, $rows);
+        $this->assertSame(['ID', 'Judul', 'Status', 'Tanggal Pengajuan', 'Tanggal Penyelesaian'], $rows[0]);
+        $this->assertSame([$complaint->id, 'Fasilitas rusak', 'Selesai', '2026-09-05', '2026-09-08'], $rows[1]);
+    }
+
+    public function test_complaint_export_applies_submitted_date_filter(): void
+    {
+        [$user, $org] = $this->createSbaAdmin('SBA Alpha');
+        Complaint::factory()->for($org)->create(['title' => 'Keluhan September', 'submitted_at' => '2026-09-10']);
+        Complaint::factory()->for($org)->create(['title' => 'Keluhan Agustus', 'submitted_at' => '2026-08-10']);
+
+        $response = $this->actingAs($user)
+            ->get('/panel-sba/complaint-report/export?submitted_start=2026-09-01')
+            ->assertOk();
+        $csv = file_get_contents((string) $response->baseResponse->getFile());
+
+        $this->assertStringContainsString('Keluhan September', $csv);
+        $this->assertStringNotContainsString('Keluhan Agustus', $csv);
+    }
+
+    public function test_anonymous_cannot_export_complaints(): void
+    {
+        $this->get('/panel-sba/complaint-report/export')->assertRedirect('/panel-sba/login');
     }
 }
