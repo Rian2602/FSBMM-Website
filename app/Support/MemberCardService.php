@@ -9,6 +9,7 @@ use DomainException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use RuntimeException;
 
 class MemberCardService
@@ -38,6 +39,10 @@ class MemberCardService
     {
         if ($card->organization_id !== $actor->organization_id) {
             throw new AuthorizationException('Kartu bukan milik organisasi Anda.');
+        }
+
+        if (trim($reason) === '') {
+            throw new InvalidArgumentException('Alasan pencabutan wajib diisi.');
         }
 
         $card->update([
@@ -86,7 +91,7 @@ class MemberCardService
             return $card;
         }
 
-        return $card->member?->status === 'aktif' ? $card : null;
+        return $card->member?->status === Member::STATUS_ACTIVE ? $card : null;
     }
 
     public function getCardHistory(Member $member): Collection
