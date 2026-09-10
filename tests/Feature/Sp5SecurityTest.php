@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Member;
 use App\Models\Organization;
 use App\Models\User;
-use App\Models\Member;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,6 +16,7 @@ class Sp5SecurityTest extends TestCase
     {
         $org = Organization::factory()->create(['name' => $orgName]);
         $user = User::factory()->sbaAdmin($org)->create();
+
         return [$user, $org];
     }
 
@@ -28,7 +29,7 @@ class Sp5SecurityTest extends TestCase
 
         // Directly accessing member B's edit page should 404 (scoped)
         $this->actingAs($sbaA)
-            ->get('/panel-sba/members/' . $memberB->id . '/edit')
+            ->get('/panel-sba/members/'.$memberB->id.'/edit')
             ->assertNotFound();
     }
 
@@ -54,11 +55,13 @@ class Sp5SecurityTest extends TestCase
         Member::factory()->for($orgA)->create(['name' => 'Member SBA A']);
         Member::factory()->for($orgB)->create(['name' => 'Member SBA B']);
 
-        $response = $this->actingAs($sbaA)
+        $download = $this->actingAs($sbaA)
             ->get('/panel-sba/member-report/export?organization_id='.$orgB->id)
-            ->assertOk();
+            ->assertStatus(302);
 
-        $csv = file_get_contents((string) $response->baseResponse->getFile());
+        $followed = $this->get($download->headers->get('Location'));
+        $followed->assertOk();
+        $csv = file_get_contents((string) $followed->baseResponse->getFile());
 
         $this->assertStringContainsString('Member SBA A', $csv);
         $this->assertStringNotContainsString('Member SBA B', $csv);
@@ -73,7 +76,7 @@ class Sp5SecurityTest extends TestCase
 
         // Assuming member cards are managed via a Filament resource or page action
         $this->actingAs($sbaA)
-            ->get('/panel-sba/member-cards/' . $memberB->id . '/print')
+            ->get('/panel-sba/member-cards/'.$memberB->id.'/print')
             ->assertNotFound();
     }
 
