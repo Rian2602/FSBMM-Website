@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             OrganizationSeeder::class,
             SbaAccountSeeder::class,
             MemberDataSeeder::class,
+            MemberCardSeeder::class,
             ArticleSeeder::class,
             PageSeeder::class,
             LibrarySeeder::class,
