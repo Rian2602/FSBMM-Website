@@ -707,15 +707,45 @@ bersih (auto-fix EOF newline). **)**
 
 Create `tests/Feature/MemberCardTest.php`:
 
-- [ ] Test: issue card for active member
-- [ ] Test: card number is unique
-- [ ] Test: verification token is unique
-- [ ] Test: only one active card per member
-- [ ] Test: revoke card
-- [ ] Test: reissue card (old revoked, new active)
-- [ ] Test: card history retained
-- [ ] Test: inactive member cannot receive new card
-- [ ] Test: sba_admin cannot issue card for other SBA member
+- [x] Test: issue card for active member
+- [x] Test: card number is unique
+- [x] Test: verification token is unique
+- [x] Test: only one active card per member
+- [x] Test: revoke card
+- [x] Test: reissue card (old revoked, new active)
+- [x] Test: card history retained
+- [x] Test: inactive member cannot receive new card
+- [x] Test: sba_admin cannot issue card for other SBA member
+
+(** executed @2026-09-10: Task 5.4 complete — commits 6214778 (feat) + docs
+(commit yang memuat anotasi ini). Sembilan test `MemberCardTest` hijau
+(9 tests / 23 assertions). DEVIASI SCOPE (disetujui user dalam review plan):
+minimal `App\Support\MemberCardService` (path persis spec §9.6/plan 6.1)
+ditulis BERSAMA test di 5.4 — engine enforcement nyata §9.6
+(one-active auto-revoke, guard member nonaktif, cross-tenant) tak bisa
+diuji jujur hanya via schema (partial unique index dihindari: MySQL tak
+mendukung + spec menegaskan enforcement ADA di service). Subset di 5.4:
+`issue` (auto-revoke aktif lama dengan reason `Digantikan kartu baru`,
+collision max-3 `generateUniqueCardNumber` → `RuntimeException` setelah 3
+percobaan), `revoke` (guard org actor), `reissue` (revoke + issue),
+`resolveCurrentCard`, `generateCardNumber` (`FSBMM-YYYY-XXXXXXXX`),
+`generateVerificationToken` (64 hex). Task 6.1 lanjut: `validateToken` +
+formalisasi (anotasi 6.1 mencatat sisanya sudah ada); Task 6.2 delapan
+service test tetap. Pilihan exception SPL zero-dep: `AuthorizationException`
+(cross-tenant; menjawab §11.4 member-auth) & `DomainException` (member
+nonaktif); UI Phase 7 menerjemahkannya ke notifikasi Filament. Mapping
+checklist→spec §11.4: 'member auth org sendiri' terlipat ke #9; 'duplicate
+active prevention (issue kedua auto-revoke)' terlipat ke #4. Item #2/#3
+ditest lewat `MemberCard::create` duplikat → `QueryException` = constraint
+global unique migrasi 5.1 (bukan service). `guardEligible` memakai
+`create` (bukan firstOrCreate). ponytail note: `exists()`-lalu-create tidak
+atomic — race hanya di demo-scale, DB unique safety net; upgrade path:
+INSERT ... WHERE NOT EXISTS / retry-on-QueryException bila expand. Koreksi
+selama TDD: urutan history `issue→issue→revoke→issue` (bukan
+issue→revoke→issue) karena `resolveCurrentCard` mengembalikan null setelah
+revoke eksplisit → 3 row, 2 dicabut. Pengujian tanpa factory (array langsung
+di test, YAGNI). Verifikasi: suite **325 passed / 1 failed** (placeholder
+Phase-6 saja), pint bersih. **)
 
 ---
 
