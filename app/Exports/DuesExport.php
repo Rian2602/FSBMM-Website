@@ -4,36 +4,26 @@ namespace App\Exports;
 
 use App\Models\Due;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Str;
-use OpenSpout\Common\Entity\Row;
-use OpenSpout\Writer\XLSX\Writer;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class DuesExport
+class DuesExport extends ReportExport
 {
-    public const COLUMNS = [
-        'member.name' => 'Nama Anggota',
-        'period' => 'Periode',
-        'amount' => 'Nominal',
-        'paid_at' => 'Tanggal Pembayaran',
-        'recordedBy.name' => 'Pencatat',
-    ];
-
-    public static function streamFor(int $organizationId, array $filters, string $format = 'csv'): BinaryFileResponse
+    protected static function columns(): array
     {
-        $format = $format === 'xlsx' ? 'xlsx' : 'csv';
-        $path = sys_get_temp_dir().'/fsbmm_'.Str::random(8).'.'.$format;
-        $query = static::scopedQuery($organizationId, $filters);
-
-        $format === 'xlsx' ? static::writeXlsx($query, $path) : static::writeCsv($query, $path);
-
-        return response()
-            ->download($path, sprintf('iuran-%s-%s.%s', $organizationId, now()->format('Y-m-d'), $format))
-            ->deleteFileAfterSend(true);
+        return [
+            'member.name' => 'Nama Anggota',
+            'period' => 'Periode',
+            'amount' => 'Nominal',
+            'paid_at' => 'Tanggal Pembayaran',
+            'recordedBy.name' => 'Pencatat',
+        ];
     }
 
-    private static function scopedQuery(int $organizationId, array $filters): Builder
+    protected static function filenamePrefix(): string
+    {
+        return 'iuran';
+    }
+
+    protected static function scopedQuery(int $organizationId, array $filters): Builder
     {
         $query = Due::query()->with('member', 'recordedBy')->where('organization_id', $organizationId);
 
@@ -50,34 +40,10 @@ class DuesExport
         return $query->orderBy('id');
     }
 
-    private static function writeCsv(Builder $query, string $path): void
+    protected static function row($model): array
     {
-        $handle = fopen($path, 'w');
-        fputcsv($handle, array_values(self::COLUMNS));
-        static::rows($query)->each(function (Due $due) use ($handle): void {
-            fputcsv($handle, static::row($due));
-        });
-        fclose($handle);
-    }
+        $due = $model;
 
-    private static function writeXlsx(Builder $query, string $path): void
-    {
-        $writer = new Writer;
-        $writer->openToFile($path);
-        $writer->addRow(Row::fromValues(array_values(self::COLUMNS)));
-        static::rows($query)->each(function (Due $due) use ($writer): void {
-            $writer->addRow(Row::fromValues(static::row($due)));
-        });
-        $writer->close();
-    }
-
-    private static function rows(Builder $query): LazyCollection
-    {
-        return $query->cursor();
-    }
-
-    private static function row(Due $due): array
-    {
         return [
             $due->member?->name,
             $due->period,

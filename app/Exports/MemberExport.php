@@ -4,43 +4,33 @@ namespace App\Exports;
 
 use App\Models\Member;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\LazyCollection;
-use Illuminate\Support\Str;
-use OpenSpout\Common\Entity\Row;
-use OpenSpout\Writer\XLSX\Writer;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class MemberExport
+class MemberExport extends ReportExport
 {
-    public const COLUMNS = [
-        'name' => 'Nama',
-        'nik' => 'NIK',
-        'gender' => 'Jenis Kelamin',
-        'birthplace' => 'Tempat Lahir',
-        'birthdate' => 'Tanggal Lahir',
-        'address' => 'Alamat',
-        'department' => 'Departemen',
-        'position' => 'Jabatan',
-        'basic_salary' => 'Upah Dasar',
-        'join_date' => 'Tanggal Bergabung',
-        'education' => 'Pendidikan',
-        'status' => 'Status',
-    ];
-
-    public static function streamFor(int $organizationId, array $filters, string $format = 'csv'): BinaryFileResponse
+    protected static function columns(): array
     {
-        $format = $format === 'xlsx' ? 'xlsx' : 'csv';
-        $path = sys_get_temp_dir().'/fsbmm_'.Str::random(8).'.'.$format;
-        $query = static::scopedQuery($organizationId, $filters);
-
-        $format === 'xlsx' ? static::writeXlsx($query, $path) : static::writeCsv($query, $path);
-
-        return response()
-            ->download($path, sprintf('anggota-%s-%s.%s', $organizationId, now()->format('Y-m-d'), $format))
-            ->deleteFileAfterSend(true);
+        return [
+            'name' => 'Nama',
+            'nik' => 'NIK',
+            'gender' => 'Jenis Kelamin',
+            'birthplace' => 'Tempat Lahir',
+            'birthdate' => 'Tanggal Lahir',
+            'address' => 'Alamat',
+            'department' => 'Departemen',
+            'position' => 'Jabatan',
+            'basic_salary' => 'Upah Dasar',
+            'join_date' => 'Tanggal Bergabung',
+            'education' => 'Pendidikan',
+            'status' => 'Status',
+        ];
     }
 
-    private static function scopedQuery(int $organizationId, array $filters): Builder
+    protected static function filenamePrefix(): string
+    {
+        return 'anggota';
+    }
+
+    protected static function scopedQuery(int $organizationId, array $filters): Builder
     {
         $query = Member::query()->where('organization_id', $organizationId);
 
@@ -69,34 +59,10 @@ class MemberExport
         return $query->orderBy('id');
     }
 
-    private static function writeCsv(Builder $query, string $path): void
+    protected static function row($model): array
     {
-        $handle = fopen($path, 'w');
-        fputcsv($handle, array_values(self::COLUMNS));
-        static::rows($query)->each(function (Member $member) use ($handle): void {
-            fputcsv($handle, static::row($member));
-        });
-        fclose($handle);
-    }
+        $member = $model;
 
-    private static function writeXlsx(Builder $query, string $path): void
-    {
-        $writer = new Writer;
-        $writer->openToFile($path);
-        $writer->addRow(Row::fromValues(array_values(self::COLUMNS)));
-        static::rows($query)->each(function (Member $member) use ($writer): void {
-            $writer->addRow(Row::fromValues(static::row($member)));
-        });
-        $writer->close();
-    }
-
-    private static function rows(Builder $query): LazyCollection
-    {
-        return $query->cursor();
-    }
-
-    private static function row(Member $member): array
-    {
         return [
             $member->name,
             $member->nik,
