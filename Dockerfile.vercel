@@ -17,7 +17,7 @@ RUN composer install \
     --no-scripts \
     --optimize-autoloader \
     --prefer-dist \
-    && composer dump-autoload --no-dev --classmap-authoritative --no-scripts
+    && composer dump-autoload --no-dev --optimize --no-scripts
 
 # Build the Vite manifest (resources/css + resources/js → public/build) that
 # every @vite blade on the public site depends on.
