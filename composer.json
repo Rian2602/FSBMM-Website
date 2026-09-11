@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "fsbmm/website",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Website resmi Federasi Serikat Buruh Makanan dan Minuman (FSBMM) — Laravel 12 + Filament 3, sepenuhnya data-driven (SP1-SP5 + enhancement 1-4).",
+    "keywords": ["fsbmm", "federasi", "serikat-buruh", "laravel", "filament"],
     "license": "MIT",
     "require": {
         "php": "^8.3",
