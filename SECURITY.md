@@ -17,8 +17,10 @@ diekspos berisiko eksploitasi sebelum patch siap.
 
 Kirim detail lengkap sebagai berikut:
 
-- Email: **admin@fsbmm.test** *(ganti dengan alamat keamanan resmi saat
-  deploy — lihat `.env.example`)*
+- Email: **ganti dengan alamat keamanan resmi saat deploy** (contoh placeholder
+  saja — alamat nyata ditetapkan pemilik repo di `.env.example`, jangan kirim
+  ke alamat `*.test` yang non-aktif). Untuk laporan pra-deploy gunakan jalur
+  langsung ke pemelihara (kontak di profil git/README).
 - Subjek: `[SECURITY] <ringkasan singkat>`
 - Lampirkan: versi/commit yang terpengaruh, langkah reproduksi, dampak, dan —
   bila ada — saran perbaikan (tanpa mengekspos data produksi/PII).

@@ -42,8 +42,9 @@ when an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-**admin@fsbmm.test** (replace with the official address on deployment).
+reported to the community leaders responsible for enforcement via the project's
+official security/maintainer contact (set on deployment — the `admin@fsbmm.test`
+placeholder in this repo's env files is non-functional and must not be used).
 
 All complaints will be reviewed and investigated promptly and fairly.
 
