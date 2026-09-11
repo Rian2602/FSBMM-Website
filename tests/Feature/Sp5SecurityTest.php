@@ -9,6 +9,8 @@ use App\Models\Event;
 use App\Models\Member;
 use App\Models\Organization;
 use App\Models\User;
+use App\Support\MemberCardService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -105,16 +107,43 @@ class Sp5SecurityTest extends TestCase
         }
     }
 
-    public function test_sba_a_cannot_create_revoke_print_card_for_sba_b_member(): void
+    public function test_sba_a_cannot_create_or_revoke_card_for_sba_b_member(): void
     {
-        [$sbaA, $orgA] = $this->createSbaAdmin('SBA A');
+        [$sbaA] = $this->createSbaAdmin('SBA A');
         [$sbaB, $orgB] = $this->createSbaAdmin('SBA B');
 
-        $memberB = Member::factory()->for($orgB)->create(['name' => 'Member B']);
+        $memberB = Member::factory()->for($orgB)->create(['name' => 'Member B', 'status' => Member::STATUS_ACTIVE]);
+        $cardB = (new MemberCardService)->issue($memberB, $sbaB);
 
-        // Assuming member cards are managed via a Filament resource or page action
+        // Creating a card for a foreign member must be rejected by the service.
+        $this->expectException(AuthorizationException::class);
+        (new MemberCardService)->issue($memberB, $sbaA);
+    }
+
+    public function test_sba_a_cannot_revoke_sba_b_card(): void
+    {
+        [$sbaA] = $this->createSbaAdmin('SBA A');
+        [$sbaB, $orgB] = $this->createSbaAdmin('SBA B');
+
+        $memberB = Member::factory()->for($orgB)->create(['name' => 'Member B', 'status' => Member::STATUS_ACTIVE]);
+        $cardB = (new MemberCardService)->issue($memberB, $sbaB);
+
+        // Revoking a foreign card must be rejected by the service.
+        $this->expectException(AuthorizationException::class);
+        (new MemberCardService)->revoke($cardB, 'uji', $sbaA);
+    }
+
+    public function test_sba_a_cannot_print_sba_b_card(): void
+    {
+        [$sbaA] = $this->createSbaAdmin('SBA A');
+        [$sbaB, $orgB] = $this->createSbaAdmin('SBA B');
+
+        $memberB = Member::factory()->for($orgB)->create(['name' => 'Member B', 'status' => Member::STATUS_ACTIVE]);
+        $cardB = (new MemberCardService)->issue($memberB, $sbaB);
+
+        // The print endpoint is tenant-scoped: a foreign card must 404.
         $this->actingAs($sbaA)
-            ->get('/panel-sba/member-cards/'.$memberB->id.'/print')
+            ->get(route('filament.sba.card.print', ['record' => $cardB->id]))
             ->assertNotFound();
     }
 

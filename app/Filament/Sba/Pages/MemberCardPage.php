@@ -107,7 +107,7 @@ class MemberCardPage extends Page implements HasForms, HasTable
                     ->label('Cetak')
                     ->icon('heroicon-o-printer')
                     ->color('info')
-                    ->url(fn (MemberCard $record): string => url('/panel-sba/kartu-anggota/cetak/'.$record->id))
+                    ->url(fn (MemberCard $record): string => route('filament.sba.card.print', ['record' => $record->id]))
                     ->openUrlInNewTab()
                     ->visible(fn (MemberCard $record): bool => $record->status === MemberCard::STATUS_ACTIVE),
                 Tables\Actions\Action::make('revoke')

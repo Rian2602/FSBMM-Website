@@ -75,6 +75,17 @@ class MemberCardPrintTest extends TestCase
             ->assertRedirect();
     }
 
+    public function test_revoked_card_cannot_be_printed(): void
+    {
+        [$user, $member] = $this->fixture();
+        $card = (new MemberCardService)->issue($member, $user);
+        (new MemberCardService)->revoke($card, 'Kartu hilang', $user);
+
+        $this->actingAs($user)
+            ->get(route('filament.sba.card.print', ['record' => $card->id]))
+            ->assertNotFound();
+    }
+
     private function fixture(): array
     {
         $organisasi = Organization::factory()->create([

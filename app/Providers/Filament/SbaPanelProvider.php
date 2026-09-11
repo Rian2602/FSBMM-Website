@@ -111,6 +111,7 @@ class SbaPanelProvider extends PanelProvider
                     Route::get('/kartu-anggota/cetak/{record}', function (int $record) {
                         $card = MemberCard::where('id', $record)
                             ->where('organization_id', auth()->user()->organization_id)
+                            ->where('status', MemberCard::STATUS_ACTIVE)
                             ->with('member', 'organization')
                             ->firstOrFail();
 
