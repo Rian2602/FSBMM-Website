@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\MemberCard;
 use Illuminate\Http\Response;
+use PDF;
 use Throwable;
 
 class MemberCardPdfRenderer
@@ -17,7 +18,7 @@ class MemberCardPdfRenderer
         $html = view('public.cards.print', ['card' => $card])->render();
 
         try {
-            $pdf = SnappyPDF::loadHTML($html)
+            $pdf = PDF::loadHTML($html)
                 ->setOption('page-size', 'A5')
                 ->setOption('margin-top', '8mm')
                 ->setOption('margin-bottom', '8mm')
