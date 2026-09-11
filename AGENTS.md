@@ -128,6 +128,8 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
   `vendor/bin/phpstan analyse --generate-baseline` after deleting a suppression or
   upgrading PHPStan). `composer verify` fails on NEW findings only.
 - Parallel test run: `composer test:parallel` (uses `brianium/paratest`).
+- Coverage: `composer test:coverage` (needs Xdebug or pcov; missing driver makes
+  PHPUnit abort with a clear message).
 - Frontend: `npm run dev` (dev) / `npm run build` (prod).
 - Fresh install + seed + build: `composer setup`.
 - Full dev with hot reload + queue + logs: `composer dev` (concurrently runs

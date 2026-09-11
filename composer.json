@@ -59,6 +59,10 @@
             "@php artisan config:clear --ansi",
             "@php artisan test --parallel"
         ],
+        "test:coverage": [
+            "@php artisan config:clear --ansi",
+            "@php -d pcov.enabled=1 -d xdebug.mode=coverage vendor/bin/phpunit --coverage-text"
+        ],
         "analyse": [
             "@php vendor/bin/phpstan analyse --memory-limit=1G --no-progress"
         ],

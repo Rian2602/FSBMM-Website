@@ -7,10 +7,10 @@ parameters:
         - app
         - tests
 
-    # Level 7 (max) per repo-management Fase B. Pre-existing findings live in
-    # phpstan-baseline.neon (regenerate with --generate-baseline after deleting
-    # a suppression or upgrading phpstan); `composer analyse` fails only on NEW
-    # findings.
+    # Level 7 per repo-management Fase B (PHPStan max level is 9). Pre-existing
+    # findings live in phpstan-baseline.neon (regenerate with --generate-baseline
+    # after deleting a suppression or upgrading phpstan); `composer analyse` fails
+    # only on NEW findings.
     level: 7
 
     tmpDir: storage/phpstan
