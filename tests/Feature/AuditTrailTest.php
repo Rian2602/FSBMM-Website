@@ -98,6 +98,23 @@ class AuditTrailTest extends TestCase
         $this->assertStringContainsString('CSV', $log->description);
     }
 
+    public function test_complaint_delete_is_audited_without_pii(): void
+    {
+        $org = Organization::factory()->create();
+        $complaint = Complaint::factory()->for($org, 'organization')->create([
+            'title' => 'Judul Pengaduan Rahasia',
+            'description' => 'Isi pengaduan yang sangat rahasia',
+        ]);
+
+        $complaint->delete();
+
+        $log = AuditLog::where('action', 'complaint.deleted')->firstOrFail();
+
+        $this->assertSame($org->id, $log->organization_id);
+        $this->assertStringNotContainsString('Judul Pengaduan Rahasia', $log->description);
+        $this->assertStringNotContainsString('Isi pengaduan yang sangat rahasia', $log->description);
+    }
+
     public function test_admin_audit_page_is_super_admin_only(): void
     {
         $super = User::factory()->create(['role' => User::ROLE_SUPER_ADMIN]);

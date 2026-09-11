@@ -121,6 +121,29 @@ class SbaBatchActionTest extends TestCase
         $this->assertStringContainsString('1 catatan', $log->description);
     }
 
+    public function test_bulk_delete_complaints_is_tenant_scoped_and_audited(): void
+    {
+        [$orgA, $adminA] = $this->fixture();
+        $complaintA = Complaint::factory()->for($orgA, 'organization')->create(['title' => 'Judul Rahasia']);
+
+        $orgB = Organization::factory()->create();
+        $complaintB = Complaint::factory()->for($orgB, 'organization')->create();
+
+        Filament::setCurrentPanel(Filament::getPanel('sba'));
+
+        Livewire::actingAs($adminA)
+            ->test(ListComplaints::class)
+            ->callTableBulkAction('delete', [$complaintA->id, $complaintB->id])
+            ->assertHasNoTableBulkActionErrors();
+
+        $this->assertDatabaseMissing('complaints', ['id' => $complaintA->id]);
+        $this->assertDatabaseHas('complaints', ['id' => $complaintB->id]);
+
+        $log = AuditLog::where('action', 'complaint.deleted')->firstOrFail();
+        $this->assertSame($orgA->id, $log->organization_id);
+        $this->assertStringNotContainsString('Judul Rahasia', $log->description);
+    }
+
     /** @return array{0: Organization, 1: User} */
     private function fixture(): array
     {

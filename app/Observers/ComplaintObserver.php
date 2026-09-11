@@ -30,4 +30,17 @@ class ComplaintObserver
             $complaint->organization_id,
         );
     }
+
+    public function deleted(Complaint $complaint): void
+    {
+        // (** executed: Fase A review — the bulk/single delete actions used
+        // to remove complaints with no audit trace; hook this so every delete
+        // (like member.deleted) lands in the append-only trail. **)
+        app(AuditLogger::class)->record(
+            'complaint.deleted',
+            'Pengaduan dihapus',
+            $complaint,
+            $complaint->organization_id,
+        );
+    }
 }
