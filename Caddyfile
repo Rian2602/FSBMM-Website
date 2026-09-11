@@ -2,16 +2,5 @@
     root * /app/public
     encode zstd gzip
 
-    # Serve Vite/static assets directly so requests for CSS/JS/images never
-    # fall through to Laravel's PHP router.
-    @static path /build/* /favicon.ico /robots.txt /images/* /storage/*
-    handle @static {
-        file_server
-    }
-
-    handle {
-        php_server {
-            try_files {path} index.php
-        }
-    }
+    php_server
 }
