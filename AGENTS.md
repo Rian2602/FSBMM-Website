@@ -138,8 +138,9 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
 ## Git workflow
 
 Git workflow (branch `feature/*`/`hotfix/*`, conventional commits, merge
-`--no-ff`, quality gates wajib) didokumentasikan di `CONTRIBUTING.md`. Repo
-memakai `core.hooksPath = .githooks` (pre-commit Pint + `php -l`, commit-msg
+`--no-ff`, quality gates wajib) didokumentasikan di `CONTRIBUTING.md`; sisi
+maintainer (CI, dependabot, release/tag, mirror) di `REPO_MANAGEMENT.md`.
+Repo memakai `core.hooksPath = .githooks` (pre-commit Pint + `php -l`, commit-msg
 conventional) — diaktifkan otomatis oleh `composer install`/`update` via
 `post-install-cmd`/`post-update-cmd`. Jangan nonaktifkan hooks; jalankan
 `git config core.hooksPath .githooks` bila lingkungan Anda tak punya `.git`
