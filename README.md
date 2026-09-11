@@ -1,6 +1,6 @@
 # FSBMM — Website Federasi Serikat Buruh Makanan dan Minuman
 
-Situs resmi (SP1–SP4) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
+Situs resmi (SP1–SP5) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
 berbasis konten plus panel admin staf federasi. Dibangun dengan **Laravel 12**,
 **Filament 3**, dan **Tailwind CSS v4** — sepenuhnya *data-driven*: semua
 halaman, berita, direktori SBA, e-resource, dan kursus dikelola dari panel
@@ -10,7 +10,7 @@ admin, tanpa konten hardcoded.
 > (database anggota Serikat Pekerja/Buruh tingkat perusahaan). Proyek ini
 > adalah federasi yang menaungi banyak SBA; SP1 menyiapkan fondasinya.
 
-## Cakupan (SP1–SP4)
+## Cakupan (SP1–SP5)
 
 | Area | Rute | Kelola di admin |
 |---|---|---|
@@ -25,12 +25,19 @@ admin, tanpa konten hardcoded.
 | Authoring e-learning (pelajaran, kuis, soal, opsi, kuis akhir per kursus) | — | Pelajaran, Kuis, Soal, Kuis Akhir (E-Learning) |
 | Area belajar "Kursus Saya" (progres per pengguna, materi, kuis) | `/admin`, `/panel-sba` | — |
 | Laporan pembelajaran federasi (kursus × peserta, super admin saja) | `/admin` | — |
+| Laporan operasional SBA: anggota, iuran, kehadiran, pengaduan (statistik + filter server-side, scoped per SBA) | `/panel-sba` | — |
+| Export laporan CSV/XLSX (URL bertanda tangan, file privat per SBA) | `/panel-sba/*/export` | — |
+| Kartu anggota SBA (terbitkan, cetak PDF/HTML + QR, cabut, ganti kartu; 1 kartu aktif per anggota) | `/panel-sba` | — |
+| Verifikasi publik kartu anggota (hanya nama + SBA + status + nomor kartu, tanpa PII) | `/verifikasi/kartu/{token}` | — |
 
 `member_count` kini dihitung otomatis begitu sebuah SBA punya data anggota
 (SP3); SBA yang belum punya data anggota tetap memakai angka manual federasi.
 SP4 menambahkan authoring e-learning di `/admin` (staf) dan area belajar dengan
 progres per pengguna di kedua panel; kursus bersifat global milik federasi
 (bukan per-SBA), dan laporan pembelajaran hanya untuk super admin.
+SP5 menambahkan pelaporan operasional per SBA (4 laporan + export CSV/XLSX),
+kartu anggota digital dengan cetak PDF/HTML + QR, dan verifikasi publik kartu
+via token yang hanya menampilkan data minimal (tanpa PII).
 
 ## Stack
 
@@ -119,7 +126,8 @@ php artisan test          # seluruh suite feature (PHPUnit)
 - `app/Models/` — `User`, `Organization`, `Category`, `Article`, `Page`,
   `PageBlock`, `Eresource`, `Course`; data anggota SP3: `Member`, `Due`,
   `Event`, `Attendance`, `Complaint`; e-learning SP4: `CourseLesson`,
-  `CourseQuiz`, `QuizQuestion`, `QuizOption`, `CourseProgress`, `CourseAttempt`
+  `CourseQuiz`, `QuizQuestion`, `QuizOption`, `CourseProgress`, `CourseAttempt`;
+  kartu anggota SP5: `MemberCard`
 - `app/Support/PageBlockRenderer.php` — merender blok halaman menjadi HTML
   (lihat `resources/views/blocks/*.blade.php`)
 - `app/Support/QuizEngine.php` — penilaian kuis server-side + pencatatan
@@ -138,7 +146,18 @@ php artisan test          # seluruh suite feature (PHPUnit)
 - `resources/views/layouts/public.blade.php` — kerangka situs publik (token
   warna placeholder Swiss-Brutalist-Green; ganti saat aset brand resmi tiba)
 - `database/seeders/` — data demo (admin, SBA, artikel, halaman, e-resource,
-  kursus)
+  kursus, kartu anggota)
+- `app/Exports/` — export laporan SP5 (CSV/XLSX via OpenSpout): `MemberExport`,
+  `DuesExport`, `AttendanceExport`, `ComplaintExport` (berbagi base
+  `ReportExport`); file disimpan di storage privat dan disajikan via URL
+  bertanda tangan
+- `app/Support/MemberCardService.php` — lifecycle kartu anggota (issue/revoke/
+  reissue, satu kartu aktif per anggota); `MemberCardPdfRenderer` (cetak kartu
+  via Snappy PDF dengan fallback HTML saat `wkhtmltopdf` tak tersedia);
+  `QrCodeRenderer` (QR scannable untuk kartu); `MemberCardVerificationService`
+  (pencarian token verifikasi publik)
+- `app/Http/Controllers/CardVerificationController.php` — halaman publik
+  `/verifikasi/kartu/{token}` (data minimal, tanpa PII)
 
 ## Catatan keamanan
 
@@ -158,6 +177,14 @@ php artisan test          # seluruh suite feature (PHPUnit)
   dikirim ke browser; skor + kelulusan dihitung di `QuizEngine`.
 - Laporan pembelajaran federasi (kursus × peserta) hanya untuk super admin
   (`LearningReportWidget::canView()`).
+- **Export laporan SP5** dibuat dengan org dari user sesi (parameter
+  `organization_id` dari request diabaikan), disimpan di storage privat, dan
+  disajikan lewat URL bertanda tangan dengan guard org + realpath containment
+  (anti path-traversal). Laporan per SBA juga ter-scope ke organisasinya.
+- **Kartu anggota SP5**: cetak menampilkan logo, federasi, SBA, nama, nomor
+  kartu, dan QR — **tanpa NIK/foto/tanggal berlaku**. Verifikasi publik
+  `/verifikasi/kartu/{token}` hanya menampilkan nama, SBA, status, dan nomor
+  kartu; token salah/revoked menampilkan pesan generik tanpa enumerasi.
 - **Upload gambar dibatasi & dikompres di server** — logo (maks 2 MB, lebar
   ≤512px), sampul artikel & gambar page-block (maks 4 MB, lebar ≤1600-1920px),
   MIME whitelist eksplisit (JPEG/PNG/WEBP, bukan generic `image/*`). Batas ini
@@ -173,6 +200,10 @@ php artisan test          # seluruh suite feature (PHPUnit)
   pengaduan) dengan aturan PII~~ ✅
 - ~~**SP4** — authoring e-learning (pelajaran + kuis, area belajar "Kursus
   Saya" di kedua panel, progres per pengguna, laporan super admin)~~ ✅
+- ~~**SP5** — pelaporan operasional per SBA + export CSV/XLSX + kartu anggota
+  digital + verifikasi publik~~ ✅
 
 Lihat `docs/superpowers/specs/2026-09-03-fsbmm-website-sp1-design.md` dan
 `docs/superpowers/plans/2026-09-03-sp1-foundation-public-site.md` untuk detail.
+SP5: spec `docs/superpowers/specs/2026-09-08-fsbmm-website-sp5-operational-reporting.md`
+dan plan `docs/superpowers/plans/2026-09-08-fsbmm-website-sp5-operational-reporting.md`.

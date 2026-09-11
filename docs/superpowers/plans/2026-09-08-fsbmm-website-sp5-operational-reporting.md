@@ -1375,9 +1375,19 @@ card token was re-issued (see the Task 10.4 checklist file). **)
 
 ### Task 10.5: Documentation
 
-- [ ] Update `README.md` with SP5 scope
-- [ ] Update `knowledge.md` with SP5 conventions
-- [ ] Document deviations from spec (if any) with `(** executed: ... **)` annotations
+- [x] Update `README.md` with SP5 scope
+- [x] Update `knowledge.md` with SP5 conventions
+- [x] Document deviations from spec (if any) with `(** executed: ... **)` annotations
+
+  (** executed: README scope + structure + security + roadmap beat SP5; knowledge.md
+  synchronized to Phases 0–10, corrected stale claims: `app/Support/*ExportService`
+  → real `app/Exports/{Member,Dues,Attendance,Complaint}Export extends ReportExport`,
+  ReportingTest 15→16, added MemberCardPdfRenderer / MemberCardVerificationService /
+  CardVerificationController + the MemberCard/Page/Print + CardVerification +
+  Sp5SecurityRegression/Sp5InputTampering test suites, removed the outdated
+  "expected failures" Sp5SecurityTest warning. No new
+  spec deviations introduced by this task — cumulative deviations remain as recorded
+  per-phase above. Task 10.4 manual browser QA note: pending human verification. **)
 
 ---
 
