@@ -1,5 +1,8 @@
 # FSBMM — Website Federasi Serikat Buruh Makanan dan Minuman
 
+![CI](https://github.com/Rian2602/FSBMM-Website/actions/workflows/ci.yml/badge.svg)
+![License MIT](https://img.shields.io/badge/license-MIT-green.svg)
+
 Situs resmi (SP1–SP5) Federasi Serikat Buruh Makanan dan Minuman: halaman publik
 berbasis konten plus panel admin staf federasi. Dibangun dengan **Laravel 12**,
 **Filament 3**, dan **Tailwind CSS v4** — sepenuhnya *data-driven*: semua

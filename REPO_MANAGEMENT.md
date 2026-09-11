@@ -17,14 +17,17 @@ CI, dependabot, mirror). Baca juga `AGENTS.md` (aturan permanen repo) dan
 | Lint/statis     | `pint.json`, `phpstan.neon`, `phpstan-baseline.neon`                           |
 | Release history | `CHANGELOG.md` (norma rilis ditegakkan di sini), tag semver             |
 | Keamanan        | `SECURITY.md` (laporan), `LICENSE` (MIT)                                       |
-| Backup          | bare mirror `../fsbmm-website.git.bare` (lihat §Backup)                        |
+| Backup          | GitHub `origin` (source of truth) + bare mirror `../fsbmm-website.git.bare` (lihat §Backup & remote) |
 | SOP ini         | `REPO_MANAGEMENT.md` (di-link dari `AGENTS.md`)                                |
 
 ## Branch & riwayat
 
-- `master` adalah default dan production; **tidak ada force-push ke master**.
-- Kontributor: `feature/*` / `hotfix/*`, merge `--no-ff`. Admin boleh commit
-  langsung untuk docs/chore kecil dengan pesan conventional (lihat riwayat).
+- `master` adalah default dan production; **tidak ada force-push ke master**
+  (dijaga juga oleh GitHub ruleset — branch protection aktif penuh).
+- Semua perubahan masuk via PR dari `feature/*` / `hotfix/*` ke `master`.
+  Owner boleh self-merge PR kecil (docs/chore) tanpa reviewer setelah CI hijau;
+  PR kontributor lain wajib review. **Push langsung ke master diblokir**
+  (ruleset, termasuk admin).
 - Riwayat linier tidak dipaksakan — gunakan merge commit `--no-ff`.
 - Reformat besar (mis. Pint seluruh suite) dicatat di `.git-blame-ignore-revs`
   supaya `git blame` tidak menyalahkan whitespace. Aktifkan di mesin:
@@ -81,18 +84,23 @@ npm run build          # frontend prod build (public/build digitignore)
   2. Commit docs: `chore(repo): release vX.Y.Z — CHANGELOG`.
   3. Buat tag annotated: `git tag -a vX.Y.Z -m "vX.Y.Z"` (tag menunjuk ke
      commit CHANGELOG).
-  4. Push: `git push origin master --tags` (bila remote ada) dan perbarui
-     mirror (lihat §Backup).
+  4. Push: `git push origin master --tags` lalu perbarui mirror lokal
+     (`git push ../fsbmm-website.git.bare master:master --tags`).
+  5. Buat GitHub Release dari tag `vX.Y.Z` (`gh release create vX.Y.Z`).
 - Konvensi peningkatan/penurunan besar (breaking) — lihat `CHANGELOG.md`.
 
-## Backup: bare mirror
+## Backup & remote
 
-- Mirror lokal: bare repo `../fsbmm-website.git.bare` di mesin pengembang.
-- Sinkronkan setiap perubahan master:
+- **GitHub = source of truth**: `https://github.com/Rian2602/FSBMM-Website`
+  (remote `origin`), branch `master` protected (ruleset: require PR + checks
+  `verify`/`composer-audit`, non-fast-forward/no force-push, no-delete;
+  merge `--no-ff` tetap sah — lineran history tidak dipaksakan).
+- Mirror lokal (bare `../fsbmm-website.git.bare`) = backup sekunder di mesin
+  pengembang; setara 1:1 dengan master saat larut malam dev.
+- Sinkronisasi: `git push origin master --tags` untuk publikasi; bila bekerja
+  offline, dorong juga ke mirror lokal:
   `git push ../fsbmm-website.git.bare master:master` (+ `--tags`).
 - Verifikasi sesekali: `git --git-dir=../fsbmm-website.git.bare fsck`.
-- **Belum ada remote GitHub/CGit** (git remote -v kosong). Saat remote resmi
-  ada, ganti `origin` dan baris sinkronisasi di atas.
 
 ## Credentials & secret hygiene
 
