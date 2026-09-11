@@ -1,0 +1,58 @@
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Asia/Jakarta
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+    groups:
+      laravel:
+        patterns:
+          - "laravel/framework"
+          - "laravel/*"
+        exclude-patterns:
+          - "laravel/pint"
+          - "laravel/sail"
+      development:
+        patterns:
+          - "phpunit/*"
+          - "mockery/*"
+          - "nunomaduro/*"
+          - "brianium/*"
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Asia/Jakarta
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+    groups:
+      tailwind:
+        patterns:
+          - "@tailwindcss/*"
+          - "tailwindcss"
+      laravel-vite:
+        patterns:
+          - "laravel-vite-plugin"
+          - "vite"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: Asia/Jakarta
+    labels:
+      - dependencies
+    groups:
+      actions:
+        patterns:
+          - "*"
