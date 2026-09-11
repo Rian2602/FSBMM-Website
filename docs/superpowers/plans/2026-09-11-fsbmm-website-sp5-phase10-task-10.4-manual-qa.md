@@ -40,8 +40,8 @@ Live smoke (server `php artisan serve --port=8091`): `/`, `/tentang`, `/kontak`,
 
 ## 4. Publik — `/verifikasi/kartu/{token}`
 
-Kartu aktif QA (fresh `migrate:fresh --seed` @ evaluation gate 2026-09-11): `FSBMM-2026-QTQWRWJO`
-`http://localhost:8000/verifikasi/kartu/e749081bd145bcb3bdf57c7464d2e0663e640e2c4101a29a815e68dcd61bcf7f`
+Kartu aktif QA (fresh `migrate:fresh --seed` @ evaluation gate re-run 2026-09-11): `FSBMM-2026-QR1DWW0T`
+`http://localhost:8000/verifikasi/kartu/132961f4e1c5330fdf05a64bde1fd7a6ed4009df32f1cfdea59f8378858c9f38`
 
 - [ ] Halaman menampilkan data minimal: nama anggota, org/SBA, nomor kartu, status — TANPA NIK/alamat/gaji/iuran/anekdot pengaduan.
 - [ ] Token salah/asi → pesan generik (tanpa enumerasi).

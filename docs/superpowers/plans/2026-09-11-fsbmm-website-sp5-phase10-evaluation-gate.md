@@ -1,11 +1,17 @@
 # SP5 Phase 10 — Evaluation Gate: Tasks 10.1–10.5
 
-- Tanggal: 2026-09-11
+- Tanggal: 2026-09-11 (re-run @ final committed state, HEAD `939e8e8`)
 - Lingkup: Phase 10 (Final Security + Regression) SP5, tasks 10.1–10.5
 - Evaluasi: berbasis bukti + review subagent independent (mengikuti format gate Phase 6–9)
 - Commit dinilai: `bc5c3bf` (10.1) → `713ebfc` (10.2) → `f797977` (10.3) → `79ee924` (10.4 prep) → `bbbb0ce` (10.5)
 
-## 1. Evidence run (dijalankan ulang utk gate)
+> Re-run note: gate awal (commit `1e743ca`) dijalankan saat worktree masih memuat
+> Phase-4 uncommitted; hasil tetap sama karena artifact 10.1–10.5 byte-identik di
+> HEAD final (`git diff 1e743ca..HEAD` kosong utk kedua file test). Verdict
+> dikonfirmasi ulang oleh subagent di HEAD `939e8e8` (Phase-4 committed):
+> **CONFIRMED READY**.
+
+## 1. Evidence run (re-run @ HEAD 939e8e8)
 
 | Langkah | Hasil |
 |---|---|
@@ -15,7 +21,7 @@
 | `php artisan migrate:fresh --seed` | clean |
 | `composer test` (post-seed) | **407 passed / 1400 assertions / 0 failed** |
 
-Kartu QA pasca-seed: `FSBMM-2026-QTQWRWJO` — token di-update ke
+Kartu QA pasca-seed (re-run): `FSBMM-2026-QR1DWW0T` — token di-update ke
 `docs/superpowers/plans/2026-09-11-fsbmm-website-sp5-phase10-task-10.4-manual-qa.md`.
 
 ## 2. Verdict per-task (independent subagent review)
