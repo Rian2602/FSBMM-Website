@@ -1346,11 +1346,24 @@ card revocation is proven as "unrenderable + status untouched" rather than
 
 ### Task 10.3: Full Regression
 
-- [ ] Run `composer test` — all green (SP1–SP4 + SP5)
-- [ ] Run `vendor/bin/pint --test` — clean
-- [ ] Run `npm run build` — clean
-- [ ] Run `php artisan migrate:fresh --seed` — clean
-- [ ] Run `composer test` again after fresh migration
+- [x] Run `composer test` — all green (SP1–SP4 + SP5)
+- [x] Run `vendor/bin/pint --test` — clean
+- [x] Run `npm run build` — clean
+- [x] Run `php artisan migrate:fresh --seed` — clean
+- [x] Run `composer test` again after fresh migration
+
+(** executed: full regression gate in one pass. `composer test` (run 1):
+407 passed / 1398 assertions / 0 failures (suite = SP1–SP4 + all SP5 tests,
+incl. the 27 uncommitted Phase-4 tests present in the working tree).
+`vendor/bin/pint --test`: passed. `npm run build`: clean
+(site-BaKmgvEx.js, app-CVN497pi.css; public/build is gitignored and was rebuilt).
+`php artisan migrate:fresh --seed`: exit 0, all seeders DONE (incl. SP5
+MemberDataSeeder → 3 org / 15 members / 2 seeder cards + MemberCardSeeder).
+`composer test` (run 2, after fresh migrate): 407 passed / 1398 assertions.
+Environment note: dev box has no wkhtmltopdf installed, so the PDF-branch
+tests run binary-free via the mocked `PDF` facade alias; nothing was skipped.
+The fresh migrate re-created the DB used for Task 10.4 manual QA, so the QA
+card token was re-issued (see the Task 10.4 checklist file). **)
 
 ### Task 10.4: Manual QA
 
