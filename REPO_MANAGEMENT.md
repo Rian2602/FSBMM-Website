@@ -10,7 +10,7 @@ CI, dependabot, mirror). Baca juga `AGENTS.md` (aturan permanen repo) dan
 | Area            | File pengatur                                                                  |
 |-----------------|--------------------------------------------------------------------------------|
 | Arsitektur/data | `AGENTS.md`, `README.md`, `docs/superpowers/` (spec/plan per fase)             |
-| Kontribusi      | `CONTRIBUTING.md`                                                              |
+| Kontribusi      | `CONTRIBUTING.md`, `.github/pull_request_template.md`, `.github/ISSUE_TEMPLATE/`|
 | CI              | `.github/workflows/ci.yml`                                                     |
 | Dependency      | `.github/dependabot.yml`, `composer.lock`, `package-lock.json`                 |
 | Git hooks       | `.githooks/` (diaktifkan `composer.json` `post-install-cmd`)                    |
@@ -18,6 +18,7 @@ CI, dependabot, mirror). Baca juga `AGENTS.md` (aturan permanen repo) dan
 | Release history | `CHANGELOG.md` (norma rilis ditegakkan di sini), tag semver             |
 | Keamanan        | `SECURITY.md` (laporan), `LICENSE` (MIT)                                       |
 | Backup          | bare mirror `../fsbmm-website.git.bare` (lihat §Backup)                        |
+| SOP ini         | `REPO_MANAGEMENT.md` (di-link dari `AGENTS.md`)                                |
 
 ## Branch & riwayat
 
@@ -40,6 +41,7 @@ referensikan nomor/fase di deskripsi (mis. `fase b`).
 
 ```bash
 composer verify        # test suite + phpstan (level 7, baseline) + pint --test
+composer test:parallel # whole suite paralel (lebih cepat di dev)
 npm run build          # frontend prod build (public/build digitignore)
 ```
 
@@ -95,6 +97,9 @@ npm run build          # frontend prod build (public/build digitignore)
 - Password di repo hanya melalui env seeder (`FSBMM_ADMIN_EMAIL`,
   `FSBMM_ADMIN_PASSWORD`, `FSBMM_SBA_PASSWORD`) — ambil dari lingkungan, tidak
   pernah hardcode di file yang dikomit. Lihat `SECURITY.md`.
+- `.env.example` memakai placeholder `FSBMM_ADMIN_PASSWORD`/`FSBMM_SBA_PASSWORD`
+  = `password`. **Wajib diganti** sebelum deploy ke selain lokal/testing —
+  jangan pernah membawa nilai placeholder ke produksi.
 - `APP_KEY` di `.env` lokal; jangan gunakan kunci yang sama di
   produksi/per-dev.
 - `.env`, `public/build`, dan `knowledge.md` ada di `.gitignore` — jangan
