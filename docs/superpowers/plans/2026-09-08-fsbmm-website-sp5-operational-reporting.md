@@ -1229,6 +1229,66 @@ to the HTML fallback. Fixed at root in `MemberCardPdfRenderer` (`use PDF;` +
 the UNCOMMITTED Phase-4 worktree carries the same `SnappyPDF` alias bug — do NOT
 touch now; it is repaired when the Phase-4 batch is committed. **)
 
+### PHASE 9 VALIDATION GATE (TASK 9.1–9.3)
+
+Status: **PASS** @2026-09-11 — evaluasi berbasis bukti atas artifact committed
+(print/PDF kartu anggota; lingkup Phase 9 + fix gate).
+
+- [x] Front §9.9: logo FSBMM, nama federasi, nama SBA, nama anggota, card number,
+      QR — `print.blade.php` + `test_pdf_html_source_contains_card_data_and_qr`
+- [x] Back §9.9: pernyataan, info verifikasi, tanggal penerbitan, kontak
+      (location/website nullable) — `print.blade.php:84-103`
+- [x] Tanpa NIK / foto / emoji gender / tanggal berlaku inventasi —
+      `test_print_does_not_leak_nik_or_gender_emoji` (kini juga
+      `assertDontSee('Berlaku')`, fix gate `f365c33`)
+- [x] Snappy (`barryvdh/laravel-snappy`) + QR (`bacon/bacon-qr-code`, SVG
+      output) — `MemberCardPdfRenderer` + `QrCodeRenderer` (committed `eb7b58e`)
+- [x] PDF on-demand (tidak disimpan permanen) — renderer kembalikan `Response`,
+      tanpa `Storage::put`
+- [x] Authz "same as card operations": guard service org-scope (create/revoke
+      cross-tenant ditolak) + guard route org-scope AND `STATUS_ACTIVE` —
+      `Sp5SecurityTest` + `test_revoked_card_cannot_be_printed`
+- [x] "No public PDF URLs": route hanya di `authenticatedRoutes()` panel SBA —
+      `test_anonymous_cannot_print` (anonymous redirect)
+- [x] "No enumeration": `where('organization_id', auth organization)` +
+      `firstOrFail()` → 404 cross-tenant nyata — `test_print_is_forbidden_for_another_sba_card`
+      + `Sp5SecurityTest::test_sba_a_cannot_print_sba_b_card` (kartu org B
+      diciptakan sungguhan via `MemberCardService->issue`, bukan tebak ID)
+- [x] Cabang PDF teruji walau wkhtmltopdf binary absen (dev box) — facade mock
+      `PDF::shouldReceive('loadHTML'|'setOption'|'output')` →
+      `test_pdf_branch_serves_pdf_when_snappy_available` +
+      `test_pdf_html_source_contains_card_data_and_qr`
+- [x] Regression scope: MemberCardPrintTest 7 passed / 28 assertions,
+      Sp5SecurityTest 12 passed, CardVerificationTest 12 passed → 31 scope tests;
+      suite penuh **388 passed / 1345 assertions / 0 failed**; pint clean;
+      `migrate:fresh --seed` idempotent (tetap 3 org / 15 anggota / 2 kartu)
+
+(** evaluated @2026-09-11: PHASE 9 GATE PASS — evaluasi berbasis bukti; lingkup =
+artifact committed `MemberCardPdfRenderer.php` + `SbaPanelProvider.php` route
+`card.print` + `print.blade.php` + `MemberCardPage` print action +
+`MemberCardPrintTest.php` + `Sp5SecurityTest.php` (commit `2ca5435` +
+`afcf46a` + `c5fe141`). Bukti run saat gate: 31 scope tests hijau; suite penuh
+**388 passed / 1345 assertions / 0 failed**; pint clean; seed idempoten.
+Review independent subagent (general) terhadap artifact committed → **Verdict:
+NOT READY dgn 1 Critical / 1 Important / 0 Minor**; Critical #1: committed blade
+`print.blade.php` memanggil `App\Support\QrCodeRenderer` yang masih
+UNTRACKED (Phase-4) dan `$html = view(...)->render()` berada DI LUAR try/catch
+renderer (`MemberCardPdfRenderer.php:18` vs `:20`) → fresh checkout di HEAD
+500s `filament.sba.card.print` (kartu PDF DAN HTML) plus test suite committed
+merah. **DIPERBAIKI di gate**: commit `eb7b58e` — QrCodeRenderer jadi dependensi
+wajib Task 9.1 dicommit agar HEAD self-contained (per-approval: QrCodeRenderer
+adalah dependensi card print, bukan sekadar bagian Phase-4; contoh certificates
+Phase-4 tetap menunggu batch-nya). Important #2: template merender `Berlaku s.d.
+{issued_at+1th}` inventasi yang kontradiksi §9.9 (6 field front persis, tanpa
+tanggal berlaku) dan keputusan Phase 8 menghapus `valid_until` sebagai inventasi
+(migrasi kartu tak punya kolom itu). **DIPERBAIKI di gate**: commit `f365c33` —
+hapus baris `.validity` + CSS rule; regresi `assertDontSee('Berlaku')`.
+Reviewer konfirmasi bersih: PII zero-leak (nama/nomor/QR/kontak saja), tidak ada
+lintas tenant (route + page table org-scoped), `/verifikasi/kartu/{token}`
+masih di atas catch-all (web.php:83 vs :87). Deferral bertahan: verifikasi visual
+rendering SVG data-URI di Qt WebKit/wkhtmltopdf tetap menunggu env ber-binary
+(Minor tunggal reviewer, selaras anotasi Task 9.1). **)
+
 ---
 
 ## PHASE 10 — Final Security + Regression
