@@ -1193,10 +1193,41 @@ cross-tenant. Suite penuh **386 passed / 0 failed**; pint clean. **)
 
 ### Task 9.3: PDF Tests
 
-- [ ] Test: PDF generates successfully
-- [ ] Test: PDF contains correct data
-- [ ] Test: PDF contains QR code
-- [ ] Test: unauthorized user cannot generate PDF
+- [x] Test: PDF generates successfully
+- [x] Test: PDF contains correct data
+- [x] Test: PDF contains QR code
+- [x] Test: unauthorized user cannot generate PDF
+
+(** evaluated Task 9.3: the canonical checklist is committed as
+`tests/Feature/MemberCardPrintTest.php` (7 tests, `58dd801..`-era file; + 3 tests
+added here). The wkhtmltopdf binary is NOT installed on the dev box, so the PDF
+branch cannot be exercised against a real binary — by design the suite stays
+format-agnostic (same policy as `FederationReportExportTest`). Two additions mock
+the `PDF` facade (registered alias of `Barryvdh\Snappy\Facades\SnappyPdf`) so the
+renderer's PDF branch **is** exercised layout- and data-wise without the binary:
+
+- `test_pdf_branch_serves_pdf_when_snappy_available` — mocks
+  `loadHTML()`/`setOption()`/`output()` and asserts a real PDF response
+  (`application/pdf`, `%PDF-1.4` prefix, `Content-Disposition` filename). Maps
+  checklist item "PDF generates successfully".
+- `test_pdf_html_source_contains_card_data_and_qr` — captures the HTML handed to
+  `loadHTML()` and asserts it contains member name, `card_number` and the
+  `data:image/svg+xml;base64` QR, while still excluding the NIK. Maps the
+  "contains correct data" + "contains QR code" items.
+- Item "unauthorized user cannot generate PDF" is already covered by pre-existing
+  tests (`test_anonymous_cannot_print`, `test_print_is_forbidden_for_another_sba_card`,
+  `test_revoked_card_cannot_be_printed`).
+
+(** executed task 9.3: root-cause fix **) While mocking, the short: the Snappy
+package's registered facade alias is `PDF` (extra.laravel.aliases →
+`Barryvdh\Snappy\Facades\SnappyPdf`), NOT `SnappyPDF`. The renderer used
+`SnappyPDF::loadHTML(...)` which is an unregistered class name — every call threw
+`Error: Class "SnappyPDF" not found`, swallowed by `catch (\Throwable)`, so the
+PDF branch never ran even on hosts with wkhtmltopdf installed, silently degrading
+to the HTML fallback. Fixed at root in `MemberCardPdfRenderer` (`use PDF;` +
+`PDF::loadHTML`). Commit `c5fe141`. (** Note: `FederationReportGenerator.php` in
+the UNCOMMITTED Phase-4 worktree carries the same `SnappyPDF` alias bug — do NOT
+touch now; it is repaired when the Phase-4 batch is committed. **)
 
 ---
 
