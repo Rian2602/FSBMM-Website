@@ -105,7 +105,11 @@
 
     <div class="section">
         <h2>📅 Kegiatan Mendatang</h2>
-        @if ($upcomingEvents->isEmpty())
+        {{-- (** executed: Phase 4 — the blade read $upcomingEvents while
+             FederationReportGenerator::gatherData() returns 'upcoming_events',
+             so render() threw Undefined variable and the dashboard's
+             "Unduh Laporan PDF" button always failed. **) --}}
+        @if ($upcoming_events->isEmpty())
             <p style="font-size: 12px; color: #666;">Tidak ada kegiatan yang dijadwalkan dalam 7 hari ke depan.</p>
         @else
             <table>
@@ -117,7 +121,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($upcomingEvents as $event)
+                    @foreach ($upcoming_events as $event)
                         <tr>
                             <td>{{ $event->title }}</td>
                             <td>{{ $event->event_date->format('d M Y') }}</td>

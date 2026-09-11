@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Complaint;
 use App\Models\Member;
+use App\Observers\ComplaintObserver;
 use App\Observers\MemberObserver;
 use Illuminate\Support\ServiceProvider;
 
@@ -22,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Member::observe(MemberObserver::class);
+        Complaint::observe(ComplaintObserver::class);
     }
 }

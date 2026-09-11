@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CardVerificationController;
 use App\Http\Controllers\Public\ArticleController;
+use App\Http\Controllers\Public\CertificateVerificationController;
 use App\Http\Controllers\Public\CourseController;
 use App\Http\Controllers\Public\EresourceController;
 use App\Http\Controllers\Public\ExportDownloadController;
@@ -82,6 +83,10 @@ Route::get('/e-learning', [CourseController::class, 'index'])->name('courses.ind
 // Card verification — MUST stay above the page catch-all.
 Route::get('/verifikasi/kartu/{token}', [CardVerificationController::class, 'verify'])
     ->name('cards.verify');
+
+// Certificate verification — MUST stay above the page catch-all.
+Route::get('/verifikasi/sertifikat/{token}', [CertificateVerificationController::class, 'verify'])
+    ->name('certificates.verify');
 
 // Page-builder catch-all (no whereIn: see Task 6 annotation).
 Route::get('/{page:slug}', [PageController::class, 'show'])->name('pages.show');

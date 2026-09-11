@@ -4,12 +4,15 @@ namespace App\Filament\Sba\Resources;
 
 use App\Filament\Sba\Resources\DuesResource\Pages;
 use App\Models\Due;
+use App\Support\AuditLogger;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class DuesResource extends Resource
 {
@@ -61,6 +64,34 @@ class DuesResource extends Resource
             Tables\Columns\TextColumn::make('recordedBy.name')
                 ->label('Dicatat Oleh')
                 ->placeholder('-'),
+        ])->bulkActions([
+            // (** executed: Phase 4 bulk operations. Delete is a custom action
+            // (not DeleteBulkAction) so a single PII-free audit entry covers the
+            // whole batch; records still come from the tenant-scoped table query. **)
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\BulkAction::make('deleteDues')
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Hapus iuran terpilih')
+                    ->modalDescription('Catatan iuran yang dipilih akan dihapus permanen.')
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records): void {
+                        $count = $records->count();
+                        $records->each(fn (Due $due) => $due->delete());
+
+                        app(AuditLogger::class)->record(
+                            'dues.bulk_deleted',
+                            'Iuran dihapus massal ('.$count.' catatan)',
+                        );
+
+                        Notification::make()
+                            ->title($count.' catatan iuran dihapus')
+                            ->success()
+                            ->send();
+                    }),
+            ]),
         ]);
     }
 

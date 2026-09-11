@@ -21,18 +21,16 @@ class FederationReportGenerator
         $data = static::gatherData();
         $html = view('reports.federation-summary', $data)->render();
 
-        $name = 'laporan-federasi-'.now()->format('Y-m-d').'.pdf';
+        $name = 'laporan-federasi-'.now()->format('Y-m-d');
         $disk = Storage::disk('local');
         $disk->makeDirectory('exports');
 
-        $path = 'exports/'.$name;
-        SnappyPDF::loadHTML($html)
-            ->setOption('enable-local-file-access', true)
-            ->setOption('page-size', 'A4')
-            ->setOption('margin-top', '15mm')
-            ->setOption('margin-bottom', '15mm')
-            ->setOption('encoding', 'UTF-8')
-            ->save($disk->path($path));
+        $path = static::writePdfOrHtml($disk, $name, $html);
+
+        app(AuditLogger::class)->record(
+            'export.generated',
+            'Laporan operasional federasi dibuat',
+        );
 
         // Sweep expired exports
         static::sweepExpired($disk);
@@ -107,6 +105,39 @@ class FederationReportGenerator
             'resolved_complaints' => $resolvedComplaints,
             'sba_breakdown' => $sbaBreakdown,
         ];
+    }
+
+    /**
+     * Render the report as PDF, or as a print-ready HTML page when the Snappy
+     * backend (wkhtmltopdf) is not installed on the host.
+     */
+    private static function writePdfOrHtml($disk, string $name, string $html): string
+    {
+        $pdfPath = 'exports/'.$name.'.pdf';
+
+        try {
+            SnappyPDF::loadHTML($html)
+                ->setOption('enable-local-file-access', true)
+                ->setOption('page-size', 'A4')
+                ->setOption('margin-top', '15mm')
+                ->setOption('margin-bottom', '15mm')
+                ->setOption('encoding', 'UTF-8')
+                ->save($disk->path($pdfPath));
+
+            return $pdfPath;
+        } catch (\Throwable $e) {
+            // (** executed: the wkhtmltopdf binary is not guaranteed on every
+            // host (this dev box has none), which previously surfaced a 500 to
+            // the dashboard. Fall back to the same report as an inline
+            // print-ready HTML page — ExportDownloadController serves .html
+            // inline instead of forcing a download. **)
+            report($e);
+
+            $htmlPath = 'exports/'.$name.'.html';
+            $disk->put($htmlPath, $html);
+
+            return $htmlPath;
+        }
     }
 
     private static function sweepExpired($disk): void

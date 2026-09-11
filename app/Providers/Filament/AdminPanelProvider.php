@@ -2,12 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\AuditTrailPage;
 use App\Filament\Admin\Pages\CourseDetailPage;
 use App\Filament\Admin\Pages\LessonViewPage;
 use App\Filament\Admin\Pages\MyCoursesPage;
 use App\Filament\Admin\Pages\QuizViewPage;
 use App\Filament\Widgets\GlobalSearchWidget;
 use App\Filament\Widgets\NotificationAlertWidget;
+use App\Http\Controllers\CertificatePrintController;
 use App\Support\FederationReportGenerator;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -50,6 +52,7 @@ class AdminPanelProvider extends PanelProvider
                 CourseDetailPage::class,
                 LessonViewPage::class,
                 QuizViewPage::class,
+                AuditTrailPage::class,
             ])
             // (** executed: plan Task 5 used a page-level getRoutes() method,
             // which does not exist in Filament v3.3.55 (custom pages get a
@@ -63,6 +66,8 @@ class AdminPanelProvider extends PanelProvider
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
                     Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
+                    // Phase 4: shared certificate printer (also registered on the SBA panel).
+                    Route::get('/certificates/{record}/print', CertificatePrintController::class)->name('certificates.print'),
                     Route::get('/generate-report', function () {
                         $url = FederationReportGenerator::generate();
 

@@ -24,7 +24,7 @@ class MemberCardService
             'revocation_reason' => 'Digantikan kartu baru',
         ]);
 
-        return MemberCard::create([
+        $card = MemberCard::create([
             'organization_id' => $member->organization_id,
             'member_id' => $member->id,
             'card_number' => $this->generateUniqueCardNumber(),
@@ -33,6 +33,16 @@ class MemberCardService
             'issued_at' => now(),
             'created_by' => $creator->id,
         ]);
+
+        app(AuditLogger::class)->record(
+            'card.issued',
+            'Kartu anggota diterbitkan ('.$card->card_number.')',
+            $card,
+            $card->organization_id,
+            $creator,
+        );
+
+        return $card;
     }
 
     public function revoke(MemberCard $card, string $reason, User $actor): MemberCard
@@ -50,6 +60,14 @@ class MemberCardService
             'revoked_at' => now(),
             'revocation_reason' => $reason,
         ]);
+
+        app(AuditLogger::class)->record(
+            'card.revoked',
+            'Kartu anggota dicabut ('.$card->card_number.')',
+            $card,
+            $card->organization_id,
+            $actor,
+        );
 
         return $card;
     }

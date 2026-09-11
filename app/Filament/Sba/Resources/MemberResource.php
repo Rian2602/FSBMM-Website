@@ -6,10 +6,12 @@ use App\Filament\Sba\Resources\MemberResource\Pages;
 use App\Models\Member;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class MemberResource extends Resource
 {
@@ -55,6 +57,43 @@ class MemberResource extends Resource
                 ->formatStateUsing(static fn (string $state): string => $state === 'aktif' ? 'Aktif' : 'Nonaktif'),
         ])->filters([
             Tables\Filters\SelectFilter::make('status')->options(['aktif' => 'Aktif', 'nonaktif' => 'Nonaktif']),
+        ])->bulkActions([
+            // (** executed: Phase 4 bulk operations. Records come from the
+            // table query (already tenant-scoped by getEloquentQuery()), so a
+            // crafted record id from another organization resolves to nothing.
+            // Each update fires MemberObserver → member_count stays in sync and
+            // AuditLogger records the change. **)
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\BulkAction::make('activate')
+                    ->label('Aktifkan')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records): void {
+                        $records->each(fn (Member $member) => $member->update(['status' => Member::STATUS_ACTIVE]));
+
+                        Notification::make()
+                            ->title($records->count().' anggota diaktifkan')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\BulkAction::make('deactivate')
+                    ->label('Nonaktifkan')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records): void {
+                        $records->each(fn (Member $member) => $member->update(['status' => Member::STATUS_INACTIVE]));
+
+                        Notification::make()
+                            ->title($records->count().' anggota dinonaktifkan')
+                            ->warning()
+                            ->send();
+                    }),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Support\AuditLogger;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
@@ -31,6 +32,15 @@ abstract class ReportExport
         $format === 'xlsx'
             ? static::writeXlsx($query, $disk->path('exports/'.$name), $filters)
             : static::writeCsv($query, $disk->path('exports/'.$name), $filters);
+
+        // PII-free audit entry: only the dataset + format are recorded, never
+        // the exported member rows.
+        app(AuditLogger::class)->record(
+            'export.generated',
+            sprintf('Ekspor %s dibuat (%s)', static::filenamePrefix(), strtoupper($format)),
+            null,
+            $organizationId,
+        );
 
         return URL::temporarySignedRoute('exports.download', now()->addHour(), ['file' => 'exports/'.$name, 'org' => $organizationId]);
     }

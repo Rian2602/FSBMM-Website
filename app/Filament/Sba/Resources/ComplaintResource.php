@@ -7,10 +7,12 @@ use App\Models\Complaint;
 use App\Models\Member;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
 class ComplaintResource extends Resource
 {
@@ -87,6 +89,43 @@ class ComplaintResource extends Resource
                     default => 'gray',
                 }),
             Tables\Columns\TextColumn::make('submitted_at')->label('Masuk')->date('d M Y'),
+        ])->bulkActions([
+            // (** executed: Phase 4 bulk operations — status transitions go
+            // through ComplaintObserver, so each record is audited. **)
+            Tables\Actions\BulkActionGroup::make([
+                Tables\Actions\BulkAction::make('process')
+                    ->label('Tandai Diproses')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records): void {
+                        $records->each(fn (Complaint $complaint) => $complaint->update(['status' => 'diproses']));
+
+                        Notification::make()
+                            ->title($records->count().' pengaduan ditandai diproses')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\BulkAction::make('resolve')
+                    ->label('Tandai Selesai')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->deselectRecordsAfterCompletion()
+                    ->action(function (Collection $records): void {
+                        $records->each(fn (Complaint $complaint) => $complaint->update([
+                            'status' => 'selesai',
+                            'resolved_at' => now(),
+                        ]));
+
+                        Notification::make()
+                            ->title($records->count().' pengaduan diselesaikan')
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\DeleteBulkAction::make(),
+            ]),
         ]);
     }
 

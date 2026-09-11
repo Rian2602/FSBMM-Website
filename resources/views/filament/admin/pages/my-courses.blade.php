@@ -8,25 +8,28 @@
                 $total = $row['lessons_total'];
                 $complete = $row['is_complete'];
             @endphp
-            <a href="{{ route('filament.admin.courses.show', $course->slug) }}"
-               class="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-primary-400 hover:shadow-md dark:border-white/10 dark:bg-gray-900">
-                <div class="flex items-start justify-between gap-3">
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ $course->title }}</h3>
-                        <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                            {{ ucfirst($course->level) }} · {{ $total }} pelajaran
-                        </p>
+            {{-- (** executed: the card is no longer one big <a> — the certificate
+                 action nests a second link, and nested anchors are invalid HTML. **) --}}
+            <div class="group flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-primary-400 hover:shadow-md dark:border-white/10 dark:bg-gray-900">
+                <a href="{{ route('filament.admin.courses.show', $course->slug) }}" class="flex flex-col">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">{{ $course->title }}</h3>
+                            <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                                {{ ucfirst($course->level) }} · {{ $total }} pelajaran
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            @if ($complete)
+                                <span class="rounded-full bg-lime-600 px-2 py-0.5 text-[11px] font-semibold text-white">✓ Selesai</span>
+                            @endif
+                            <x-filament::icon icon="heroicon-o-arrow-right"
+                                              class="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-primary-500" />
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        @if ($complete)
-                            <span class="rounded-full bg-lime-600 px-2 py-0.5 text-[11px] font-semibold text-white">✓ Selesai</span>
-                        @endif
-                        <x-filament::icon icon="heroicon-o-arrow-right"
-                                          class="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-primary-500" />
-                    </div>
-                </div>
 
-                <p class="mt-3 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">{{ $course->description }}</p>
+                    <p class="mt-3 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">{{ $course->description }}</p>
+                </a>
 
                 <div class="mt-4">
                     <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
@@ -38,7 +41,15 @@
                              style="width: {{ $total > 0 ? round(($done / $total) * 100) : 0 }}%"></div>
                     </div>
                 </div>
-            </a>
+
+                @if ($complete)
+                    <a href="{{ route('filament.admin.certificates.print', $course->slug) }}" target="_blank"
+                       class="mt-4 inline-flex items-center justify-center gap-2 rounded-lg bg-lime-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-lime-500">
+                        <x-filament::icon icon="heroicon-o-academic-cap" class="h-4 w-4" />
+                        Cetak Sertifikat
+                    </a>
+                @endif
+            </div>
         @endforeach
     </div>
 

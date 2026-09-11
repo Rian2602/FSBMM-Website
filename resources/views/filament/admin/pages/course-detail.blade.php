@@ -77,5 +77,20 @@
                 Kuis akhir belum tersedia — kursus dinilai selesai setelah kuis akhir lulus.
             </div>
         @endif
+
+        {{-- Phase 4: completion proof — issues (once) and opens the printable certificate. --}}
+        @if ($courseProgress['is_complete'])
+            <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-lime-200 bg-lime-50 px-5 py-4 dark:border-lime-500/30 dark:bg-lime-500/10">
+                <div>
+                    <p class="text-sm font-semibold text-lime-800 dark:text-lime-200">🎓 Kursus selesai — sertifikat tersedia</p>
+                    <p class="mt-0.5 text-xs text-lime-700/80 dark:text-lime-300/80">Cetak atau simpan sertifikat kelulusan Anda sebagai PDF.</p>
+                </div>
+                <a href="{{ route('filament.admin.certificates.print', $this->getCourse()->slug) }}" target="_blank"
+                   class="inline-flex items-center gap-2 rounded-lg bg-lime-600 px-4 py-2 text-xs font-semibold text-white hover:bg-lime-500">
+                    <x-filament::icon icon="heroicon-o-academic-cap" class="h-4 w-4" />
+                    Cetak Sertifikat
+                </a>
+            </div>
+        @endif
     </div>
 </x-filament-panels::page>
