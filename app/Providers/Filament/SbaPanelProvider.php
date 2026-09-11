@@ -7,6 +7,7 @@ use App\Exports\ComplaintExport;
 use App\Exports\DuesExport;
 use App\Exports\MemberExport;
 use App\Filament\Sba\Pages\AttendanceReportPage;
+use App\Filament\Sba\Pages\AuditTrailPage;
 use App\Filament\Sba\Pages\ComplaintReportPage;
 use App\Filament\Sba\Pages\CourseDetailPage;
 use App\Filament\Sba\Pages\DuesReportPage;
@@ -15,7 +16,9 @@ use App\Filament\Sba\Pages\MemberCardPage;
 use App\Filament\Sba\Pages\MemberReportPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
 use App\Filament\Sba\Pages\QuizViewPage;
+use App\Http\Controllers\CertificatePrintController;
 use App\Models\MemberCard;
+use App\Support\MemberCardPdfRenderer;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -65,6 +68,7 @@ class SbaPanelProvider extends PanelProvider
                 MemberReportPage::class,
                 DuesReportPage::class,
                 MemberCardPage::class,
+                AuditTrailPage::class,
             ])
             // (** executed: same panel-route pattern as the admin panel — see
             // AdminPanelProvider note (page-level getRoutes() does not exist
@@ -74,6 +78,8 @@ class SbaPanelProvider extends PanelProvider
                     Route::get('/courses/{record}', CourseDetailPage::class)->name('courses.show'),
                     Route::get('/courses/{record}/lessons/{lesson}', LessonViewPage::class)->name('courses.lessons.show'),
                     Route::get('/quizzes/{record}', QuizViewPage::class)->name('quizzes.show'),
+                    // Phase 4: shared certificate printer (same controller as /admin).
+                    Route::get('/certificates/{record}/print', CertificatePrintController::class)->name('certificates.print'),
                     Route::get('/member-report/export', function (): RedirectResponse {
                         return redirect()->to(MemberExport::generate(
                             auth()->user()->organization_id,
@@ -108,7 +114,7 @@ class SbaPanelProvider extends PanelProvider
                             ->with('member', 'organization')
                             ->firstOrFail();
 
-                        return view('public.cards.print', ['card' => $card]);
+                        return MemberCardPdfRenderer::render($card);
                     })->name('card.print'),
                 ];
             })
