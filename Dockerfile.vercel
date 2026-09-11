@@ -34,11 +34,17 @@ COPY --from=dependencies --chown=www-data:www-data /app /app
 COPY --from=frontend /frontend/public/build /app/public/build
 COPY . /app
 
+# Pre-compile Blade views at build time: the runtime container filesystem is
+# read-only, so nothing can lazily write storage/framework/views on first
+# request. config:cache/route:cache are intentionally NOT run here (env vars
+# differ between build and Vercel runtime; web.php also has Closure routes,
+# which route:cache cannot serialize).
 RUN mkdir -p \
         storage/framework/cache \
         storage/framework/sessions \
         storage/framework/views \
         bootstrap/cache \
+    && rm -f bootstrap/cache/packages.php bootstrap/cache/services.php \
     && composer dump-autoload --no-dev --classmap-authoritative --no-scripts \
     && php artisan package:discover --ansi \
     && php artisan filament:assets --ansi \

@@ -12,3 +12,9 @@ public/storage
 storage/
 coverage
 .phpunit.cache
+# Generated Filament/panel caches. A dev cache (from the local `composer install`)
+# still lists dev-only providers like laravel/pail, which `package:discover`
+# then tries to load in a `--no-dev` image and crashes the build. Never ship a
+# dev cache into a production image.
+bootstrap/cache/packages.php
+bootstrap/cache/services.php
