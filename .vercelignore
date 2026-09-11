@@ -1,0 +1,19 @@
+# Vercel container image: keep the build context lean and secret-free.
+# vendor/node_modules are installed inside the image (Dockerfile.vercel);
+# .env / local DB / storage never enter the image (Vercel env vars provide
+# configuration; uploads/exports live in the S3-compatible bucket).
+.env
+.env.*
+!.env.example
+database/database.sqlite
+node_modules
+vendor
+public/build
+public/storage
+storage/
+.vitest
+coverage
+.phpunit.cache
+.idea
+.vscode
+*.log

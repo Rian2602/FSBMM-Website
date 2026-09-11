@@ -86,19 +86,38 @@ class UploadedImageOptimizer
         $filename = Str::random(40) . ($isPng ? '.png' : '.jpg');
         $relativePath = $directory . '/' . $filename;
 
-        Storage::disk('public')->makeDirectory($directory);
-        $absolutePath = Storage::disk('public')->path($relativePath);
+        // (** executed: GD needs a real on-disk file, but the target disk may
+        // be an S3-compatible object store (Vercel container runtime has a
+        // read-only filesystem). Render to a temp file first, stream it onto
+        // the disk, then drop the temp. Local disks accept the same streams,
+        // so this stays driver-agnostic. **)
+        $tmpPath = tempnam(sys_get_temp_dir(), 'img_');
+        if ($tmpPath === false) {
+            return static::storeOriginal($file, $directory);
+        }
 
         // PNG stays PNG (transparency); everything else (JPEG, WEBP input) is
         // re-encoded as JPEG — smaller than PNG for photographic content and
         // consistent output regardless of the source format.
         $written = $isPng
-            ? imagepng($source, $absolutePath, 6)
-            : imagejpeg($source, $absolutePath, $quality);
+            ? imagepng($source, $tmpPath, 6)
+            : imagejpeg($source, $tmpPath, $quality);
 
         imagedestroy($source);
 
         if (! $written) {
+            @unlink($tmpPath);
+
+            return static::storeOriginal($file, $directory);
+        }
+
+        // (** executed: both write paths (put of a full buffer vs streaming)
+        // exist; the buffer variant is fine for capped uploads (maxSize), and
+        // keeps the failure branch simple. **)
+        $stored = Storage::disk('public')->put($relativePath, (string) file_get_contents($tmpPath));
+        @unlink($tmpPath);
+
+        if (! $stored) {
             return static::storeOriginal($file, $directory);
         }
 

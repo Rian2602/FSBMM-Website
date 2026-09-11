@@ -40,10 +40,13 @@ class EresourceResource extends Resource
                 Forms\Components\FileUpload::make('file_path')
                     ->label('File PDF')
                     ->acceptedFileTypes(['application/pdf'])
-                    ->maxSize(10240)
+                    // (** executed: Vercel functions reject requests >4.5MB
+                    // (FUNCTION_PAYLOAD_TOO_LARGE), so e-resource PDFs are
+                    // capped at 4MB. Anything larger misses serverless. **)
+                    ->maxSize(4096)
                     ->directory('eresources')
                     ->required()
-                    ->helperText('Hanya PDF, maksimal 10 MB. File tersimpan di storage publik.'),
+                    ->helperText('Hanya PDF, maksimal 4 MB. File tersimpan di storage publik.'),
                 Forms\Components\Textarea::make('description')
                     ->label('Deskripsi')
                     ->maxLength(1000)

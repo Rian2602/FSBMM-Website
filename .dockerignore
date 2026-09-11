@@ -1,0 +1,14 @@
+# Same intent as .vercelignore — Vercel builds the container image from the
+# Vercel-repo filesystem, but a .dockerignore keeps the image context slim and
+# prevents accidentally COPYing a host vendor/ or .env into /app.
+.env
+.env.*
+!.env.example
+database/database.sqlite
+node_modules
+vendor
+public/build
+public/storage
+storage/
+coverage
+.phpunit.cache

@@ -65,7 +65,7 @@
         @if ($article->cover_image_path)
             <div class="relative mt-6 rounded-3xl bg-linear-to-br from-vivid-sky via-vivid-violet to-vivid-rose p-1.5 shadow-lg">
                 <img
-                    src="{{ asset('storage/'.$article->cover_image_path) }}"
+                    src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($article->cover_image_path) }}"
                     alt="Sampul {{ $article->title }}"
                     class="w-full rounded-[calc(1.5rem-4px)] object-cover"
                     loading="lazy"

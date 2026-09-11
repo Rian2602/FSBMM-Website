@@ -22,16 +22,10 @@ class EresourceController extends Controller
         $disk = Storage::disk('public');
         $path = $eresource->file_path;
 
-        // Fail cleanly if the stored path would resolve outside the public
-        // disk root (Flysystem/OS would otherwise turn '../' into a traversal).
-        $real = realpath($disk->path($path));
-        $root = realpath($disk->path(''));
-
-        abort_unless(
-            $real !== false && $root !== false && str_starts_with($real, $root . DIRECTORY_SEPARATOR),
-            404,
-            'File tidak ditemukan.',
-        );
+        // (** executed: Vercel container runtime has no local filesystem path
+        // for S3-backed disks, so the realpath() traversal guard is replaced
+        // with a logical one — reject absolute paths and any '..' segments. **)
+        abort_unless(! str_contains($path, '..') && ! str_starts_with($path, '/'), 404, 'File tidak ditemukan.');
 
         abort_unless($disk->exists($path), 404, 'File tidak ditemukan.');
 

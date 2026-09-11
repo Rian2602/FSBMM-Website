@@ -29,7 +29,7 @@
                     @if ($organization->logo_path)
                         <div class="rounded-2xl bg-linear-to-br from-vivid-sky via-vivid-violet to-vivid-rose p-1">
                             <img
-                                src="{{ asset('storage/'.$organization->logo_path) }}"
+                                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($organization->logo_path) }}"
                                 alt="Logo {{ $organization->name }}"
                                 class="h-20 w-20 rounded-[calc(1rem-2px)] border border-white/40 bg-white object-contain"
                             >

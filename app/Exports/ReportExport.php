@@ -25,13 +25,25 @@ abstract class ReportExport
         $format = $format === 'xlsx' ? 'xlsx' : 'csv';
         $name = sprintf('%s-%s-%s.%s', static::filenamePrefix(), $organizationId, now()->format('Y-m-d'), $format);
         $disk = Storage::disk('local');
-        $disk->makeDirectory('exports');
         static::sweepExpired($disk); // ponytail: lazy sweep per generate; hourly-command only if files accumulate
         $query = static::scopedQuery($organizationId, $filters);
 
+        // (** executed: OpenSpout/fopen need a real on-disk file; write to a
+        // temp path, then stream the bytes onto the (possibly S3-backed)
+        // disk. Local disks accept the same writes, so behaviour is
+        // driver-agnostic. **)
+        $tmpPath = tempnam(sys_get_temp_dir(), 'export_');
+        if ($tmpPath === false) {
+            throw new \RuntimeException('Gagal membuat berkas sementara.');
+        }
+
         $format === 'xlsx'
-            ? static::writeXlsx($query, $disk->path('exports/' . $name), $filters)
-            : static::writeCsv($query, $disk->path('exports/' . $name), $filters);
+            ? static::writeXlsx($query, $tmpPath, $filters)
+            : static::writeCsv($query, $tmpPath, $filters);
+
+        $storedPath = 'exports/' . $name;
+        $disk->put($storedPath, (string) file_get_contents($tmpPath));
+        @unlink($tmpPath);
 
         // PII-free audit entry: only the dataset + format are recorded, never
         // the exported member rows.
@@ -42,7 +54,7 @@ abstract class ReportExport
             $organizationId,
         );
 
-        return URL::temporarySignedRoute('exports.download', now()->addHour(), ['file' => 'exports/' . $name, 'org' => $organizationId]);
+        return URL::temporarySignedRoute('exports.download', now()->addHour(), ['file' => $storedPath, 'org' => $organizationId]);
     }
 
     private static function sweepExpired($disk): void

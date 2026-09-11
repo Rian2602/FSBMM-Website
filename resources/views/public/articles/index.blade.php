@@ -85,7 +85,7 @@
                         @if ($article->cover_image_path)
                             <a href="{{ route('articles.show', $article) }}" class="block shrink-0 overflow-hidden rounded-xl">
                                 <img
-                                    src="{{ asset('storage/'.$article->cover_image_path) }}"
+                                    src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($article->cover_image_path) }}"
                                     alt="Sampul {{ $article->title }}"
                                     class="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-105 sm:h-24 sm:w-36"
                                     loading="lazy"

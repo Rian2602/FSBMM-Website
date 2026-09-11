@@ -27,7 +27,7 @@
         @if (! empty($payload['image_path']))
             <div class="animate-rise rise-delay-3 mt-12 rounded-2xl bg-linear-to-br from-vivid-amber via-vivid-rose to-vivid-violet p-1 shadow-2xl">
                 <img
-                    src="{{ asset('storage/'.$payload['image_path']) }}"
+                    src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($payload['image_path']) }}"
                     alt=""
                     class="max-h-96 w-full rounded-[calc(1rem-2px)] object-cover"
                     loading="lazy"
