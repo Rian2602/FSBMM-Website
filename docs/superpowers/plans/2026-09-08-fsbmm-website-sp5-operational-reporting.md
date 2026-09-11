@@ -1297,18 +1297,27 @@ rendering SVG data-URI di Qt WebKit/wkhtmltopdf tetap menunggu env ber-binary
 
 Create `tests/Feature/Sp5SecurityRegressionTest.php`:
 
-- [ ] SBA A → Member SBA A: Allow
-- [ ] SBA A → Member SBA B: 404/Forbidden
-- [ ] SBA A → Card SBA A: Allow
-- [ ] SBA A → Card SBA B: 404/Forbidden
-- [ ] SBA A → Export SBA A: Allow
-- [ ] SBA A → Export SBA B: Deny
-- [ ] Anonymous → Member: Deny
-- [ ] Anonymous → Export: Deny
-- [ ] Anonymous → Card verification: Allow (minimal)
-- [ ] Editor → Individual member PII: Deny
-- [ ] Editor → Federation aggregate: Deny
-- [ ] SBA → Federation report: Deny
+- [x] SBA A → Member SBA A: Allow
+- [x] SBA A → Member SBA B: 404/Forbidden
+- [x] SBA A → Card SBA A: Allow
+- [x] SBA A → Card SBA B: 404/Forbidden
+- [x] SBA A → Export SBA A: Allow
+- [x] SBA A → Export SBA B: Deny
+- [x] Anonymous → Member: Deny
+- [x] Anonymous → Export: Deny
+- [x] Anonymous → Card verification: Allow (minimal)
+- [x] Editor → Individual member PII: Deny
+- [x] Editor → Federation aggregate: Deny
+- [x] SBA → Federation report: Deny
+
+(** executed: 12-row matrix as a self-standing `Sp5SecurityRegressionTest`
+(rows 2/4/6/8/9/10/12 re-prove coverage already in `Sp5SecurityTest` /
+`CardVerificationTest`). Found + fixed a pass-by-construction bug in
+`Sp5SecurityTest::test_editor_cannot_access_federation_aggregate_reporting`:
+it asserted `assertDontSee('Federation Operations')` — a placeholder present
+nowhere in the app (the real widget heading is 'Ringkasan Operasional
+Federasi'). Replaced with the real heading. Suite: 400 passed (1374
+assertions), pint clean. **)
 
 ### Task 10.2: Input Tampering Tests
 

@@ -179,7 +179,7 @@ class Sp5SecurityTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin')
             ->assertOk()
-            ->assertDontSee('Federation Operations'); // placeholder text for widget
+            ->assertDontSee('Ringkasan Operasional Federasi'); // (** executed: real widget heading — the old 'Federation Operations' placeholder never rendered (pass-by-construction). **)
     }
 
     public function test_sba_admin_cannot_access_federation_reports(): void
