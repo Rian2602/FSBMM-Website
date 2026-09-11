@@ -1321,10 +1321,28 @@ assertions), pint clean. **)
 
 ### Task 10.2: Input Tampering Tests
 
-- [ ] Test: organization_id from request is ignored
-- [ ] Test: member_id from request is validated against tenant
-- [ ] Test: card_id from request is validated against tenant
-- [ ] Test: export filter cannot access other tenant
+- [x] Test: organization_id from request is ignored
+- [x] Test: member_id from request is validated against tenant
+- [x] Test: card_id from request is validated against tenant
+- [x] Test: export filter cannot access other tenant
+
+(** executed: `tests/Feature/Sp5InputTamperingTest.php` (7 tests). Exports
+copy `organization_id` from `auth()->user()`, never the request, so even a
+bogus `/export?organization_id=999999` serves only the caller's org (test 1).
+Tampering `org` on the temporarySignedRoute breaks the signature -> 403 (test 2).
+Cross-tenant `member_id` on the MemberCardPage filter yields no rows (test 3);
+the `issueNew` header action resolves the member but `MemberCardService::guardEligible`
+rejects it before any `member_cards` row is written (test 4). A foreign card is
+unresolvable from the page's org-scoped table query, so no action (incl.
+revoke) can reach it (test 5). `AttendanceExport::scopedQuery` whereKey's
+`event_id` inside the org-scoped event query, so a foreign event_id leaks
+nothing (test 6). Bonus: validly-signed `exports.download` with a `file`
+containing `../` traversal is rejected by the realpath containment check in
+`ExportDownloadController` before download (test 7). Two tests were adjusted
+during execution: a foreign filter shows *no* cards (not A's), and foreign
+card revocation is proven as "unrenderable + status untouched" rather than
+`callTableAction` (which cannot even bind the record). Suite: 407 passed
+(1398 assertions), pint clean. **)
 
 ### Task 10.3: Full Regression
 
