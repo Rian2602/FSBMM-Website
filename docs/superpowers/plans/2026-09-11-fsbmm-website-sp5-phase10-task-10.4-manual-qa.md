@@ -4,6 +4,8 @@ Verifikasi di browser lokal (`php artisan serve` / `composer dev`, URL `http://l
 
 Prep CLI sudah divalidasi (environment dinormalisasi): `composer test` **407 passed / 1398 assertions**, `pint --test` clean, `npm run build` clean, `migrate:fresh --seed` clean (3 SBA / 15 members / 2 kartu seeder), `storage:link` tersedia, 1 kartu aktif dibuat untuk QA.
 
+Live smoke (server `php artisan serve --port=8091`): `/`, `/tentang`, `/kontak`, `/berita`, `/sba`, `/e-resource`, `/e-learning`, `/robots.txt`, `/sitemap.xml` → semua **200**. `/verifikasi/kartu/{token}` (kartu QA) → **200**, menampilkan status Aktif + nomor kartu, tanpa NIK; token salah → 200 dengan pesan generik (tanpa enumerasi). Item panel/login/klik tetap butuh verifikasi manual di bawah.
+
 ## Kredensial (dari seeder, fallback local)
 
 | Area | Login | Password |
