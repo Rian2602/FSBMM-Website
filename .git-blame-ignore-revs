@@ -1,0 +1,5 @@
+# Git blame ignore list for large style/reformat commits.
+# Activate with: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Fase B: whole-suite Pint reformat (79 files, cosmetic whitespace only)
+72c8077

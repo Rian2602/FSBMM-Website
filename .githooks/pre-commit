@@ -1,0 +1,26 @@
+#!/bin/bash
+# Pre-commit hook: lint staged PHP files with Pint + syntax check.
+# Requires vendor/bin/pint (installed via composer install).
+
+phpFiles=$(git diff --cached --name-only --diff-filter=ACM -- '*.php')
+[ -z "$phpFiles" ] && exit 0
+
+# Syntax check (fast, always).
+echo "$phpFiles" | xargs -0 -d '\n' -I {} php -l {} 2>&1 | grep -v "^No syntax errors" || true
+syntaxErrors=$(echo "$phpFiles" | xargs -d '\n' -I {} php -l {} 2>&1 | grep "^Parse error\|^Fatal error" | wc -l)
+if [ "$syntaxErrors" -gt 0 ]; then
+    echo "❌ $syntaxErrors PHP syntax error(s) in staged files."
+    exit 1
+fi
+
+# Pint check on staged files only.
+if [ -f vendor/bin/pint ]; then
+    echo "Running Pint..."
+    vendor/bin/pint --test $phpFiles
+    if [ $? -ne 0 ]; then
+        echo "❌ Pint failed. Run 'vendor/bin/pint' to fix, then re-stage."
+        exit 1
+    fi
+fi
+
+exit 0

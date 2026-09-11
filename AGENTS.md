@@ -133,6 +133,19 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
 - Full dev with hot reload + queue + logs: `composer dev` (concurrently runs
   `php artisan serve`, `queue:listen`, `pail`, `npm run dev`).
 
+## Git workflow
+
+Git workflow (branch `feature/*`/`hotfix/*`, conventional commits, merge
+`--no-ff`, quality gates wajib) didokumentasikan di `CONTRIBUTING.md`. Repo
+memakai `core.hooksPath = .githooks` (pre-commit Pint + `php -l`, commit-msg
+conventional) — diaktifkan otomatis oleh `composer install`/`update` via
+`post-install-cmd`/`post-update-cmd`. Jangan nonaktifkan hooks; jalankan
+`git config core.hooksPath .githooks` bila lingkungan Anda tak punya `.git`
+(CI). `.git-blame-ignore-revs` memigrasi commit reformat besar (Pint whole
+suite) — aktifkan lokal dengan `git config blame.ignoreRevsFile
+.git-blame-ignore-revs`. Menambah/menghapus file ini wajib lewat plan seperti
+perubahan konvensi lainnya.
+
 ## Env gotchas
 
 - Admin account comes from `FSBMM_ADMIN_EMAIL` / `FSBMM_ADMIN_PASSWORD` env in the

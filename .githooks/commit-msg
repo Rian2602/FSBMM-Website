@@ -1,0 +1,21 @@
+#!/bin/bash
+# Commit-msg hook: enforce conventional commit format.
+# Allowed: feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert.
+# Merge commits are exempt.
+
+commitMsg=$(cat "$1")
+
+# Allow merge commits.
+if echo "$commitMsg" | head -1 | grep -qE "^Merge "; then
+    exit 0
+fi
+
+if ! echo "$commitMsg" | head -1 | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore|ci|build|revert)(\(.+\))?: .{1,}"; then
+    echo "❌ Commit message does not follow conventional format."
+    echo "   Expected: type(scope): description"
+    echo "   Types:    feat, fix, docs, style, refactor, perf, test, chore, ci, build, revert"
+    echo "   Example:  feat(course): add certificate printing"
+    exit 1
+fi
+
+exit 0
