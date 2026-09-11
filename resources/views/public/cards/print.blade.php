@@ -34,8 +34,7 @@
         .card-body .sba { font-size: 11px; opacity: .9; display: block; margin-top: 3px; }
         .card-footer { margin-top: 1.25rem; }
         .card-footer::after { content: ''; display: table; clear: both; }
-        .card-number { float: left; font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; letter-spacing: .5px; }
-        .validity { float: right; font-size: 9px; opacity: .8; }
+        .card-number { font-family: 'Courier New', monospace; font-size: 12px; font-weight: 700; letter-spacing: .5px; }
         .card-back { background-color: #f0fdf4; background-image: linear-gradient(135deg, #f0fdf4, #ecfdf5); color: #065f46; padding: 1rem 1.2rem; min-height: 214px; border: 1px solid #d1fae5; }
         .card-back .back-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: .6rem; }
         .card-back .statement { font-size: 10px; line-height: 1.45; color: #374151; display: block; }
@@ -77,7 +76,6 @@
         </div>
         <div class="card-footer">
             <span class="card-number">{{ $card->card_number }}</span>
-            <span class="validity">Berlaku s.d. {{ $card->issued_at?->copy()->addYear()->format('d/m/Y') }}</span>
         </div>
     </div>
 

@@ -51,7 +51,8 @@ class MemberCardPrintTest extends TestCase
             ->get(route('filament.sba.card.print', ['record' => $card->id]))
             ->assertOk()
             ->assertDontSee($member->nik)
-            ->assertDontSee(str_contains($member->gender, 'P') ? '👩' : '👨');
+            ->assertDontSee(str_contains($member->gender, 'P') ? '👩' : '👨')
+            ->assertDontSee('Berlaku');
     }
 
     public function test_print_is_forbidden_for_another_sba_card(): void
