@@ -1168,10 +1168,28 @@ dibuktikan di mesin ini (binary absent) — diverifikasi saat env binary tersedi
 
 ### Task 9.2: Print Action
 
-- [ ] Add print action to `MemberCardPage`
-- [ ] Authorization: same as card operations
-- [ ] No public PDF URLs
-- [ ] No enumeration via PDF endpoint
+- [x] Add print action to `MemberCardPage`
+- [x] Authorization: same as card operations
+- [x] No public PDF URLs
+- [x] No enumeration via PDF endpoint
+
+(** executed @2026-09-11: Task 9.2 DONE (commit `afcf46a`) — print action sudah
+ada sejak Task 7.1 (MemberCardPage:106); dikerjakan residual + deferral gate
+Phase 7. (1) Route `card.print` (SbaPanelProvider:111) kini guard
+`where('status', STATUS_ACTIVE)` — kartu dicabut → 404 (deferral Minor #1:
+sebelumnya URL langsung masih bisa print kartu revoked). (2) Print action pakai
+named route `filament.sba.card.print` menggantikan hardcoded
+`url('/panel-sba/kartu-anggota/cetak/...')` (deferral Minor #2, sesuai konvensi
+AGENTS.md named-route). (3) `Sp5SecurityTest` split 1 → 3 test nyata: create
+foreign-card ditolak service (AuthorizationException), revoke foreign-card
+ditolak service, dan print cross-tenant → 404 — menggantikan URL palsu
+`/panel-sba/member-cards/{member_id}/print` yang tak pernah ada
+(pass-by-construction, deferral Minor #4). (4) Regresi `MemberCardPrintTest`
++`test_revoked_card_cannot_be_printed` → 404. Authz "same as card operations"
+terpenuhi: service guard (org-scope) + route guard (org-scope AND active).
+"No public PDF URLs": route hanya di `authenticatedRoutes()` panel SBA
+(anonymous redirect diuji). "No enumeration": `firstOrFail()` scoped → 404
+cross-tenant. Suite penuh **386 passed / 0 failed**; pint clean. **)
 
 ### Task 9.3: PDF Tests
 
