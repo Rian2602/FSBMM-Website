@@ -43,6 +43,8 @@ jobs:
         run: npm ci
       - name: "Build assets (required: tests render blades with @vite)"
         run: npm run build
+      - name: Prepare .env (no .env in CI; app.key is mandatory)
+        run: cp .env.example .env && php artisan key:generate
       - name: Run quality gate
         run: composer verify
 
@@ -76,6 +78,8 @@ jobs:
         run: npm ci
       - name: "Build assets (required: tests render blades with @vite)"
         run: npm run build
+      - name: Prepare .env (no .env in CI; app.key is mandatory)
+        run: cp .env.example .env && php artisan key:generate
       - name: Run coverage
         run: composer test:coverage
 
