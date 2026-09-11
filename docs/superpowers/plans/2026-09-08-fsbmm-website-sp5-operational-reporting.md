@@ -1140,12 +1140,31 @@ PDF/print + auth-z print action + enumeration-protection test PDF. **)
 
 ### Task 9.1: PDF Generation
 
-- [ ] Create card PDF template (front + back)
-- [ ] Front: logo FSBMM, nama federasi, nama SBA, nama anggota, card number, QR code
-- [ ] Back: pernyataan, informasi verifikasi, tanggal penerbitan, kontak
-- [ ] Use `barryvdh/laravel-snappy` (wkhtmltopdf)
-- [ ] QR code via `bacon/bacon-qr-code` (SVG output)
-- [ ] PDF on-demand (not stored permanently)
+- [x] Create card PDF template (front + back)
+- [x] Front: logo FSBMM, nama federasi, nama SBA, nama anggota, card number, QR code
+- [x] Back: pernyataan, informasi verifikasi, tanggal penerbitan, kontak
+- [x] Use `barryvdh/laravel-snappy` (wkhtmltopdf)
+- [x] QR code via `bacon/bacon-qr-code` (SVG output)
+- [x] PDF on-demand (not stored permanently)
+
+(** executed @2026-09-11: Task 9.1 DONE — `MemberCardPdfRenderer` (commit
+`2ca5435`): render `public.cards.print` → coba `SnappyPDF::loadHTML()->output()`
+(A5, margins 8/10mm, enable-local-file-access, UTF-8) → response PDF inline
+`kartu-{card_number}.pdf`; `catch Throwable` → `report()` + fallback
+text/html inline (wkhtmltopdf binary tak ada di dev box — pola mirror
+`FederationReportGenerator`). Route `card.print` (SbaPanelProvider:111) kini
+return renderer, tidak lagi view langsung. Template `print.blade.php` di-refactor
+jadi SATU template wkhtmltopdf-affine (front+back): buang flexbox/gap (Qt WebKit
+tak bisa render), QR sebagai `<img src="data:image/svg+xml;base64,...">`,
+hapus NIK + emoji gender + foto (drift §9.9; deferral Minor #5 gate Phase 7).
+Front per §9.9: logo FSBMM, nama federasi, nama SBA, nama anggota, card number,
+QR. Back: pernyataan, info verifikasi (URL verifikasi), tanggal penerbitan
+(issued_at), kontak (location/website nullable, conditional). Test baru
+`MemberCardPrintTest` (4, semuanya format-agnostic): artefact pdf-atau-html,
+no-NIK/no-emoji, cross-tenant 404, anonymous redirect. Suite penuh
+**383 passed / 0 failed**; pint clean. Verifikasi SVG di wkhtmltopdf belum
+dibuktikan di mesin ini (binary absent) — diverifikasi saat env binary tersedia
+(Task 9.3). **)
 
 ### Task 9.2: Print Action
 
