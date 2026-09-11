@@ -49,5 +49,3 @@ Rilis pertama — seluruh peta jalan SP1–SP5 selesai + enhancement fase 1–4.
 - Kebijakan PII: federasi aggregate-only; deskripsi audit trail bebas PII.
 - `Organization.description` disanitasi (non-staf); konten rich editor & lesson
   hanya ditulis staf (raw trusted HTML).
-
-[1.0.0]: https://github.com/fsbmm/fsbmm-website/releases/tag/v1.0.0

@@ -5,19 +5,23 @@
 phpFiles=$(git diff --cached --name-only --diff-filter=ACM -- '*.php')
 [ -z "$phpFiles" ] && exit 0
 
-# Syntax check (fast, always).
-echo "$phpFiles" | xargs -0 -d '\n' -I {} php -l {} 2>&1 | grep -v "^No syntax errors" || true
-syntaxErrors=$(echo "$phpFiles" | xargs -d '\n' -I {} php -l {} 2>&1 | grep "^Parse error\|^Fatal error" | wc -l)
+# Syntax check (fast, always). php -l exit code is the source of truth —
+# its "PHP Parse error:" prefix breaks string grep patterns.
+syntaxErrors=0
+while IFS= read -r f; do
+    if ! php -l "$f" >/dev/null 2>&1; then
+        echo "❌ PHP syntax error in $f"
+        syntaxErrors=$((syntaxErrors + 1))
+    fi
+done < <(printf '%s\n' "$phpFiles")
 if [ "$syntaxErrors" -gt 0 ]; then
-    echo "❌ $syntaxErrors PHP syntax error(s) in staged files."
     exit 1
 fi
 
 # Pint check on staged files only.
 if [ -f vendor/bin/pint ]; then
     echo "Running Pint..."
-    vendor/bin/pint --test $phpFiles
-    if [ $? -ne 0 ]; then
+    if ! printf '%s\n' "$phpFiles" | xargs -d '\n' vendor/bin/pint --test; then
         echo "❌ Pint failed. Run 'vendor/bin/pint' to fix, then re-stage."
         exit 1
     fi
