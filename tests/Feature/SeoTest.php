@@ -48,8 +48,8 @@ class SeoTest extends TestCase
 
         $response->assertOk()
             ->assertSee('/sejarah', false)
-            ->assertSee('/berita/'.$article->slug, false)
-            ->assertSee('/sba/'.$org->slug, false);
+            ->assertSee('/berita/' . $article->slug, false)
+            ->assertSee('/sba/' . $org->slug, false);
     }
 
     public function test_robots_txt_declares_absolute_sitemap_url(): void
@@ -58,7 +58,7 @@ class SeoTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString('text/plain', $response->headers->get('content-type') ?? '');
-        $response->assertSee('Sitemap: '.url('/sitemap.xml'), false);
+        $response->assertSee('Sitemap: ' . url('/sitemap.xml'), false);
     }
 
     public function test_index_pages_emit_meta_description(): void
@@ -83,7 +83,7 @@ class SeoTest extends TestCase
         $this->assertSame(
             count($locs),
             count(array_unique($locs)),
-            'Sitemap mengulang loc yang sama.'
+            'Sitemap mengulang loc yang sama.',
         );
     }
 

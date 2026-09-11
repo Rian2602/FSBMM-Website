@@ -62,7 +62,7 @@ class SbaEventAttendanceTest extends TestCase
         $event = Event::factory()->for($other)->create();
 
         $this->actingAs($user)
-            ->get('/panel-sba/events/'.$event->id.'/edit')
+            ->get('/panel-sba/events/' . $event->id . '/edit')
             ->assertNotFound();
     }
 

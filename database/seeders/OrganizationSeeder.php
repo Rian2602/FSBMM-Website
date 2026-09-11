@@ -39,7 +39,7 @@ class OrganizationSeeder extends Seeder
         foreach ($organizations as $org) {
             Organization::firstOrCreate(
                 ['slug' => str($org['name'])->slug()],
-                [...$org, 'is_published' => true, 'website' => null, 'logo_path' => null]
+                [...$org, 'is_published' => true, 'website' => null, 'logo_path' => null],
             );
         }
     }

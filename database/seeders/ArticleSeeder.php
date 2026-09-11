@@ -53,7 +53,7 @@ class ArticleSeeder extends Seeder
             ],
         ];
 
-        $body = fn (string $lead) => '<p>'.$lead.'</p><p>Kegiatan ini merupakan bagian dari program penguatan organisasi yang dijalankan sepanjang tahun anggaran berjalan. Perwakilan SBA dari berbagai daerah mengikuti agenda secara langsung dan menyampaikan aspirasi anggotanya untuk dibahas bersama pengurus federasi.</p><p>Federasi berkomitmen menjaga keberlanjutan program dengan melibatkan seluruh pemangku kepentingan secara transparan dan partisipatif.</p>';
+        $body = fn (string $lead) => '<p>' . $lead . '</p><p>Kegiatan ini merupakan bagian dari program penguatan organisasi yang dijalankan sepanjang tahun anggaran berjalan. Perwakilan SBA dari berbagai daerah mengikuti agenda secara langsung dan menyampaikan aspirasi anggotanya untuk dibahas bersama pengurus federasi.</p><p>Federasi berkomitmen menjaga keberlanjutan program dengan melibatkan seluruh pemangku kepentingan secara transparan dan partisipatif.</p>';
 
         foreach ($articles as $i => $article) {
             Article::firstOrCreate(
@@ -62,11 +62,11 @@ class ArticleSeeder extends Seeder
                     'title' => $article['title'],
                     'category_id' => $article['category']->id,
                     'author_id' => $author->id,
-                    'excerpt' => 'Rangkuman singkat: '.$article['title'].'. Simak selengkapnya di halaman berita federasi.',
+                    'excerpt' => 'Rangkuman singkat: ' . $article['title'] . '. Simak selengkapnya di halaman berita federasi.',
                     'body' => $body('Berita ini disampaikan untuk seluruh anggota FSBMM dan serikat pekerja di bawah naungannya.'),
                     'published_at' => $article['published_at'],
                     'is_featured' => $article['is_featured'],
-                ]
+                ],
             );
         }
     }

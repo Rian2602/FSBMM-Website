@@ -25,11 +25,11 @@ class EresourceFactory extends Factory
         return [
             'title' => $title,
             // Unique slug suffix so several factory rows never collide.
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 99999),
+            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(100, 99999),
             'description' => fake()->paragraph(),
             // Dummy relative path; tests that need a real file put one on the
             // disk themselves (Storage::fake('public')).
-            'file_path' => 'eresources/'.Str::slug($title).'.pdf',
+            'file_path' => 'eresources/' . Str::slug($title) . '.pdf',
             'is_published' => true,
             'downloads_count' => 0,
         ];

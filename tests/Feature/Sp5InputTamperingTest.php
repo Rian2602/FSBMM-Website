@@ -61,7 +61,7 @@ class Sp5InputTamperingTest extends TestCase
         $query = [];
         parse_str((string) parse_url((string) $url, PHP_URL_QUERY), $query);
         $query['org'] = $orgB->id;
-        $tampered = parse_url((string) $url, PHP_URL_PATH).'?'.http_build_query($query);
+        $tampered = parse_url((string) $url, PHP_URL_PATH) . '?' . http_build_query($query);
 
         $this->actingAs($sbaA)
             ->get($tampered)
@@ -150,7 +150,7 @@ class Sp5InputTamperingTest extends TestCase
         // event_id of another tenant is whereKey'd inside the org-scoped event
         // query, so the export yields only A's own attendance rows.
         $redirect = $this->actingAs($sbaA)
-            ->get('/panel-sba/attendance-report/export?event_id='.$eventB->id)
+            ->get('/panel-sba/attendance-report/export?event_id=' . $eventB->id)
             ->assertStatus(302);
 
         $followed = $this->get($redirect->headers->get('Location'));

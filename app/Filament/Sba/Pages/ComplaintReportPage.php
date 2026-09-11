@@ -130,15 +130,15 @@ class ComplaintReportPage extends Page implements HasForms, HasTable
         $data = $this->data;
 
         if (! empty($data['submitted_start']) && ! empty($data['submitted_end'])) {
-            return $data['submitted_start'].' s.d. '.$data['submitted_end'];
+            return $data['submitted_start'] . ' s.d. ' . $data['submitted_end'];
         }
 
         if (! empty($data['submitted_start'])) {
-            return 'Mulai '.$data['submitted_start'];
+            return 'Mulai ' . $data['submitted_start'];
         }
 
         if (! empty($data['submitted_end'])) {
-            return 'Sampai '.$data['submitted_end'];
+            return 'Sampai ' . $data['submitted_end'];
         }
 
         return 'Semua tanggal';

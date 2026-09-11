@@ -33,7 +33,7 @@ class NotificationAlertWidget extends Widget
                 'type' => 'warning',
                 'icon' => 'heroicon-o-exclamation-triangle',
                 'title' => 'Pengaduan Terbuka',
-                'message' => $openComplaintsCount.' pengaduan belum diselesaikan',
+                'message' => $openComplaintsCount . ' pengaduan belum diselesaikan',
                 'details' => [],
                 'url' => '/admin/complaints',
             ];
@@ -52,7 +52,7 @@ class NotificationAlertWidget extends Widget
                 'type' => 'info',
                 'icon' => 'heroicon-o-banknotes',
                 'title' => 'Iuran Belum Tercatat',
-                'message' => $pendingCount.' anggota belum tercatat membayar iuran bulan ini',
+                'message' => $pendingCount . ' anggota belum tercatat membayar iuran bulan ini',
                 'details' => [],
                 'url' => '/admin/dues',
             ];
@@ -69,9 +69,9 @@ class NotificationAlertWidget extends Widget
                 'type' => 'success',
                 'icon' => 'heroicon-o-calendar',
                 'title' => 'Kegiatan Minggu Ini',
-                'message' => count($upcomingEvents).' kegiatan akan dilaksanakan',
+                'message' => count($upcomingEvents) . ' kegiatan akan dilaksanakan',
                 'details' => $upcomingEvents->take(5)->map(fn ($e) => [
-                    'text' => $e->title.' — '.$e->event_date->format('d M Y'),
+                    'text' => $e->title . ' — ' . $e->event_date->format('d M Y'),
                     'status' => 'upcoming',
                 ])->toArray(),
                 'url' => '/admin/events',

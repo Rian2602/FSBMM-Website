@@ -62,7 +62,7 @@ class SbaDuesTest extends TestCase
         $otherDue = Due::factory()->for($other)->for($otherMember)->create();
 
         $this->actingAs($user)
-            ->get('/panel-sba/dues/'.$otherDue->id.'/edit')
+            ->get('/panel-sba/dues/' . $otherDue->id . '/edit')
             ->assertNotFound();
     }
 

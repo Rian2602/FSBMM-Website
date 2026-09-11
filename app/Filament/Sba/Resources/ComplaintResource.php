@@ -103,7 +103,7 @@ class ComplaintResource extends Resource
                         $records->each(fn (Complaint $complaint) => $complaint->update(['status' => 'diproses']));
 
                         Notification::make()
-                            ->title($records->count().' pengaduan ditandai diproses')
+                            ->title($records->count() . ' pengaduan ditandai diproses')
                             ->success()
                             ->send();
                     }),
@@ -120,7 +120,7 @@ class ComplaintResource extends Resource
                         ]));
 
                         Notification::make()
-                            ->title($records->count().' pengaduan diselesaikan')
+                            ->title($records->count() . ' pengaduan diselesaikan')
                             ->success()
                             ->send();
                     }),

@@ -96,7 +96,7 @@ class LearnerAccessTest extends TestCase
             ->assertSee('Materi Satu');
 
         $this->actingAs($sba)
-            ->get('/panel-sba/courses/kursus-sba/lessons/'.$lesson->id)
+            ->get('/panel-sba/courses/kursus-sba/lessons/' . $lesson->id)
             ->assertOk()
             ->assertSee('Materi Satu');
     }
@@ -154,7 +154,7 @@ class LearnerAccessTest extends TestCase
             fn () => Livewire::actingAs($editor)
                 ->test(CourseDetailPage::class, ['record' => $course])
                 ->call('toggleLessonCompletion', $lesson->id),
-            HttpException::class
+            HttpException::class,
         );
 
         $this->assertDatabaseMissing('course_progress', [
@@ -178,8 +178,8 @@ class LearnerAccessTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin/courses/kursus-duakuis')
             ->assertOk()
-            ->assertSee('/admin/quizzes/'.$k1->id, false)
-            ->assertSee('/admin/quizzes/'.$k2->id, false);
+            ->assertSee('/admin/quizzes/' . $k1->id, false)
+            ->assertSee('/admin/quizzes/' . $k2->id, false);
     }
 
     public function test_course_detail_shows_lesson_statuses_and_quiz_button(): void
@@ -237,7 +237,7 @@ class LearnerAccessTest extends TestCase
         ]);
 
         $this->actingAs($editor)
-            ->get('/admin/courses/kursus-konten/lessons/'.$lesson->id)
+            ->get('/admin/courses/kursus-konten/lessons/' . $lesson->id)
             ->assertOk()
             ->assertSee('Header Bab');
     }
@@ -279,7 +279,7 @@ class LearnerAccessTest extends TestCase
             fn () => Livewire::actingAs($sba)
                 ->test(SbaCourseDetailPage::class, ['record' => $course])
                 ->call('toggleLessonCompletion', $lesson->id),
-            HttpException::class
+            HttpException::class,
         );
 
         $this->assertDatabaseMissing('course_progress', [
@@ -372,7 +372,7 @@ class LearnerAccessTest extends TestCase
         $quiz = CourseQuiz::factory()->for($course)->create(['lesson_id' => null]);
 
         $this->actingAs($editor)
-            ->get('/admin/quizzes/'.$quiz->id)
+            ->get('/admin/quizzes/' . $quiz->id)
             ->assertNotFound();
     }
 
@@ -387,7 +387,7 @@ class LearnerAccessTest extends TestCase
         QuizOption::factory()->for($q, 'question')->create(['option' => 'Benar', 'is_correct' => true]);
 
         $this->actingAs($sba)
-            ->get('/panel-sba/quizzes/'.$quiz->id)
+            ->get('/panel-sba/quizzes/' . $quiz->id)
             ->assertOk()
             ->assertSee('Benar');
 

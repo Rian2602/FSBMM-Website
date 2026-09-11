@@ -20,7 +20,7 @@ class LearningProgress
     {
         CourseProgress::updateOrCreate(
             ['user_id' => $user->id, 'course_id' => $course->id, 'lesson_id' => $lesson->id],
-            ['is_completed' => $completed, 'completed_at' => $completed ? now() : null]
+            ['is_completed' => $completed, 'completed_at' => $completed ? now() : null],
         );
     }
 
@@ -135,7 +135,7 @@ class LearningProgress
             // separate count. **)
             'rows' => $users->map(fn (User $user) => array_merge(
                 ['user' => $user],
-                $this->userCourseStatus($user, $course)
+                $this->userCourseStatus($user, $course),
             ))->values(),
         ])->values();
     }

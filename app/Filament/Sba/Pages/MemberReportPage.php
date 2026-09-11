@@ -87,13 +87,13 @@ class MemberReportPage extends Page implements HasForms, HasTable
             $query->where('status', $data['status']);
         }
         if (! empty($data['department'])) {
-            $query->where('department', 'like', '%'.$data['department'].'%');
+            $query->where('department', 'like', '%' . $data['department'] . '%');
         }
         if (! empty($data['position'])) {
-            $query->where('position', 'like', '%'.$data['position'].'%');
+            $query->where('position', 'like', '%' . $data['position'] . '%');
         }
         if (! empty($data['education'])) {
-            $query->where('education', 'like', '%'.$data['education'].'%');
+            $query->where('education', 'like', '%' . $data['education'] . '%');
         }
         if (! empty($data['gender'])) {
             $query->where('gender', $data['gender']);

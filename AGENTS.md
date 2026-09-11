@@ -118,9 +118,16 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
 
 - Test whole suite: `composer test` (runs `config:clear` then `php artisan test`).
   Single: `php artisan test --filter <Name>`.
-- Lint: `vendor/bin/pint` (default Laravel Pint config — no `pint.json`, don't add
-  one). NOT part of `composer test`; generated Filament `Create*/Edit*` pages can
-  drift (unused imports) — run before committing.
+- Lint: `vendor/bin/pint` (config in repo `pint.json` — stricter than the default
+  Laravel preset: alpha-order imports, short arrays, no unused imports).
+  Frontend/static gate: `composer verify` (runs `composer test` + PHPStan + Pint).
+  Generated Filament `Create*/Edit*` pages can drift (unused imports) — run Pint
+  before committing.
+- Static analysis: `composer analyse` (PHPStan level 7 via Larastan; pre-existing
+  findings live in `phpstan-baseline.neon` — regenerate with
+  `vendor/bin/phpstan analyse --generate-baseline` after deleting a suppression or
+  upgrading PHPStan). `composer verify` fails on NEW findings only.
+- Parallel test run: `composer test:parallel` (uses `brianium/paratest`).
 - Frontend: `npm run dev` (dev) / `npm run build` (prod).
 - Fresh install + seed + build: `composer setup`.
 - Full dev with hot reload + queue + logs: `composer dev` (concurrently runs

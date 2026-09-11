@@ -60,7 +60,7 @@ class GlobalSearchWidget extends Widget implements HasForms
             return;
         }
 
-        $search = '%'.$query.'%';
+        $search = '%' . $query . '%';
         $results = [];
 
         // Search members
@@ -105,7 +105,7 @@ class GlobalSearchWidget extends Widget implements HasForms
             ->map(fn ($e) => [
                 'type' => 'Kegiatan',
                 'title' => $e->title,
-                'subtitle' => 'Tanggal: '.($e->event_date?->format('d M Y') ?? '-'),
+                'subtitle' => 'Tanggal: ' . ($e->event_date?->format('d M Y') ?? '-'),
                 'url' => "/panel-sba/{$e->organization_id}/events/{$e->id}/edit",
                 'color' => 'success',
             ]);
@@ -120,8 +120,8 @@ class GlobalSearchWidget extends Widget implements HasForms
             ->get()
             ->map(fn ($d) => [
                 'type' => 'Iuran',
-                'title' => ($d->member?->name ?? 'N/A')." — {$d->period}",
-                'subtitle' => 'Rp '.number_format($d->amount, 0, ',', '.'),
+                'title' => ($d->member?->name ?? 'N/A') . " — {$d->period}",
+                'subtitle' => 'Rp ' . number_format($d->amount, 0, ',', '.'),
                 'url' => "/panel-sba/{$d->organization_id}/dues/{$d->id}/edit",
                 'color' => 'warning',
             ]);

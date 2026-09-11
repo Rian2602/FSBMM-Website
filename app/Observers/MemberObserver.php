@@ -20,7 +20,7 @@ class MemberObserver
             $member->organization->syncMemberCount();
         }
 
-        $this->audit('member.updated', 'Data anggota diperbarui ('.$this->changedFields($member).')', $member);
+        $this->audit('member.updated', 'Data anggota diperbarui (' . $this->changedFields($member) . ')', $member);
     }
 
     public function deleted(Member $member): void

@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    paths:
+        - app
+        - tests
+
+    # Level 7 (max) per repo-management Fase B. Pre-existing findings live in
+    # phpstan-baseline.neon (regenerate with --generate-baseline after deleting
+    # a suppression or upgrading phpstan); `composer analyse` fails only on NEW
+    # findings.
+    level: 7
+
+    tmpDir: storage/phpstan
+
+    # larastan ships Laravel bootstrapping; keep tool caches out of the tree.
+    excludePaths:
+        analyse:
+            - database/migrations
+            - routes/console.php

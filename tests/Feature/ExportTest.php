@@ -111,7 +111,7 @@ class ExportTest extends TestCase
         Member::factory()->for($orgB)->create(['name' => 'Budi Santoso']);
 
         $download = $this->actingAs($sbaA)
-            ->followExport('/panel-sba/member-report/export?organization_id='.$orgB->id);
+            ->followExport('/panel-sba/member-report/export?organization_id=' . $orgB->id);
         $download->assertOk();
         $csv = file_get_contents((string) $download->baseResponse->getFile());
 
@@ -183,7 +183,7 @@ class ExportTest extends TestCase
         Due::factory()->for($orgB)->for($memberB, 'member')->create(['period' => '2026-09']);
 
         $download = $this->actingAs($sbaA)
-            ->followExport('/panel-sba/dues-report/export?organization_id='.$orgB->id);
+            ->followExport('/panel-sba/dues-report/export?organization_id=' . $orgB->id);
         $download->assertOk();
         $csv = file_get_contents((string) $download->baseResponse->getFile());
 
@@ -268,7 +268,7 @@ class ExportTest extends TestCase
         Attendance::factory()->for($orgB)->for($eventB, 'event')->for($memberB, 'member')->create();
 
         $download = $this->actingAs($sbaA)
-            ->followExport('/panel-sba/attendance-report/export?organization_id='.$orgB->id);
+            ->followExport('/panel-sba/attendance-report/export?organization_id=' . $orgB->id);
         $download->assertOk();
         $csv = file_get_contents((string) $download->baseResponse->getFile());
 
@@ -305,7 +305,7 @@ class ExportTest extends TestCase
         Attendance::factory()->for($org)->for($eventAgs, 'event')->for($memberB, 'member')->create();
 
         $download = $this->actingAs($user)
-            ->followExport('/panel-sba/attendance-report/export?event_id='.$eventSep->id);
+            ->followExport('/panel-sba/attendance-report/export?event_id=' . $eventSep->id);
         $download->assertOk();
         $csv = file_get_contents((string) $download->baseResponse->getFile());
 
@@ -370,7 +370,7 @@ class ExportTest extends TestCase
         Complaint::factory()->for($orgB)->create(['title' => 'Keluhan B']);
 
         $download = $this->actingAs($sbaA)
-            ->followExport('/panel-sba/complaint-report/export?organization_id='.$orgB->id);
+            ->followExport('/panel-sba/complaint-report/export?organization_id=' . $orgB->id);
         $download->assertOk();
         $csv = file_get_contents((string) $download->baseResponse->getFile());
 
@@ -425,7 +425,7 @@ class ExportTest extends TestCase
 
         // Hand-built (unsigned) URL to the exact same file — no valid signature.
         $this->get(route('exports.download', [
-            'file' => 'exports/member-'.$org->id.'-'.now()->format('Y-m-d').'.csv',
+            'file' => 'exports/member-' . $org->id . '-' . now()->format('Y-m-d') . '.csv',
         ]))->assertForbidden();
     }
 

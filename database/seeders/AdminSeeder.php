@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
         if (! $email || ! $password) {
             if (! app()->environment(['local', 'testing'])) {
                 throw new \RuntimeException(
-                    'FSBMM_ADMIN_EMAIL dan FSBMM_ADMIN_PASSWORD wajib di-set untuk seeding di luar local/testing.'
+                    'FSBMM_ADMIN_EMAIL dan FSBMM_ADMIN_PASSWORD wajib di-set untuk seeding di luar local/testing.',
                 );
             }
 
@@ -32,7 +32,7 @@ class AdminSeeder extends Seeder
                 'name' => 'Admin FSBMM',
                 'password' => $password,
                 'role' => User::ROLE_SUPER_ADMIN,
-            ]
+            ],
         );
     }
 }

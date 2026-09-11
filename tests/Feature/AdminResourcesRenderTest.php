@@ -50,13 +50,13 @@ class AdminResourcesRenderTest extends TestCase
                 '/admin/courses',
             ],
             'edit' => [
-                '/admin/users/'.$staff->getRouteKey().'/edit',
-                '/admin/organizations/'.$organization->getRouteKey().'/edit',
-                '/admin/categories/'.$category->getRouteKey().'/edit',
-                '/admin/articles/'.$article->getRouteKey().'/edit',
-                '/admin/pages/'.$page->getRouteKey().'/edit',
-                '/admin/eresources/'.$eresource->getRouteKey().'/edit',
-                '/admin/courses/'.$course->getRouteKey().'/edit',
+                '/admin/users/' . $staff->getRouteKey() . '/edit',
+                '/admin/organizations/' . $organization->getRouteKey() . '/edit',
+                '/admin/categories/' . $category->getRouteKey() . '/edit',
+                '/admin/articles/' . $article->getRouteKey() . '/edit',
+                '/admin/pages/' . $page->getRouteKey() . '/edit',
+                '/admin/eresources/' . $eresource->getRouteKey() . '/edit',
+                '/admin/courses/' . $course->getRouteKey() . '/edit',
             ],
         ];
 

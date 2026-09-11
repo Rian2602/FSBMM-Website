@@ -25,14 +25,14 @@ class OrganizationTest extends TestCase
     {
         $org = Organization::factory()->create(['is_published' => true]);
 
-        $this->get('/sba/'.$org->slug)->assertOk()->assertSee($org->name);
+        $this->get('/sba/' . $org->slug)->assertOk()->assertSee($org->name);
     }
 
     public function test_unpublished_sba_profile_returns_404(): void
     {
         $org = Organization::factory()->create(['is_published' => false]);
 
-        $this->get('/sba/'.$org->slug)->assertNotFound();
+        $this->get('/sba/' . $org->slug)->assertNotFound();
     }
 
     public function test_unsafe_website_value_renders_inert_not_as_link(): void
@@ -42,7 +42,7 @@ class OrganizationTest extends TestCase
             'website' => 'javascript:alert(1)',
         ]);
 
-        $response = $this->get('/sba/'.$org->slug);
+        $response = $this->get('/sba/' . $org->slug);
 
         $response->assertOk();
         $response->assertDontSee('href="javascript:', false);
@@ -56,7 +56,7 @@ class OrganizationTest extends TestCase
             'website' => 'https://example.org/sba',
         ]);
 
-        $this->get('/sba/'.$org->slug)
+        $this->get('/sba/' . $org->slug)
             ->assertOk()
             ->assertSee('href="https://example.org/sba"', false);
     }

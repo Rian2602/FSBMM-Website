@@ -35,7 +35,7 @@ class Sp5SecurityTest extends TestCase
 
         // Directly accessing member B's edit page should 404 (scoped)
         $this->actingAs($sbaA)
-            ->get('/panel-sba/members/'.$memberB->id.'/edit')
+            ->get('/panel-sba/members/' . $memberB->id . '/edit')
             ->assertNotFound();
     }
 
@@ -62,7 +62,7 @@ class Sp5SecurityTest extends TestCase
         Member::factory()->for($orgB)->create(['name' => 'Member SBA B']);
 
         $download = $this->actingAs($sbaA)
-            ->get('/panel-sba/member-report/export?organization_id='.$orgB->id)
+            ->get('/panel-sba/member-report/export?organization_id=' . $orgB->id)
             ->assertStatus(302);
 
         $followed = $this->get($download->headers->get('Location'));
@@ -97,7 +97,7 @@ class Sp5SecurityTest extends TestCase
             'complaint-report' => 'Keluhan B',
         ] as $endpoint => $forbidden) {
             $redirect = $this->actingAs($sbaA)
-                ->get('/panel-sba/'.$endpoint.'/export?organization_id='.$orgB->id)
+                ->get('/panel-sba/' . $endpoint . '/export?organization_id=' . $orgB->id)
                 ->assertStatus(302);
             $downloaded = $this->get($redirect->headers->get('Location'));
             $downloaded->assertOk();

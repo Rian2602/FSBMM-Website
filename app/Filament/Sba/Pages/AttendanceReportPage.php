@@ -164,15 +164,15 @@ class AttendanceReportPage extends Page implements HasForms, HasTable
         $data = $this->data;
 
         if (! empty($data['event_date_start']) && ! empty($data['event_date_end'])) {
-            return $data['event_date_start'].' s.d. '.$data['event_date_end'];
+            return $data['event_date_start'] . ' s.d. ' . $data['event_date_end'];
         }
 
         if (! empty($data['event_date_start'])) {
-            return 'Mulai '.$data['event_date_start'];
+            return 'Mulai ' . $data['event_date_start'];
         }
 
         if (! empty($data['event_date_end'])) {
-            return 'Sampai '.$data['event_date_end'];
+            return 'Sampai ' . $data['event_date_end'];
         }
 
         return 'Semua tanggal';

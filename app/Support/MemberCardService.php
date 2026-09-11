@@ -36,7 +36,7 @@ class MemberCardService
 
         app(AuditLogger::class)->record(
             'card.issued',
-            'Kartu anggota diterbitkan ('.$card->card_number.')',
+            'Kartu anggota diterbitkan (' . $card->card_number . ')',
             $card,
             $card->organization_id,
             $creator,
@@ -63,7 +63,7 @@ class MemberCardService
 
         app(AuditLogger::class)->record(
             'card.revoked',
-            'Kartu anggota dicabut ('.$card->card_number.')',
+            'Kartu anggota dicabut (' . $card->card_number . ')',
             $card,
             $card->organization_id,
             $actor,
@@ -89,7 +89,7 @@ class MemberCardService
 
     public function generateCardNumber(): string
     {
-        return 'FSBMM-'.now()->format('Y').'-'.strtoupper(Str::random(8));
+        return 'FSBMM-' . now()->format('Y') . '-' . strtoupper(Str::random(8));
     }
 
     public function generateVerificationToken(): string

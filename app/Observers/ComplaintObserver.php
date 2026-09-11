@@ -25,7 +25,7 @@ class ComplaintObserver
 
         app(AuditLogger::class)->record(
             'complaint.status_changed',
-            'Status pengaduan: '.$complaint->getOriginal('status').' → '.$complaint->status,
+            'Status pengaduan: ' . $complaint->getOriginal('status') . ' → ' . $complaint->status,
             $complaint,
             $complaint->organization_id,
         );

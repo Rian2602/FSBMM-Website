@@ -48,7 +48,7 @@ class CertificateService
 
             app(AuditLogger::class)->record(
                 'certificate.issued',
-                'Sertifikat kelulusan diterbitkan ('.$certificate->certificate_number.')',
+                'Sertifikat kelulusan diterbitkan (' . $certificate->certificate_number . ')',
                 $certificate,
                 $user->organization_id,
             );
@@ -97,7 +97,7 @@ class CertificateService
 
     public function generateCertificateNumber(): string
     {
-        return 'FSBMM-CERT-'.now()->format('Y').'-'.strtoupper(bin2hex(random_bytes(4)));
+        return 'FSBMM-CERT-' . now()->format('Y') . '-' . strtoupper(bin2hex(random_bytes(4)));
     }
 
     public function generateVerificationToken(): string

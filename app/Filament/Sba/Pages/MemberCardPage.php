@@ -189,7 +189,7 @@ class MemberCardPage extends Page implements HasForms, HasTable
                             $service->issue($member, auth()->user());
 
                             Notification::make()
-                                ->title('Kartu berhasil diterbitkan untuk '.$member->name)
+                                ->title('Kartu berhasil diterbitkan untuk ' . $member->name)
                                 ->success()
                                 ->send();
                         } catch (\DomainException $e) {

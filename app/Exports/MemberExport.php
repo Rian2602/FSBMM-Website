@@ -38,13 +38,13 @@ class MemberExport extends ReportExport
             $query->where('status', $filters['status']);
         }
         if (! empty($filters['department'])) {
-            $query->where('department', 'like', '%'.$filters['department'].'%');
+            $query->where('department', 'like', '%' . $filters['department'] . '%');
         }
         if (! empty($filters['position'])) {
-            $query->where('position', 'like', '%'.$filters['position'].'%');
+            $query->where('position', 'like', '%' . $filters['position'] . '%');
         }
         if (! empty($filters['education'])) {
-            $query->where('education', 'like', '%'.$filters['education'].'%');
+            $query->where('education', 'like', '%' . $filters['education'] . '%');
         }
         if (! empty($filters['gender'])) {
             $query->where('gender', $filters['gender']);

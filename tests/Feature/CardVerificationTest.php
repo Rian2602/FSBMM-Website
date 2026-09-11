@@ -17,7 +17,7 @@ class CardVerificationTest extends TestCase
     {
         [$member, $creator, $card] = $this->fixture();
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertSee($member->name)
             ->assertSee($card->card_number)
@@ -39,7 +39,7 @@ class CardVerificationTest extends TestCase
         $service = new MemberCardService;
         $service->revoke($card, 'Kartu rusak', $creator);
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertSee('Kartu Tidak Aktif')
             ->assertSee($card->card_number);
@@ -49,7 +49,7 @@ class CardVerificationTest extends TestCase
     {
         [$member, $creator, $card] = $this->fixture();
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertDontSee($member->nik);
     }
@@ -58,7 +58,7 @@ class CardVerificationTest extends TestCase
     {
         [$member, $creator, $card] = $this->fixture();
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertDontSee($member->address);
     }
@@ -67,7 +67,7 @@ class CardVerificationTest extends TestCase
     {
         [$member, $creator, $card] = $this->fixture();
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertDontSee((string) $member->basic_salary);
     }
@@ -78,7 +78,7 @@ class CardVerificationTest extends TestCase
 
         $member->update(['status' => Member::STATUS_INACTIVE]);
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertSee('Kartu Tidak Aktif');
     }
@@ -87,7 +87,7 @@ class CardVerificationTest extends TestCase
     {
         [$member, $creator, $card] = $this->fixture();
 
-        $complaintTitle = 'Pengaduan internal FSBMM rahasia-'.uniqid();
+        $complaintTitle = 'Pengaduan internal FSBMM rahasia-' . uniqid();
         $member->complaints()->create([
             'organization_id' => $member->organization_id,
             'reporter_name' => $member->name,
@@ -97,7 +97,7 @@ class CardVerificationTest extends TestCase
             'submitted_at' => now(),
         ]);
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertDontSee($complaintTitle);
     }
@@ -106,7 +106,7 @@ class CardVerificationTest extends TestCase
     {
         [$member, $creator, $card] = $this->fixture();
 
-        $period = '2026-09-rahasiadues-'.uniqid();
+        $period = '2026-09-rahasiadues-' . uniqid();
         $member->dues()->create([
             'organization_id' => $member->organization_id,
             'amount' => 50000,
@@ -114,7 +114,7 @@ class CardVerificationTest extends TestCase
             'paid_at' => now(),
         ]);
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertDontSee($period);
     }
@@ -128,7 +128,7 @@ class CardVerificationTest extends TestCase
         $memberB = Member::factory()->for($orgB)->create(['name' => 'Secret Member B']);
 
         // Verify card A does not leak member B's data
-        $this->get('/verifikasi/kartu/'.$cardA->verification_token)
+        $this->get('/verifikasi/kartu/' . $cardA->verification_token)
             ->assertOk()
             ->assertDontSee('Secret Member B');
     }
@@ -146,7 +146,7 @@ class CardVerificationTest extends TestCase
 
         $member->delete();
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertSee('Kartu Tidak Aktif');
     }

@@ -156,7 +156,7 @@ class PageResource extends Resource
                                     'type' => $block->type,
                                     'data' => $block->payload ?? [],
                                 ])
-                                ->all()
+                                ->all(),
                         );
                     }),
             ])

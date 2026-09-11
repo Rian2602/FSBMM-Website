@@ -36,9 +36,9 @@ class ArticleFactory extends Factory
         return [
             'title' => $title,
             // Unique slug suffix: titles may repeat across factory rows, slugs must not.
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 99999),
+            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(100, 99999),
             'excerpt' => fake()->randomElement($paragraphs),
-            'body' => '<p>'.implode('</p><p>', $paragraphs).'</p>',
+            'body' => '<p>' . implode('</p><p>', $paragraphs) . '</p>',
             'cover_image_path' => null,
             'category_id' => Category::factory(),
             'author_id' => User::factory(),

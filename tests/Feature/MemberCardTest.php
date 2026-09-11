@@ -140,7 +140,7 @@ class MemberCardTest extends TestCase
         MemberCard::create([
             'organization_id' => $member->organization_id,
             'member_id' => $member->id,
-            'card_number' => 'FSBMM-'.now()->format('Y').'-'.$conflictingSuffix,
+            'card_number' => 'FSBMM-' . now()->format('Y') . '-' . $conflictingSuffix,
             'verification_token' => str_repeat('e', 64),
             'status' => MemberCard::STATUS_ACTIVE,
             'issued_at' => now(),

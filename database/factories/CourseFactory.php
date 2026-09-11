@@ -24,7 +24,7 @@ class CourseFactory extends Factory
         return [
             'title' => $title,
             // Unique slug suffix: titles may repeat across factory rows, slugs must not.
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 99999),
+            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(100, 99999),
             'description' => fake()->paragraph(),
             'level' => fake()->randomElement(Course::LEVELS),
             'is_published' => true,

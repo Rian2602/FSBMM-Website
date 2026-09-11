@@ -74,7 +74,7 @@ class MemberResource extends Resource
                         $records->each(fn (Member $member) => $member->update(['status' => Member::STATUS_ACTIVE]));
 
                         Notification::make()
-                            ->title($records->count().' anggota diaktifkan')
+                            ->title($records->count() . ' anggota diaktifkan')
                             ->success()
                             ->send();
                     }),
@@ -88,7 +88,7 @@ class MemberResource extends Resource
                         $records->each(fn (Member $member) => $member->update(['status' => Member::STATUS_INACTIVE]));
 
                         Notification::make()
-                            ->title($records->count().' anggota dinonaktifkan')
+                            ->title($records->count() . ' anggota dinonaktifkan')
                             ->warning()
                             ->send();
                     }),

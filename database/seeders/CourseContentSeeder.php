@@ -21,7 +21,7 @@ class CourseContentSeeder extends Seeder
                 'level' => 'dasar',
                 'is_published' => true,
                 'pass_threshold' => 70,
-            ]
+            ],
         );
 
         if ($course->lessons()->exists()) {

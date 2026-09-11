@@ -26,7 +26,7 @@ class PageFactory extends Factory
             'title' => $title,
             // Unique suffix so factory rows never collide on pages.slug
             // (pool names repeat) or with seeded slugs (home/tentang/kontak).
-            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(100, 99999),
+            'slug' => Str::slug($title) . '-' . fake()->unique()->numberBetween(100, 99999),
             'meta_title' => null,
             'meta_description' => null,
             'is_published' => true,

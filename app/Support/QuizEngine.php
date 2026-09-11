@@ -48,7 +48,7 @@ class QuizEngine
         if ($passed) {
             CourseProgress::updateOrCreate(
                 ['user_id' => $user->id, 'course_id' => $quiz->course_id, 'lesson_id' => $quiz->lesson_id],
-                ['is_completed' => true, 'completed_at' => now()]
+                ['is_completed' => true, 'completed_at' => now()],
             );
 
             return;
@@ -56,7 +56,7 @@ class QuizEngine
 
         CourseProgress::firstOrCreate(
             ['user_id' => $user->id, 'course_id' => $quiz->course_id, 'lesson_id' => $quiz->lesson_id],
-            ['is_completed' => false, 'completed_at' => null]
+            ['is_completed' => false, 'completed_at' => null],
         );
     }
 }

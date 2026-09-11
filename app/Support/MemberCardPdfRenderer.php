@@ -30,7 +30,7 @@ class MemberCardPdfRenderer
 
             return response($pdf)
                 ->header('Content-Type', 'application/pdf')
-                ->header('Content-Disposition', 'inline; filename="kartu-'.$card->card_number.'.pdf"');
+                ->header('Content-Disposition', 'inline; filename="kartu-' . $card->card_number . '.pdf"');
         } catch (Throwable $e) {
             // (** executed: the wkhtmltopdf binary is not guaranteed on every
             // host (this dev box has none), so the card falls back to the same

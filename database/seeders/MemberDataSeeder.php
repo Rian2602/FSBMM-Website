@@ -55,7 +55,7 @@ class MemberDataSeeder extends Seeder
                 Member::factory()->for($org)->make([
                     'nik' => $nik,
                     'name' => $name,
-                ])->getAttributes()
+                ])->getAttributes(),
             );
 
             $members[] = $member;
@@ -73,7 +73,7 @@ class MemberDataSeeder extends Seeder
                     'period' => $currentMonth,
                     'amount' => 50000 + ($i * 5000),
                     'recorded_by' => $recorder?->id,
-                ])->getAttributes()
+                ])->getAttributes(),
             );
 
             if ($i >= 3) {
@@ -84,18 +84,18 @@ class MemberDataSeeder extends Seeder
                         'period' => $lastMonth,
                         'amount' => 50000 + ($i * 5000),
                         'recorded_by' => $recorder?->id,
-                    ])->getAttributes()
+                    ])->getAttributes(),
                 );
             }
         }
 
         // One event with attendance rows for every member (mixed statuses).
         $event = Event::firstOrCreate(
-            ['organization_id' => $org->id, 'title' => 'Rapat Anggota '.$org->name],
+            ['organization_id' => $org->id, 'title' => 'Rapat Anggota ' . $org->name],
             Event::factory()->for($org)->make([
-                'title' => 'Rapat Anggota '.$org->name,
+                'title' => 'Rapat Anggota ' . $org->name,
                 'description' => 'Agenda rutin organisasi (data demo SP3).',
-            ])->getAttributes()
+            ])->getAttributes(),
         );
 
         foreach ($members as $i => $member) {
@@ -104,7 +104,7 @@ class MemberDataSeeder extends Seeder
                 Attendance::factory()->for($org)->for($event)->for($member)->make([
                     'status' => self::ATTENDANCE_STATUSES[$i],
                     'note' => null,
-                ])->getAttributes()
+                ])->getAttributes(),
             );
         }
 
@@ -116,7 +116,7 @@ class MemberDataSeeder extends Seeder
                 'member_id' => $members[0]->id,
                 'title' => 'Permintaan perbaikan fasilitas (demo)',
                 'description' => 'Contoh pengaduan data demo: fasilitas ruang istirahat perlu diperbaiki.',
-            ])->getAttributes()
+            ])->getAttributes(),
         );
 
         // DatabaseSeeder runs with WithoutModelEvents, so the MemberObserver is

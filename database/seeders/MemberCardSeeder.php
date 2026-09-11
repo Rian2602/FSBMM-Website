@@ -33,7 +33,7 @@ class MemberCardSeeder extends Seeder
             ->first()?->id;
 
         MemberCard::firstOrCreate(
-            ['card_number' => 'FSBMM-'.now()->format('Y').'-'.strtoupper(Str::random(8))],
+            ['card_number' => 'FSBMM-' . now()->format('Y') . '-' . strtoupper(Str::random(8))],
             [
                 'organization_id' => $org->id,
                 'member_id' => $demoMembers[0]->id,
@@ -41,11 +41,11 @@ class MemberCardSeeder extends Seeder
                 'status' => MemberCard::STATUS_ACTIVE,
                 'issued_at' => now()->subWeeks(2),
                 'created_by' => $creator,
-            ]
+            ],
         );
 
         MemberCard::firstOrCreate(
-            ['card_number' => 'FSBMM-'.now()->format('Y').'-'.strtoupper(Str::random(8))],
+            ['card_number' => 'FSBMM-' . now()->format('Y') . '-' . strtoupper(Str::random(8))],
             [
                 'organization_id' => $org->id,
                 'member_id' => $demoMembers[1]->id,
@@ -55,7 +55,7 @@ class MemberCardSeeder extends Seeder
                 'revoked_at' => now()->subWeek(),
                 'revocation_reason' => 'Penggantian kartu',
                 'created_by' => $creator,
-            ]
+            ],
         );
     }
 }

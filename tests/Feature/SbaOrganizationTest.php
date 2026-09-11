@@ -55,7 +55,7 @@ class SbaOrganizationTest extends TestCase
         [$user] = $this->sbaUser();
         $other = Organization::factory()->create(['name' => 'SPM Milik Orang Lain']);
 
-        $this->actingAs($user)->get('/panel-sba/organizations/'.$other->slug.'/edit')
+        $this->actingAs($user)->get('/panel-sba/organizations/' . $other->slug . '/edit')
             ->assertNotFound();
     }
 
@@ -113,7 +113,7 @@ class SbaOrganizationTest extends TestCase
             ->fillForm(['description' => '<p>Profil baru yang diubah pengurus.</p>'])
             ->call('save');
 
-        $this->get('/sba/'.$org->slug)->assertOk()->assertSee('Profil baru yang diubah pengurus');
+        $this->get('/sba/' . $org->slug)->assertOk()->assertSee('Profil baru yang diubah pengurus');
     }
 
     public function test_dashboard_summary_widget_shows_own_organization_only(): void

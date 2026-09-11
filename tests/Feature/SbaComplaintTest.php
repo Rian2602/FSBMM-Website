@@ -60,7 +60,7 @@ class SbaComplaintTest extends TestCase
         $complaint = Complaint::factory()->for($other)->create();
 
         $this->actingAs($user)
-            ->get('/panel-sba/complaints/'.$complaint->id.'/edit')
+            ->get('/panel-sba/complaints/' . $complaint->id . '/edit')
             ->assertNotFound();
     }
 

@@ -30,8 +30,8 @@ abstract class ReportExport
         $query = static::scopedQuery($organizationId, $filters);
 
         $format === 'xlsx'
-            ? static::writeXlsx($query, $disk->path('exports/'.$name), $filters)
-            : static::writeCsv($query, $disk->path('exports/'.$name), $filters);
+            ? static::writeXlsx($query, $disk->path('exports/' . $name), $filters)
+            : static::writeCsv($query, $disk->path('exports/' . $name), $filters);
 
         // PII-free audit entry: only the dataset + format are recorded, never
         // the exported member rows.
@@ -42,7 +42,7 @@ abstract class ReportExport
             $organizationId,
         );
 
-        return URL::temporarySignedRoute('exports.download', now()->addHour(), ['file' => 'exports/'.$name, 'org' => $organizationId]);
+        return URL::temporarySignedRoute('exports.download', now()->addHour(), ['file' => 'exports/' . $name, 'org' => $organizationId]);
     }
 
     private static function sweepExpired($disk): void

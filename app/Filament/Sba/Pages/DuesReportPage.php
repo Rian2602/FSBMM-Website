@@ -90,7 +90,7 @@ class DuesReportPage extends Page implements HasForms, HasTable
                 Tables\Columns\TextColumn::make('period')->label('Periode')->sortable(),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Nominal')
-                    ->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.'))
+                    ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('paid_at')
                     ->label('Tgl Bayar')
@@ -131,19 +131,19 @@ class DuesReportPage extends Page implements HasForms, HasTable
         $data = $this->data;
 
         if (! empty($data['period'])) {
-            return 'Periode '.$data['period'];
+            return 'Periode ' . $data['period'];
         }
 
         if (! empty($data['period_start']) && ! empty($data['period_end'])) {
-            return 'Periode '.$data['period_start'].' s.d. '.$data['period_end'];
+            return 'Periode ' . $data['period_start'] . ' s.d. ' . $data['period_end'];
         }
 
         if (! empty($data['period_start'])) {
-            return 'Mulai '.$data['period_start'];
+            return 'Mulai ' . $data['period_start'];
         }
 
         if (! empty($data['period_end'])) {
-            return 'Sampai '.$data['period_end'];
+            return 'Sampai ' . $data['period_end'];
         }
 
         return 'Semua periode';

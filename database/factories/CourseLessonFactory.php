@@ -19,7 +19,7 @@ class CourseLessonFactory extends Factory
                 'Pengantar K3', 'Bentuk Serikat', 'Perundingan Bersama',
                 'Hak & Kewajiban', 'Kepemimpinan Anggota',
             ]),
-            'content' => '<h2>Materi</h2><p>'.fake()->paragraph().'</p>',
+            'content' => '<h2>Materi</h2><p>' . fake()->paragraph() . '</p>',
             'sort_order' => 0,
         ];
     }

@@ -26,7 +26,7 @@ class CategoryFactory extends Factory
         // slugs like 'kabar-federasi' used by tests/seeders.
         return [
             'name' => $name,
-            'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(100, 99999),
+            'slug' => Str::slug($name) . '-' . fake()->unique()->numberBetween(100, 99999),
         ];
     }
 }

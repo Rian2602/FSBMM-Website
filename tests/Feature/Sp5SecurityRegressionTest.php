@@ -42,7 +42,7 @@ class Sp5SecurityRegressionTest extends TestCase
         $memberB = Member::factory()->for($orgB)->create(['name' => 'Member B']);
 
         $this->actingAs($sbaA)
-            ->get('/panel-sba/members/'.$memberB->id.'/edit')
+            ->get('/panel-sba/members/' . $memberB->id . '/edit')
             ->assertNotFound();
     }
 
@@ -76,7 +76,7 @@ class Sp5SecurityRegressionTest extends TestCase
         Member::factory()->for($orgA)->create(['name' => 'Member SBA A']);
 
         $redirect = $this->actingAs($sbaA)
-            ->get('/panel-sba/member-report/export?organization_id='.$orgA->id)
+            ->get('/panel-sba/member-report/export?organization_id=' . $orgA->id)
             ->assertStatus(302);
 
         $followed = $this->get($redirect->headers->get('Location'));
@@ -109,7 +109,7 @@ class Sp5SecurityRegressionTest extends TestCase
             'complaint-report' => ['expected' => 'Keluhan A', 'forbidden' => 'Keluhan B'],
         ] as $endpoint => $pairs) {
             $redirect = $this->actingAs($sbaA)
-                ->get('/panel-sba/'.$endpoint.'/export?organization_id='.$orgB->id)
+                ->get('/panel-sba/' . $endpoint . '/export?organization_id=' . $orgB->id)
                 ->assertStatus(302);
             $downloaded = $this->get($redirect->headers->get('Location'));
             $downloaded->assertOk();
@@ -136,7 +136,7 @@ class Sp5SecurityRegressionTest extends TestCase
         $member = Member::factory()->for($org)->create(['status' => Member::STATUS_ACTIVE]);
         $card = (new MemberCardService)->issue($member, $user);
 
-        $this->get('/verifikasi/kartu/'.$card->verification_token)
+        $this->get('/verifikasi/kartu/' . $card->verification_token)
             ->assertOk()
             ->assertSee($member->name)
             ->assertSee($card->card_number);

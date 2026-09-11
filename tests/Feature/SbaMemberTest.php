@@ -58,7 +58,7 @@ class SbaMemberTest extends TestCase
         $otherMember = Member::factory()->for($other)->create();
 
         $this->actingAs($user)
-            ->get('/panel-sba/members/'.$otherMember->id.'/edit')
+            ->get('/panel-sba/members/' . $otherMember->id . '/edit')
             ->assertNotFound();
     }
 

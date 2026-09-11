@@ -40,7 +40,7 @@ class ArticleTest extends TestCase
     {
         $article = Article::factory()->create(['body' => '<p>Isi artikel lengkap untuk diuji.</p>']);
 
-        $this->get('/berita/'.$article->slug)
+        $this->get('/berita/' . $article->slug)
             ->assertOk()
             ->assertSee($article->title)
             ->assertSee('Isi artikel lengkap untuk diuji.');

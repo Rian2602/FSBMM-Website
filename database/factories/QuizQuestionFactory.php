@@ -15,7 +15,7 @@ class QuizQuestionFactory extends Factory
     {
         return [
             'course_quiz_id' => CourseQuiz::factory(),
-            'question' => fake()->sentence().'?',
+            'question' => fake()->sentence() . '?',
             'sort_order' => 0,
         ];
     }

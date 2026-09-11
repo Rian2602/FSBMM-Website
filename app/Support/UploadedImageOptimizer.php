@@ -83,8 +83,8 @@ class UploadedImageOptimizer
             $source = $resized;
         }
 
-        $filename = Str::random(40).($isPng ? '.png' : '.jpg');
-        $relativePath = $directory.'/'.$filename;
+        $filename = Str::random(40) . ($isPng ? '.png' : '.jpg');
+        $relativePath = $directory . '/' . $filename;
 
         Storage::disk('public')->makeDirectory($directory);
         $absolutePath = Storage::disk('public')->path($relativePath);

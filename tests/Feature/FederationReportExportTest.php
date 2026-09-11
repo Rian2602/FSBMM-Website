@@ -32,7 +32,7 @@ class FederationReportExportTest extends TestCase
 
         $this->assertNotEmpty($files);
         $this->assertTrue($files->every(
-            fn (string $file): bool => str_ends_with($file, '.pdf') || str_ends_with($file, '.html')
+            fn (string $file): bool => str_ends_with($file, '.pdf') || str_ends_with($file, '.html'),
         ));
 
         $this->assertDatabaseHas('audit_logs', ['action' => 'export.generated']);

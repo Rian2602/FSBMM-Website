@@ -16,7 +16,7 @@ class SbaAccountSeeder extends Seeder
         if (! $password) {
             if (! app()->environment(['local', 'testing'])) {
                 throw new \RuntimeException(
-                    'FSBMM_SBA_PASSWORD wajib di-set untuk seeding di luar local/testing.'
+                    'FSBMM_SBA_PASSWORD wajib di-set untuk seeding di luar local/testing.',
                 );
             }
 
@@ -39,7 +39,7 @@ class SbaAccountSeeder extends Seeder
                     'password' => $password,
                     'role' => User::ROLE_SBA_ADMIN,
                     'organization_id' => $org->id,
-                ]
+                ],
             );
         }
     }

@@ -165,7 +165,7 @@ class UserResource extends Resource
 
                             // Never delete the actor's own account via bulk delete.
                             $candidates = $records->reject(
-                                static fn (User $record): bool => $actor && $record->is($actor)
+                                static fn (User $record): bool => $actor && $record->is($actor),
                             );
 
                             // Keep at least one super admin in the system (anti-lockout),

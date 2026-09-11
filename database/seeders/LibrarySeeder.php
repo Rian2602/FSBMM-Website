@@ -32,7 +32,7 @@ class LibrarySeeder extends Seeder
         ];
 
         foreach ($resources as $resource) {
-            $path = 'eresources/'.Str::slug($resource['title']).'.pdf';
+            $path = 'eresources/' . Str::slug($resource['title']) . '.pdf';
 
             Eresource::firstOrCreate(
                 ['slug' => Str::slug($resource['title'])],
@@ -42,7 +42,7 @@ class LibrarySeeder extends Seeder
                     'file_path' => $path,
                     'is_published' => true,
                     'downloads_count' => 0,
-                ]
+                ],
             );
 
             // Placeholder demo file so the signed download works end-to-end.
@@ -66,23 +66,23 @@ class LibrarySeeder extends Seeder
                     'level' => $course['level'],
                     'description' => 'Pelatihan untuk pengurus dan anggota SBA di lingkungan FSBMM. Materi lengkap beserta evaluasi akan tersedia pada tahap berikutnya.',
                     'is_published' => true,
-                ]
+                ],
             );
         }
     }
 
     private static function placeholderPdf(string $title): string
     {
-        $text = 'PLACEHOLDER — '.$title;
+        $text = 'PLACEHOLDER — ' . $title;
 
         return "%PDF-1.4\n"
-            ."1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
-            ."2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
-            ."3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n"
-            .'4 0 obj<</Length '.strlen($text).">>stream\n"
-            .'BT /F1 24 Tf 72 720 Td ('.$text.") Tj ET\n"
-            ."endstream\nendobj\n"
-            ."5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n"
-            ."trailer<</Root 1 0 R>>\n%%EOF";
+            . "1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n"
+            . "2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj\n"
+            . "3 0 obj<</Type/Page/Parent 2 0 R/MediaBox[0 0 595 842]/Contents 4 0 R/Resources<</Font<</F1 5 0 R>>>>>>endobj\n"
+            . '4 0 obj<</Length ' . strlen($text) . ">>stream\n"
+            . 'BT /F1 24 Tf 72 720 Td (' . $text . ") Tj ET\n"
+            . "endstream\nendobj\n"
+            . "5 0 obj<</Type/Font/Subtype/Type1/BaseFont/Helvetica>>endobj\n"
+            . "trailer<</Root 1 0 R>>\n%%EOF";
     }
 }

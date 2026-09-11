@@ -57,7 +57,7 @@ class DuesResource extends Resource
             Tables\Columns\TextColumn::make('period')->label('Periode')->sortable(),
             Tables\Columns\TextColumn::make('amount')
                 ->label('Jumlah')
-                ->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.')),
+                ->formatStateUsing(fn ($state) => 'Rp ' . number_format((float) $state, 0, ',', '.')),
             Tables\Columns\TextColumn::make('paid_at')
                 ->label('Tanggal Bayar')
                 ->date('d M Y'),
@@ -83,11 +83,11 @@ class DuesResource extends Resource
 
                         app(AuditLogger::class)->record(
                             'dues.bulk_deleted',
-                            'Iuran dihapus massal ('.$count.' catatan)',
+                            'Iuran dihapus massal (' . $count . ' catatan)',
                         );
 
                         Notification::make()
-                            ->title($count.' catatan iuran dihapus')
+                            ->title($count . ' catatan iuran dihapus')
                             ->success()
                             ->send();
                     }),

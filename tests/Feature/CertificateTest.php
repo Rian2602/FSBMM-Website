@@ -98,7 +98,7 @@ class CertificateTest extends TestCase
 
         $certificate = app(CertificateService::class)->issue($user, $course);
 
-        $this->get('/verifikasi/sertifikat/'.$certificate->verification_token)
+        $this->get('/verifikasi/sertifikat/' . $certificate->verification_token)
             ->assertOk()
             ->assertSee('Sertifikat Valid')
             ->assertSee('Peserta Lulus')
@@ -117,7 +117,7 @@ class CertificateTest extends TestCase
     {
         $course = Course::factory()->create();
 
-        $this->get('/admin/certificates/'.$course->slug.'/print')
+        $this->get('/admin/certificates/' . $course->slug . '/print')
             ->assertRedirect('/admin/login');
     }
 
@@ -127,7 +127,7 @@ class CertificateTest extends TestCase
         [$course] = $this->completedCourseFor($user);
 
         $this->actingAs($user)
-            ->get('/admin/certificates/'.$course->slug.'/print')
+            ->get('/admin/certificates/' . $course->slug . '/print')
             ->assertOk()
             ->assertSee('Sertifikat Kelulusan')
             ->assertSee('Peserta Cetak')
@@ -146,7 +146,7 @@ class CertificateTest extends TestCase
         CourseLesson::factory()->for($course)->create();
 
         $this->actingAs($user)
-            ->get('/admin/certificates/'.$course->slug.'/print')
+            ->get('/admin/certificates/' . $course->slug . '/print')
             ->assertForbidden();
 
         $this->assertDatabaseCount('course_certificates', 0);
@@ -159,7 +159,7 @@ class CertificateTest extends TestCase
         [$course] = $this->completedCourseFor($sba);
 
         $this->actingAs($sba)
-            ->get('/panel-sba/certificates/'.$course->slug.'/print')
+            ->get('/panel-sba/certificates/' . $course->slug . '/print')
             ->assertOk()
             ->assertSee('Sertifikat Kelulusan')
             ->assertSee('Admin Sertifikat');

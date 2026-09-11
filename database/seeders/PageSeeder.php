@@ -104,14 +104,14 @@ class PageSeeder extends Seeder
                     'meta_title' => $page['meta_title'] ?? null,
                     'meta_description' => $page['meta_description'] ?? null,
                     'is_published' => true,
-                ]
+                ],
             );
 
             if ($row->wasRecentlyCreated) {
                 $blocks = array_map(
                     fn (array $block, int $i) => [...$block, 'sort_order' => $i],
                     $page['blocks'],
-                    array_keys($page['blocks'])
+                    array_keys($page['blocks']),
                 );
                 $row->blocks()->createMany($blocks);
             }

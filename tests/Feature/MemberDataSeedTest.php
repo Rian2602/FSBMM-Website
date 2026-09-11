@@ -58,7 +58,7 @@ class MemberDataSeedTest extends TestCase
         // assertion stays valid if the demo roster size ever changes.
         $this->get('/sba/spm-kecap-bango')
             ->assertOk()
-            ->assertSee(number_format($kecap->member_count, 0, ',', '.').' pekerja')
+            ->assertSee(number_format($kecap->member_count, 0, ',', '.') . ' pekerja')
             ->assertDontSee('429 pekerja');
     }
 }

@@ -20,7 +20,7 @@ class ExportDownloadController extends Controller
         $real = realpath($disk->path($path));
         $root = realpath($disk->path(''));
         abort_unless(
-            $real !== false && $root !== false && str_starts_with($real, $root.DIRECTORY_SEPARATOR),
+            $real !== false && $root !== false && str_starts_with($real, $root . DIRECTORY_SEPARATOR),
             404,
         );
         abort_unless($disk->exists($path), 404, 'File tidak ditemukan.');

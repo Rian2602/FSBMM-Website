@@ -102,7 +102,7 @@ class MemberCardPrintTest extends TestCase
             ->get(route('filament.sba.card.print', ['record' => $card->id]))
             ->assertOk()
             ->assertHeader('Content-Type', 'application/pdf')
-            ->assertHeader('Content-Disposition', 'inline; filename="kartu-'.$card->card_number.'.pdf"');
+            ->assertHeader('Content-Disposition', 'inline; filename="kartu-' . $card->card_number . '.pdf"');
 
         $this->assertStringStartsWith('%PDF-1.4', $response->getContent());
     }
@@ -137,7 +137,7 @@ class MemberCardPrintTest extends TestCase
     private function fixture(): array
     {
         $organisasi = Organization::factory()->create([
-            'name' => 'SPM '.Str::random(4),
+            'name' => 'SPM ' . Str::random(4),
             'location' => 'Jakarta',
             'website' => 'https://example.test',
         ]);

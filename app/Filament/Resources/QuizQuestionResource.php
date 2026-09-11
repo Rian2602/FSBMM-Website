@@ -37,7 +37,7 @@ class QuizQuestionResource extends Resource
                     ->relationship('quiz', 'title')
                     ->required()
                     ->searchable()
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->course?->title.' — '.$record->title),
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->course?->title . ' — ' . $record->title),
                 Forms\Components\Textarea::make('question')->label('Pertanyaan')->required()->rows(3)->columnSpanFull(),
                 Forms\Components\TextInput::make('sort_order')->label('Urutan')->numeric()->default(0),
             ]);

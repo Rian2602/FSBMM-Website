@@ -109,7 +109,7 @@ class LibraryTest extends TestCase
         // (mewakili data DB yang dicorrupt). Flysystem menolak menulis lewat
         // '../', jadi sentinel ditulis native di induk root disk.
         $root = Storage::disk('public')->path('');
-        file_put_contents(dirname($root).'/evil.txt', 'RAHASIA');
+        file_put_contents(dirname($root) . '/evil.txt', 'RAHASIA');
 
         $res = Eresource::factory()->create(['file_path' => '../evil.txt']);
         $url = URL::signedRoute('eresources.download', ['eresource' => $res->slug]);

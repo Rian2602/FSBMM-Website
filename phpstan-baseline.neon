@@ -1,0 +1,1939 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method App\\Exports\\AttendanceExport\:\:columns\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Method App\\Exports\\AttendanceExport\:\:row\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Method App\\Exports\\AttendanceExport\:\:row\(\) has parameter \$model with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Method App\\Exports\\AttendanceExport\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Method App\\Exports\\AttendanceExport\:\:scopedQuery\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Method App\\Exports\\AttendanceExport\:\:scopedQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Relation ''event'' is not found in App\\Models\\Attendance model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Relation ''member'' is not found in App\\Models\\Attendance model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Exports/AttendanceExport.php
+
+		-
+			message: '#^Method App\\Exports\\ComplaintExport\:\:columns\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ComplaintExport.php
+
+		-
+			message: '#^Method App\\Exports\\ComplaintExport\:\:row\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ComplaintExport.php
+
+		-
+			message: '#^Method App\\Exports\\ComplaintExport\:\:row\(\) has parameter \$model with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Exports/ComplaintExport.php
+
+		-
+			message: '#^Method App\\Exports\\ComplaintExport\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ComplaintExport.php
+
+		-
+			message: '#^Method App\\Exports\\ComplaintExport\:\:scopedQuery\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ComplaintExport.php
+
+		-
+			message: '#^Method App\\Exports\\ComplaintExport\:\:scopedQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/ComplaintExport.php
+
+		-
+			message: '#^Method App\\Exports\\DuesExport\:\:columns\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Method App\\Exports\\DuesExport\:\:row\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Method App\\Exports\\DuesExport\:\:row\(\) has parameter \$model with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Method App\\Exports\\DuesExport\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Method App\\Exports\\DuesExport\:\:scopedQuery\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Method App\\Exports\\DuesExport\:\:scopedQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Relation ''member'' is not found in App\\Models\\Due model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Relation ''recordedBy'' is not found in App\\Models\\Due model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Exports/DuesExport.php
+
+		-
+			message: '#^Method App\\Exports\\MemberExport\:\:columns\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/MemberExport.php
+
+		-
+			message: '#^Method App\\Exports\\MemberExport\:\:row\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/MemberExport.php
+
+		-
+			message: '#^Method App\\Exports\\MemberExport\:\:row\(\) has parameter \$model with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Exports/MemberExport.php
+
+		-
+			message: '#^Method App\\Exports\\MemberExport\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/MemberExport.php
+
+		-
+			message: '#^Method App\\Exports\\MemberExport\:\:scopedQuery\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/MemberExport.php
+
+		-
+			message: '#^Method App\\Exports\\MemberExport\:\:scopedQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/MemberExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:columns\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:generate\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:row\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:row\(\) has parameter \$model with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:row\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:scopedQuery\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:scopedQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:sweepExpired\(\) has parameter \$disk with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:writeCsv\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:writeCsv\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:writeXlsx\(\) has parameter \$filters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Exports\\ReportExport\:\:writeXlsx\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Parameter \#1 \$cellValues of static method OpenSpout\\Common\\Entity\\Row\:\:fromValues\(\) expects list\<bool\|DateInterval\|DateTimeInterface\|float\|int\|string\|null\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fputcsv expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Unsafe call to private method App\\Exports\\ReportExport\:\:sweepExpired\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Unsafe call to private method App\\Exports\\ReportExport\:\:writeCsv\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Unsafe call to private method App\\Exports\\ReportExport\:\:writeXlsx\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Exports/ReportExport.php
+
+		-
+			message: '#^Method App\\Filament\\Admin\\Pages\\CourseDetailPage\:\:getCourseProgress\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Admin/Pages/CourseDetailPage.php
+
+		-
+			message: '#^Method App\\Filament\\Admin\\Pages\\MyCoursesPage\:\:getCourses\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Admin/Pages/MyCoursesPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$course\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Admin/Pages/QuizViewPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$questions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Admin/Pages/QuizViewPage.php
+
+		-
+			message: '#^Method App\\Filament\\Admin\\Pages\\QuizViewPage\:\:getResult\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Admin/Pages/QuizViewPage.php
+
+		-
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Resources/ArticleResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$course_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/CourseLessonResource/RelationManagers/QuizzesRelationManager.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Filament\\Forms\\Components\\Select\:\:options\(\) expects array\<array\<string\>\|string\>\|Closure\|Illuminate\\Contracts\\Support\\Arrayable\|string\|null, array\{50\: 50, 60\: 60, 70\: 70, 80\: 80, 90\: 90\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/CourseLessonResource/RelationManagers/QuizzesRelationManager.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Filament\\Forms\\Components\\Select\:\:options\(\) expects array\<array\<string\>\|string\>\|Closure\|Illuminate\\Contracts\\Support\\Arrayable\|string\|null, array\{50\: 50, 60\: 60, 70\: 70, 80\: 80, 90\: 90\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/CourseQuizResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseLesson\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\CourseLesson\>\:\:\$course_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/CourseQuizResource/Pages/CreateCourseQuiz.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseLesson\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\CourseLesson\>\:\:\$course_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/CourseQuizResource/Pages/EditCourseQuiz.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:quizzes\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: app/Filament/Resources/CourseResource/RelationManagers/FinalQuizRelationManager.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Filament\\Forms\\Components\\Select\:\:options\(\) expects array\<array\<string\>\|string\>\|Closure\|Illuminate\\Contracts\\Support\\Arrayable\|string\|null, array\{50\: 50, 60\: 60, 70\: 70, 80\: 80, 90\: 90\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/CourseResource/RelationManagers/FinalQuizRelationManager.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\FinalQuizResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Resources/FinalQuizResource.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Filament\\Forms\\Components\\Select\:\:options\(\) expects array\<array\<string\>\|string\>\|Closure\|Illuminate\\Contracts\\Support\\Arrayable\|string\|null, array\{50\: 50, 60\: 60, 70\: 70, 80\: 80, 90\: 90\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/FinalQuizResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/OrganizationResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:hasSbaAccounts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/OrganizationResource.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\OrganizationResource\:\:canDelete\(\) has parameter \$record with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Filament/Resources/OrganizationResource.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:first\(\) expects \(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: bool\)\|null, Closure\(App\\Models\\Organization\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/OrganizationResource.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\PageResource\:\:canDelete\(\) has parameter \$record with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Filament/Resources/PageResource.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:syncBlocks\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/PageResource/Pages/CreatePage.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:syncBlocks\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/PageResource/Pages/EditPage.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:options\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: app/Filament/Resources/QuizQuestionResource/RelationManagers/OptionsRelationManager.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\UserResource\:\:canDelete\(\) has parameter \$record with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\UserResource\:\:canEdit\(\) has parameter \$record with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:each\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: mixed, Closure\(App\\Models\\User\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Model\>\:\:reject\(\) expects bool\|\(callable\(Illuminate\\Database\\Eloquent\\Model, int\|string\)\: bool\)\|Illuminate\\Database\\Eloquent\\Model, Closure\(App\\Models\\User\)\: bool given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Filament\\Sba\\Pages\\AttendanceReportPage\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$event_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\AttendanceReportPage\:\:getBreakdownByEvent\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\AttendanceReportPage\:\:getFilteredEventQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\AttendanceReportPage\:\:getFilteredQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\AttendanceReportPage\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Property App\\Filament\\Sba\\Pages\\AttendanceReportPage\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\),Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Filament/Sba/Pages/AttendanceReportPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Filament\\Sba\\Pages\\ComplaintReportPage\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/ComplaintReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\ComplaintReportPage\:\:getFilteredQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/ComplaintReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\ComplaintReportPage\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/ComplaintReportPage.php
+
+		-
+			message: '#^Property App\\Filament\\Sba\\Pages\\ComplaintReportPage\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/ComplaintReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\CourseDetailPage\:\:getCourseProgress\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/CourseDetailPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Filament\\Sba\\Pages\\DuesReportPage\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/DuesReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\DuesReportPage\:\:getFilteredQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/DuesReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\DuesReportPage\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/DuesReportPage.php
+
+		-
+			message: '#^Property App\\Filament\\Sba\\Pages\\DuesReportPage\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/DuesReportPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Filament\\Sba\\Pages\\MemberCardPage\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\MemberCard\:\:\$member\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Member\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Member\>\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MemberCardPage\:\:getFilteredQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MemberCardPage\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Parameter \#1 \$member of method App\\Support\\MemberCardService\:\:issue\(\) expects App\\Models\\Member, App\\Models\\Member\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), App\\Models\\Member\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Property App\\Filament\\Sba\\Pages\\MemberCardPage\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Relation ''member'' is not found in App\\Models\\MemberCard model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Sba/Pages/MemberCardPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Filament\\Sba\\Pages\\MemberReportPage\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/MemberReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MemberReportPage\:\:getBreakdownByDepartment\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/MemberReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MemberReportPage\:\:getBreakdownByPosition\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/MemberReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MemberReportPage\:\:getFilteredQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/MemberReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MemberReportPage\:\:getStats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/MemberReportPage.php
+
+		-
+			message: '#^Property App\\Filament\\Sba\\Pages\\MemberReportPage\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/MemberReportPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\MyCoursesPage\:\:getCourses\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Pages/MyCoursesPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$course\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/QuizViewPage.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$questions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Pages/QuizViewPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Pages\\QuizViewPage\:\:getResult\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Sba/Pages/QuizViewPage.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Resources\\ComplaintResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Resources/ComplaintResource.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Resources\\DuesResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Resources/DuesResource.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Resources\\EventResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Resources/EventResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Sba/Resources/EventResource/RelationManagers/AttendancesRelationManager.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$organization_id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Filament/Sba/Resources/EventResource/RelationManagers/AttendancesRelationManager.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Resources\\MemberResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Resources/MemberResource.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Resources\\OrganizationResource\:\:canDelete\(\) has parameter \$record with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Filament/Sba/Resources/OrganizationResource.php
+
+		-
+			message: '#^Method App\\Filament\\Sba\\Resources\\OrganizationResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Sba/Resources/OrganizationResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$organization\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Sba/Widgets/OrganizationSummaryWidget.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Complaint\:\:\$c\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Widgets/FederationOperationsWidget.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Due\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Widgets/FederationOperationsWidget.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Event\:\:\$c\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Widgets/FederationOperationsWidget.php
+
+		-
+			message: '#^Method App\\Filament\\Widgets\\FederationOperationsWidget\:\:getMetrics\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Widgets/FederationOperationsWidget.php
+
+		-
+			message: '#^Method App\\Filament\\Widgets\\FederationOperationsWidget\:\:getPerSbaBreakdown\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Widgets/FederationOperationsWidget.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Widgets/GlobalSearchWidget.php
+
+		-
+			message: '#^Cannot call method merge\(\) on array\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Widgets/GlobalSearchWidget.php
+
+		-
+			message: '#^Property App\\Filament\\Widgets\\GlobalSearchWidget\:\:\$results type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Widgets/GlobalSearchWidget.php
+
+		-
+			message: '#^Relation ''member'' is not found in App\\Models\\Due model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Filament/Widgets/GlobalSearchWidget.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type string\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Widgets/GlobalSearchWidget.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Filament/Widgets/GlobalSearchWidget.php
+
+		-
+			message: '#^Method App\\Filament\\Widgets\\LearningReportWidget\:\:getReport\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Filament/Widgets/LearningReportWidget.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Filament/Widgets/NotificationAlertWidget.php
+
+		-
+			message: '#^Method App\\Filament\\Widgets\\NotificationAlertWidget\:\:getAlerts\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Filament/Widgets/NotificationAlertWidget.php
+
+		-
+			message: '#^Relation ''organization'' is not found in App\\Models\\Event model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Widgets/NotificationAlertWidget.php
+
+		-
+			message: '#^Method App\\Filament\\Widgets\\SbaAccountsOverviewWidget\:\:getAccounts\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Widgets/SbaAccountsOverviewWidget.php
+
+		-
+			message: '#^Relation ''organization'' is not found in App\\Models\\User model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Widgets/SbaAccountsOverviewWidget.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\CardVerificationController\:\:verify\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/CardVerificationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\CertificatePrintController\:\:__invoke\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/CertificatePrintController.php
+
+		-
+			message: '#^Relation ''course'' is not found in App\\Models\\CourseCertificate model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/CertificatePrintController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\CourseCertificate model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/CertificatePrintController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Category\:\:\$articles\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Cannot call method isPast\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\ArticleController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\ArticleController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Relation ''articles'' is not found in App\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Relation ''author'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Http/Controllers/Public/ArticleController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\CertificateVerificationController\:\:verify\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/CertificateVerificationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\CourseController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/CourseController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\EresourceController\:\:download\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/EresourceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\EresourceController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/EresourceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\ExportDownloadController\:\:download\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/ExportDownloadController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\OrganizationController\:\:index\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/OrganizationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\OrganizationController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/OrganizationController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Public\\PageController\:\:show\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Public/PageController.php
+
+		-
+			message: '#^Relation ''blocks'' is not found in App\\Models\\Page model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Public/PageController.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\Article model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Public/PageController.php
+
+		-
+			message: '#^Class App\\Models\\Article uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Article.php
+
+		-
+			message: '#^Method App\\Models\\Article\:\:author\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Article.php
+
+		-
+			message: '#^Method App\\Models\\Article\:\:category\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Article.php
+
+		-
+			message: '#^Method App\\Models\\Article\:\:scopePublished\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Article.php
+
+		-
+			message: '#^Method App\\Models\\Article\:\:scopePublished\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Article.php
+
+		-
+			message: '#^Class App\\Models\\Attendance uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			message: '#^Method App\\Models\\Attendance\:\:event\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			message: '#^Method App\\Models\\Attendance\:\:member\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			message: '#^Method App\\Models\\Attendance\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Attendance.php
+
+		-
+			message: '#^Method App\\Models\\AuditLog\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/AuditLog.php
+
+		-
+			message: '#^Method App\\Models\\AuditLog\:\:subject\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/AuditLog.php
+
+		-
+			message: '#^Method App\\Models\\AuditLog\:\:user\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/AuditLog.php
+
+		-
+			message: '#^Class App\\Models\\Category uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Category.php
+
+		-
+			message: '#^Method App\\Models\\Category\:\:articles\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Category.php
+
+		-
+			message: '#^Class App\\Models\\Complaint uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Complaint.php
+
+		-
+			message: '#^Method App\\Models\\Complaint\:\:member\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Complaint.php
+
+		-
+			message: '#^Method App\\Models\\Complaint\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Complaint.php
+
+		-
+			message: '#^Class App\\Models\\Course uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Course.php
+
+		-
+			message: '#^Method App\\Models\\Course\:\:lessons\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Course.php
+
+		-
+			message: '#^Method App\\Models\\Course\:\:quizzes\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Course.php
+
+		-
+			message: '#^Method App\\Models\\Course\:\:scopePublished\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Course.php
+
+		-
+			message: '#^Method App\\Models\\Course\:\:scopePublished\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Course.php
+
+		-
+			message: '#^Class App\\Models\\CourseAttempt uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CourseAttempt.php
+
+		-
+			message: '#^Method App\\Models\\CourseAttempt\:\:quiz\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseAttempt.php
+
+		-
+			message: '#^Method App\\Models\\CourseAttempt\:\:user\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseAttempt.php
+
+		-
+			message: '#^Class App\\Models\\CourseCertificate uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CourseCertificate.php
+
+		-
+			message: '#^Method App\\Models\\CourseCertificate\:\:course\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseCertificate.php
+
+		-
+			message: '#^Method App\\Models\\CourseCertificate\:\:user\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseCertificate.php
+
+		-
+			message: '#^Class App\\Models\\CourseLesson uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CourseLesson.php
+
+		-
+			message: '#^Method App\\Models\\CourseLesson\:\:course\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseLesson.php
+
+		-
+			message: '#^Method App\\Models\\CourseLesson\:\:quizzes\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseLesson.php
+
+		-
+			message: '#^Class App\\Models\\CourseProgress uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CourseProgress.php
+
+		-
+			message: '#^Method App\\Models\\CourseProgress\:\:course\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseProgress.php
+
+		-
+			message: '#^Method App\\Models\\CourseProgress\:\:lesson\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseProgress.php
+
+		-
+			message: '#^Method App\\Models\\CourseProgress\:\:user\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseProgress.php
+
+		-
+			message: '#^Class App\\Models\\CourseQuiz uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/CourseQuiz.php
+
+		-
+			message: '#^Method App\\Models\\CourseQuiz\:\:attempts\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseQuiz.php
+
+		-
+			message: '#^Method App\\Models\\CourseQuiz\:\:course\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseQuiz.php
+
+		-
+			message: '#^Method App\\Models\\CourseQuiz\:\:lesson\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseQuiz.php
+
+		-
+			message: '#^Method App\\Models\\CourseQuiz\:\:questions\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/CourseQuiz.php
+
+		-
+			message: '#^Class App\\Models\\Due uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Due.php
+
+		-
+			message: '#^Method App\\Models\\Due\:\:member\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Due.php
+
+		-
+			message: '#^Method App\\Models\\Due\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Due.php
+
+		-
+			message: '#^Method App\\Models\\Due\:\:recordedBy\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Due.php
+
+		-
+			message: '#^Class App\\Models\\Eresource uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Eresource.php
+
+		-
+			message: '#^Method App\\Models\\Eresource\:\:scopePublished\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Eresource.php
+
+		-
+			message: '#^Method App\\Models\\Eresource\:\:scopePublished\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Eresource.php
+
+		-
+			message: '#^Class App\\Models\\Event uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Method App\\Models\\Event\:\:attendances\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Method App\\Models\\Event\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Event.php
+
+		-
+			message: '#^Class App\\Models\\Member uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Member.php
+
+		-
+			message: '#^Method App\\Models\\Member\:\:attendances\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Member.php
+
+		-
+			message: '#^Method App\\Models\\Member\:\:complaints\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Member.php
+
+		-
+			message: '#^Method App\\Models\\Member\:\:dues\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Member.php
+
+		-
+			message: '#^Method App\\Models\\Member\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Member.php
+
+		-
+			message: '#^Class App\\Models\\MemberCard uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/MemberCard.php
+
+		-
+			message: '#^Method App\\Models\\MemberCard\:\:creator\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/MemberCard.php
+
+		-
+			message: '#^Method App\\Models\\MemberCard\:\:member\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/MemberCard.php
+
+		-
+			message: '#^Method App\\Models\\MemberCard\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/MemberCard.php
+
+		-
+			message: '#^Class App\\Models\\Organization uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:attendances\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:complaints\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:dues\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:events\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:members\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:scopePublished\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:scopePublished\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:setDescriptionAttribute\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:setFoundedYearAttribute\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Method App\\Models\\Organization\:\:users\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Organization.php
+
+		-
+			message: '#^Class App\\Models\\Page uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Method App\\Models\\Page\:\:blocks\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Method App\\Models\\Page\:\:scopePublished\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Method App\\Models\\Page\:\:scopePublished\(\) has parameter \$query with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Method App\\Models\\Page\:\:syncBlocks\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Offset ''data'' on array\{type\: non\-falsy\-string, data\: array\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Offset ''payload'' on array\{payload\: array\{type\: string, data\: array\}\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Models/Page.php
+
+		-
+			message: '#^Class App\\Models\\PageBlock uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PageBlock.php
+
+		-
+			message: '#^Class App\\Models\\QuizOption uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/QuizOption.php
+
+		-
+			message: '#^Method App\\Models\\QuizOption\:\:question\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/QuizOption.php
+
+		-
+			message: '#^Class App\\Models\\QuizQuestion uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/QuizQuestion.php
+
+		-
+			message: '#^Method App\\Models\\QuizQuestion\:\:options\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/QuizQuestion.php
+
+		-
+			message: '#^Method App\\Models\\QuizQuestion\:\:quiz\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/QuizQuestion.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:attempts\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:organization\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Method App\\Models\\User\:\:progress\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Member\:\:\$organization\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Observers/MemberObserver.php
+
+		-
+			message: '#^Relation ''member'' is not found in App\\Models\\MemberCard model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Providers/Filament/SbaPanelProvider.php
+
+		-
+			message: '#^Relation ''organization'' is not found in App\\Models\\MemberCard model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Providers/Filament/SbaPanelProvider.php
+
+		-
+			message: '#^Relation ''course'' is not found in App\\Models\\CourseCertificate model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Support/CertificateService.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\CourseCertificate model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Support/CertificateService.php
+
+		-
+			message: '#^Call to static method loadHTML\(\) on an unknown class SnappyPDF\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Method App\\Support\\FederationReportGenerator\:\:gatherData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Method App\\Support\\FederationReportGenerator\:\:sweepExpired\(\) has parameter \$disk with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Method App\\Support\\FederationReportGenerator\:\:writePdfOrHtml\(\) has parameter \$disk with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Unsafe call to private method App\\Support\\FederationReportGenerator\:\:gatherData\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Unsafe call to private method App\\Support\\FederationReportGenerator\:\:sweepExpired\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Unsafe call to private method App\\Support\\FederationReportGenerator\:\:writePdfOrHtml\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 1
+			path: app/Support/FederationReportGenerator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Course\:\:\$lessons\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseLesson\:\:\$quizzes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Method App\\Support\\LearningProgress\:\:forCourse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Method App\\Support\\LearningProgress\:\:forUser\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Method App\\Support\\LearningProgress\:\:report\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Method App\\Support\\LearningProgress\:\:userCourseStatus\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Relation ''lessons'' is not found in App\\Models\\Course model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Support/LearningProgress.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\MemberCard\:\:\$member\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Support/MemberCardService.php
+
+		-
+			message: '#^Method App\\Support\\MemberCardService\:\:getCardHistory\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Support/MemberCardService.php
+
+		-
+			message: '#^Relation ''creator'' is not found in App\\Models\\MemberCard model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Support/MemberCardService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\MemberCard\:\:\$member\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Support/MemberCardVerificationService.php
+
+		-
+			message: '#^Cannot call method format\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Support/MemberCardVerificationService.php
+
+		-
+			message: '#^Method App\\Support\\MemberCardVerificationService\:\:lookup\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Support/MemberCardVerificationService.php
+
+		-
+			message: '#^Relation ''member'' is not found in App\\Models\\MemberCard model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Support/MemberCardVerificationService.php
+
+		-
+			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Support/PageBlockRenderer.php
+
+		-
+			message: '#^Parameter \#1 \$width of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Support/UploadedImageOptimizer.php
+
+		-
+			message: '#^Parameter \#2 \$height of function imagecreatetruecolor expects int\<1, max\>, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Support/UploadedImageOptimizer.php
+
+		-
+			message: '#^Unsafe call to private method App\\Support\\UploadedImageOptimizer\:\:storeOriginal\(\) through static\:\:\.$#'
+			identifier: staticClassAccess.privateMethod
+			count: 4
+			path: app/Support/UploadedImageOptimizer.php
+
+		-
+			message: '#^Method Tests\\Feature\\CardVerificationTest\:\:fixture\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/CardVerificationTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Course\:\:\$lessons\.$#'
+			identifier: property.notFound
+			count: 3
+			path: tests/Feature/CourseProgressTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\QuizQuestion\:\:\$options\.$#'
+			identifier: property.notFound
+			count: 2
+			path: tests/Feature/CourseProgressTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\CourseProgressTest\:\:quizWithCorrectAnswer\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/CourseProgressTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:getFile\(\)\.$#'
+			identifier: method.notFound
+			count: 18
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\ExportTest\:\:createSbaAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\ExportTest\:\:followExport\(\) return type with generic class Illuminate\\Testing\\TestResponse does not specify its types\: TResponse$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\ExportTest\:\:readXlsx\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function trim expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 27
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 19
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Parameter \#2 \$mtime of function touch expects int\|null, float\|int\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Feature/ExportTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\QuizQuestion\:\:\$options\.$#'
+			identifier: property.notFound
+			count: 5
+			path: tests/Feature/LearnerAccessTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\MemberCardPageTest\:\:fixture\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/MemberCardPageTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\MemberCardPrintTest\:\:fixture\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/MemberCardPrintTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/MemberCardPrintTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\MemberCardTest\:\:fixture\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/MemberCardTest.php
+
+		-
+			message: '#^Parameter \#1 \$items of method App\\Models\\Page\:\:syncBlocks\(\) expects array\<int, array\{payload\: array\{type\: string, data\: array\}\}\>, array\{array\{type\: ''hero'', data\: array\{title\: ''Halo'', subtitle\: ''Dunia''\}\}, array\{type\: ''stats'', data\: array\{items\: array\{array\{label\: ''SBA'', value\: ''25''\}\}\}\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PageTest.php
+
+		-
+			message: '#^Parameter \#1 \$items of method App\\Models\\Page\:\:syncBlocks\(\) expects array\<int, array\{payload\: array\{type\: string, data\: array\}\}\>, array\{array\{type\: ''quote'', data\: array\{quote\: ''Bersatu''\}\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PageTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$questions\.$#'
+			identifier: property.notFound
+			count: 20
+			path: tests/Feature/QuizEngineTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\QuizQuestion\:\:\$options\.$#'
+			identifier: property.notFound
+			count: 8
+			path: tests/Feature/QuizEngineTest.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$data\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/ReportingTest.php
+
+		-
+			message: '#^Call to an undefined method object\:\:getStats\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/ReportingTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\ReportingTest\:\:createSbaAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/ReportingTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\ReportingTest\:\:statsFor\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/ReportingTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\ReportingTest\:\:statsFor\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/ReportingTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\SbaComplaintTest\:\:sbaUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/SbaComplaintTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\SbaDuesTest\:\:sbaUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/SbaDuesTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\SbaEventAttendanceTest\:\:sbaUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/SbaEventAttendanceTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\SbaMemberTest\:\:sbaUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/SbaMemberTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\SbaOrganizationTest\:\:sbaUser\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/SbaOrganizationTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Organization\:\:\$users\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/SbaTenantTest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$organization\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/SbaTenantTest.php
+
+		-
+			message: '#^Parameter \#2 \$subject of function preg_match_all expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/SeoTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:getFile\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Feature/Sp5InputTamperingTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Sp5InputTamperingTest\:\:createSbaAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Sp5InputTamperingTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Sp5InputTamperingTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Feature/Sp5InputTamperingTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:getFile\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Feature/Sp5SecurityRegressionTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Sp5SecurityRegressionTest\:\:createSbaAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Sp5SecurityRegressionTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/Sp5SecurityRegressionTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Sp5SecurityRegressionTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\HttpFoundation\\Response\:\:getFile\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Feature/Sp5SecurityTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\Sp5SecurityTest\:\:createSbaAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Feature/Sp5SecurityTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Sp5SecurityTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringNotContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/Sp5SecurityTest.php
+
+		-
+			message: '#^Cannot use array destructuring on array\<int\|string, int\|string\>\|false\.$#'
+			identifier: offsetAccess.nonArray
+			count: 2
+			path: tests/Feature/UploadedImageOptimizerTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/ExampleTest.php

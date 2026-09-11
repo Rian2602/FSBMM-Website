@@ -21,7 +21,7 @@ class FederationReportGenerator
         $data = static::gatherData();
         $html = view('reports.federation-summary', $data)->render();
 
-        $name = 'laporan-federasi-'.now()->format('Y-m-d');
+        $name = 'laporan-federasi-' . now()->format('Y-m-d');
         $disk = Storage::disk('local');
         $disk->makeDirectory('exports');
 
@@ -113,7 +113,7 @@ class FederationReportGenerator
      */
     private static function writePdfOrHtml($disk, string $name, string $html): string
     {
-        $pdfPath = 'exports/'.$name.'.pdf';
+        $pdfPath = 'exports/' . $name . '.pdf';
 
         try {
             SnappyPDF::loadHTML($html)
@@ -133,7 +133,7 @@ class FederationReportGenerator
             // inline instead of forcing a download. **)
             report($e);
 
-            $htmlPath = 'exports/'.$name.'.html';
+            $htmlPath = 'exports/' . $name . '.html';
             $disk->put($htmlPath, $html);
 
             return $htmlPath;

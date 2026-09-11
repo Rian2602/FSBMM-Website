@@ -38,7 +38,7 @@ class AuditTrailPage extends Page implements HasTable
             ->query(
                 AuditLog::query()
                     ->where('organization_id', auth()->user()->organization_id)
-                    ->latest('id')
+                    ->latest('id'),
             )
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')

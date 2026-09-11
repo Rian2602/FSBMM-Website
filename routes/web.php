@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 // robots.txt — declared as a route (not a static file) so the Sitemap directive
 // uses an absolute, environment-correct URL (Sitemaps spec requires absolute).
 Route::get('/robots.txt', function () {
-    return response("User-agent: *\nDisallow:\n\nSitemap: ".url('/sitemap.xml'))
+    return response("User-agent: *\nDisallow:\n\nSitemap: " . url('/sitemap.xml'))
         ->header('Content-Type', 'text/plain');
 });
 
@@ -36,17 +36,17 @@ Route::get('/sitemap.xml', function () {
         ->whereNotIn('slug', Page::STRUCTURAL_SLUGS)
         ->get()
         ->map(fn (Page $p) => [
-            'loc' => url('/'.$p->slug),
+            'loc' => url('/' . $p->slug),
             'lastmod' => optional($p->updated_at)->toDateString(),
         ]);
 
     $articles = Article::published()->get()->map(fn (Article $a) => [
-        'loc' => url('/berita/'.$a->slug),
+        'loc' => url('/berita/' . $a->slug),
         'lastmod' => optional($a->published_at)->toDateString(),
     ]);
 
     $organizations = Organization::published()->get()->map(fn (Organization $o) => [
-        'loc' => url('/sba/'.$o->slug),
+        'loc' => url('/sba/' . $o->slug),
         'lastmod' => optional($o->updated_at)->toDateString(),
     ]);
 

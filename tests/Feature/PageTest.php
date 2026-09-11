@@ -47,7 +47,7 @@ class PageTest extends TestCase
     {
         $page = Page::factory()->create(['is_published' => false]);
 
-        $this->get('/'.$page->slug)->assertNotFound();
+        $this->get('/' . $page->slug)->assertNotFound();
     }
 
     public function test_sync_blocks_splits_builder_state_into_rows(): void

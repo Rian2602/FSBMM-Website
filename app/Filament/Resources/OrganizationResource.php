@@ -129,7 +129,7 @@ class OrganizationResource extends Resource
                     Tables\Actions\DeleteBulkAction::make()
                         ->using(static function (Collection $records): void {
                             $blocked = $records->first(
-                                static fn (Organization $org): bool => $org->hasSbaAccounts() || $org->hasMembers()
+                                static fn (Organization $org): bool => $org->hasSbaAccounts() || $org->hasMembers(),
                             );
 
                             if ($blocked) {
