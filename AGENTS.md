@@ -19,19 +19,50 @@ authoring in `/admin` (staff only), a "Kursus Saya" learner surface in both
 panels, and a super-admin-only learning report. Skipping a spec/plan is how
 this repo breaks — read the relevant one before touching an area.
 
-**SP5 (operational reporting / secure export / kartu anggota) is in progress.**
-Spec + plan committed in `docs/superpowers/`; Phases 0–2 are done in a
-work-in-progress branch: 4 tenant-scoped SBA report pages (`MemberReportPage`,
-`DuesReportPage`, `AttendanceReportPage`, `ComplaintReportPage`, nav group
-`Laporan`, registered explicitly in `SbaPanelProvider->pages([...])`) + a
-`ReportingTest` suite. Some of these files may be uncommitted — read the SP5
-spec/plan before touching SBA reporting, exports, or member-cards. Federation
-reporting is `super_admin`-only and `/verifikasi/kartu/{token}` must be
-declared ABOVE the `{page:slug}` catch-all (spec §9.10).
+**SP5 (operational reporting / secure export / kartu anggota) is done through
+Phases 0–8** (all committed, gates PASS); Phases 9–10 remain. 4 tenant-scoped
+SBA report pages (`MemberReportPage`, `DuesReportPage`, `AttendanceReportPage`,
+`ComplaintReportPage`, nav group `Laporan`, registered explicitly in
+`SbaPanelProvider->pages([...])`) + a `ReportingTest` suite + member-card
+lifecycle (`MemberCardService`), the SBA `MemberCardPage`, and public
+`/verifikasi/kartu/{token}`. Federation reporting is `super_admin`-only and
+`/verifikasi/kartu/{token}`/`/verifikasi/sertifikat/{token}` must be declared
+ABOVE the `{page:slug}` catch-all (spec §9.10). Remaining: Phase 9 (PDF print
+via snappy + QR via bacon-qr-code) and Phase 10 (final regression). Read the
+SP5 spec/plan before touching SBA reporting, exports, or member-cards.
 
 Every plan records every deviation from spec/snippets as inline
 `(** executed: ... **)` annotations. Preserve/append these when you change
 behavior — never rewrite history.
+
+**Public-enhancement phases 1–4** (separate from SP1–SP5, planned in
+`docs/superpowers/plans/2026-09-10-fsbmm-website-phase4-capacity-accountability.md`
+and the phase 1–3 equivalents) added: chart page-builder block + dark mode +
+mobile drawer (1); SBA export buttons + `GlobalSearchWidget` +
+`NotificationAlertWidget` + `FederationReportGenerator` (2); SBA `MemberCardPage`
++ `/verifikasi/kartu/{token}` (3); **e-learning certificates**, **audit trail**,
+**bulk actions**, and a PDF-export fallback (4). Two things to know before
+touching these:
+
+- **Certificates** (`course_certificates`, `CertificateService`): issued only for
+  a *published + completed* course, idempotent per learner/course, printed via
+  the shared `CertificatePrintController` registered on BOTH panels as
+  `/certificates/{record}/print`, verified publicly at
+  `/verifikasi/sertifikat/{token}` (also declared ABOVE the `{page:slug}`
+  catch-all). Revocation is schema-only — there is no revocation UI yet.
+- **Audit trail** (`audit_logs`, `AuditLogger`): append-only, written from
+  observers/services, read by `app/Filament/Admin/Pages/AuditTrailPage`
+  (`super_admin` only, PII-free) and `app/Filament/Sba/Pages/AuditTrailPage`
+  (tenant-scoped). Descriptions MUST stay PII-free — only changed column names,
+  statuses, card/certificate numbers, and dataset names. Never pass member
+  names/NIK/address/salary or raw complaint text.
+
+**Phase-4 enhancement code is COMMITTED as a single batch on master** (commit
+`feat(phase4): ...`): `CertificateService`, `AuditLogger`,
+`CertificatePrintController`, `AuditTrailPage*`, their migrations, and
+`CertificateTest`/`AuditTrailTest`/`SbaBatchActionTest`/`FederationReportExportTest`.
+See `git log --oneline -1` for the exact commit; no Phase-4 file is uncommitted
+in a clean worktree.
 
 ## Two panels, one app, three roles
 
@@ -128,6 +159,11 @@ exist in Filament 3.3.55. To add a learning page, register it in BOTH
   `/robots.txt`, `/sitemap.xml` are closures by spec design, so it throws
   `LogicException`. Don't add it to a deploy script or "fix" the closures
   without the plan's blessing.
+- `layouts/public.blade.php` header is auth-aware (`@auth`/`@guest` work because
+  both panels share the `web` guard). Panel links MUST use Filament's named
+  routes (`filament.sba.auth.login`, `filament.admin.auth.login`,
+  `filament.sba.pages.dashboard`, `filament.admin.pages.dashboard`) — never
+  hardcode `/admin` or `/panel-sba` paths in blades.
 
 ## Style
 
