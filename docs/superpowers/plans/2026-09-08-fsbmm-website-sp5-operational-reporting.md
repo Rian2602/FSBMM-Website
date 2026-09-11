@@ -1319,6 +1319,15 @@ nowhere in the app (the real widget heading is 'Ringkasan Operasional
 Federasi'). Replaced with the real heading. Suite: 400 passed (1374
 assertions), pint clean. **)
 
+(** gate 2026-09-11 strengthen: PHASE 10 EVALUATION GATE — row 6
+(dues/attendance/complaint cross-tenant export denial) previously passed by
+construction: org A had zero rows for those entities, so
+`assertStringNotContainsString(foreign)` was trivially true. Now seeds the
+same period/titles for org A and asserts its OWN data appears
+(`assertStringContainsString`) AND foreign data does not — proving the export
+serves the caller's org, not that an empty file coincidentally lacks foreign
+rows. 12 passed (32 assertions). **)
+
 ### Task 10.2: Input Tampering Tests
 
 - [x] Test: organization_id from request is ignored
@@ -1389,6 +1398,29 @@ card token was re-issued (see the Task 10.4 checklist file). **)
   spec deviations introduced by this task — cumulative deviations remain as recorded
   per-phase above. Task 10.4 manual browser QA note: pending human verification. **)
 
+( ** gate @2026-09-11: PHASE 10 EVALUATION GATE — evidence-based evaluation of
+Tasks 10.1–10.5 (commits `bc5c3bf`..`bbbb0ce`). Evidence run: `composer test`
+407 passed / 1400 assertions ×2 (pre + post fresh-seed), `pint --test`
+passed, `npm run build` clean, `migrate:fresh --seed` clean (kartu QA
+di-reissue: `FSBMM-2026-QTQWRWJO`, token di checklist 10.4).
+Independent-review subagent verdict: **READY** with 2 findings, both
+test-strength (0 security gaps):
+- Important (F1) row 6 export denial passed by construction (org A held no
+  dues/attendance/complaints rows → `assertStringNotContainsString(foreign)`
+  trivially true). FIXED in gate: same test now seeds org A rows + asserts its
+  OWN data appears (`assertStringContainsString`) and foreign does not.
+  12 passed / 32 assertions.
+- Minor (F4) `assertHasNoTableActionErrors()` is misleading under
+  exception-based rejection (flash notification, not validation error); real
+  guard is `assertDatabaseMissing`. FIXED in gate: comment documents that;
+  assertion removed (guard intact).
+All other rows/tests verified as asserting real server-side behavior.
+DoD ticked: P0 Reporting ✓, P0 Export ✓, P1 Card ✓, P1 Security ✓, Quality:
+tests/pint/npm/seed ✓. Remaining UNTICKED: Quality.Manual QA (Task 10.4)
+— pending browser verification by a human reviewer.
+Verdict: **READY for all committed artifacts; SP5 backend complete; SP5 fully
+signed-off blocked only on Task 10.4 manual QA.** **)
+
 ---
 
 ## Definition of Done
@@ -1396,46 +1428,46 @@ card token was re-issued (see the Task 10.4 checklist file). **)
 SP5 is complete when:
 
 ### P0 — Reporting
-- [ ] SBA member report
-- [ ] SBA dues report
-- [ ] SBA attendance report
-- [ ] SBA complaint report
-- [ ] Federation aggregate dashboard
-- [ ] Filters work server-side
-- [ ] Tenant isolation tested
+- [x] SBA member report
+- [x] SBA dues report
+- [x] SBA attendance report
+- [x] SBA complaint report
+- [x] Federation aggregate dashboard
+- [x] Filters work server-side
+- [x] Tenant isolation tested
 
 ### P0 — Export
-- [ ] CSV + XLSX for all entities
-- [ ] Explicit column whitelist
-- [ ] Private/temporary file handling
-- [ ] Tenant isolation tested
-- [ ] Authorization tested
+- [x] CSV + XLSX for all entities
+- [x] Explicit column whitelist
+- [x] Private/temporary file handling
+- [x] Tenant isolation tested
+- [x] Authorization tested
 
 ### P1 — Card
-- [ ] `member_cards` table with `organization_id`
-- [ ] Issue, revoke, reissue
-- [ ] Card history
-- [ ] Unique card number (collision handling)
-- [ ] Unique verification token
-- [ ] Print/PDF
-- [ ] QR verification
-- [ ] Public-safe verification endpoint
+- [x] `member_cards` table with `organization_id`
+- [x] Issue, revoke, reissue
+- [x] Card history
+- [x] Unique card number (collision handling)
+- [x] Unique verification token
+- [x] Print/PDF
+- [x] QR verification
+- [x] Public-safe verification endpoint
 
 ### P1 — Security
-- [ ] Cross-tenant denial
-- [ ] Public PII protection
-- [ ] Editor PII restriction
-- [ ] Export authorization
-- [ ] Card authorization
-- [ ] Token protection
+- [x] Cross-tenant denial
+- [x] Public PII protection
+- [x] Editor PII restriction
+- [x] Export authorization
+- [x] Card authorization
+- [x] Token protection
 
 ### Quality
-- [ ] SP1–SP4 tests still green
-- [ ] SP5 tests green
-- [ ] Pint clean
-- [ ] npm build clean
-- [ ] `php artisan migrate:fresh --seed` clean
-- [ ] Manual QA passed
+- [x] SP1–SP4 tests still green
+- [x] SP5 tests green
+- [x] Pint clean
+- [x] npm build clean
+- [x] `php artisan migrate:fresh --seed` clean
+- [ ] Manual QA passed — **pending verifikasi browser oleh user (Task 10.4)**
 
 ---
 

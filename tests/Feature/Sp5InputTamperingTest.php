@@ -102,11 +102,13 @@ class Sp5InputTamperingTest extends TestCase
         Filament::setCurrentPanel(Filament::getPanel('sba'));
 
         // The header "Terbitkan Kartu Baru" resolves the member freely, but the
-        // service guard (guardEligible) rejects a cross-tenant member.
+        // service guard (guardEligible) rejects a cross-tenant member via
+        // AuthorizationException → Filament surfaces it as a flash notification,
+        // so assertHasNoTableActionErrors() cannot detect the rejection; the real
+        // guard assertion is the database write below (assertDatabaseMissing).
         Livewire::actingAs($sbaA)
             ->test(MemberCardPage::class)
-            ->callTableAction('issueNew', data: ['member_id' => $memberB->id])
-            ->assertHasNoTableActionErrors();
+            ->callTableAction('issueNew', data: ['member_id' => $memberB->id]);
 
         $this->assertDatabaseMissing('member_cards', ['member_id' => $memberB->id]);
     }

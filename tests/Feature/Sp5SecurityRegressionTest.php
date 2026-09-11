@@ -96,15 +96,18 @@ class Sp5SecurityRegressionTest extends TestCase
         $eventA = Event::factory()->for($orgA)->create(['title' => 'Rapat A']);
         $eventB = Event::factory()->for($orgB)->create(['title' => 'Rapat B']);
 
+        Due::factory()->for($orgA)->for($memberA, 'member')->create(['period' => '2026-08', 'amount' => 100000]);
         Due::factory()->for($orgB)->for($memberB, 'member')->create(['period' => '2026-08', 'amount' => 999000]);
+        Attendance::factory()->for($orgA)->for($eventA, 'event')->for($memberA, 'member')->create();
         Attendance::factory()->for($orgB)->for($eventB, 'event')->for($memberB, 'member')->create();
+        Complaint::factory()->for($orgA)->create(['title' => 'Keluhan A']);
         Complaint::factory()->for($orgB)->create(['title' => 'Keluhan B']);
 
         foreach ([
-            'dues-report' => '999000',
-            'attendance-report' => 'Budi Santoso',
-            'complaint-report' => 'Keluhan B',
-        ] as $endpoint => $forbidden) {
+            'dues-report' => ['expected' => '100000', 'forbidden' => '999000'],
+            'attendance-report' => ['expected' => 'Andi Wijaya', 'forbidden' => 'Budi Santoso'],
+            'complaint-report' => ['expected' => 'Keluhan A', 'forbidden' => 'Keluhan B'],
+        ] as $endpoint => $pairs) {
             $redirect = $this->actingAs($sbaA)
                 ->get('/panel-sba/'.$endpoint.'/export?organization_id='.$orgB->id)
                 ->assertStatus(302);
@@ -112,7 +115,8 @@ class Sp5SecurityRegressionTest extends TestCase
             $downloaded->assertOk();
 
             $content = file_get_contents((string) $downloaded->baseResponse->getFile());
-            $this->assertStringNotContainsString($forbidden, $content);
+            $this->assertStringContainsString($pairs['expected'], $content);
+            $this->assertStringNotContainsString($pairs['forbidden'], $content);
         }
     }
 
