@@ -32,8 +32,10 @@ CI, dependabot, mirror). Baca juga `AGENTS.md` (aturan permanen repo) dan
 
 ## Commit messages
 
-Jenis wajib (conventional): `feat`, `fix`, `docs`, `refactor`, `test`,
-`chore`, `ci`, `build`, `security`, `style`. Contoh valid ada di
+Jenis wajib (conventional): `feat`, `fix`, `docs`, `style`, `refactor`,
+`perf`, `test`, `chore`, `ci`, `build`, `revert` (identik dengan regex
+`.githooks/commit-msg`; jangan menambah `security` dll. yang tidak ada di
+hook). Contoh valid ada di
 `CONTRIBUTING.md`; commit-msg hook memaksakan. Untuk pekerjaan plan,
 referensikan nomor/fase di deskripsi (mis. `fase b`).
 

@@ -1,16 +1,19 @@
 #!/bin/bash
 # Pre-commit hook: lint staged PHP files with Pint + syntax check.
 # Requires vendor/bin/pint (installed via composer install).
+# Checks the STAGED blob (git show :path), not the working tree — otherwise a
+# broken staged file surfed over by a fixed worktree would slip through.
 
-phpFiles=$(git diff --cached --name-only --diff-filter=ACM -- '*.php')
+phpFiles=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
 [ -z "$phpFiles" ] && exit 0
 
 # Syntax check (fast, always). php -l exit code is the source of truth —
-# its "PHP Parse error:" prefix breaks string grep patterns.
+# its "PHP Parse error:" prefix breaks string grep patterns. Read the staged
+# blob so "stage X, fix X" can never commit a broken tree.
 syntaxErrors=0
 while IFS= read -r f; do
-    if ! php -l "$f" >/dev/null 2>&1; then
-        echo "❌ PHP syntax error in $f"
+    if ! git show ":$f" 2>/dev/null | php -l >/dev/null 2>&1; then
+        echo "❌ PHP syntax error in staged $f"
         syntaxErrors=$((syntaxErrors + 1))
     fi
 done < <(printf '%s\n' "$phpFiles")
@@ -18,7 +21,8 @@ if [ "$syntaxErrors" -gt 0 ]; then
     exit 1
 fi
 
-# Pint check on staged files only.
+# Pint check on staged files only. Pint needs a real path, so it reads the
+# file on disk; keep it simple — staging and fixing are the same file here.
 if [ -f vendor/bin/pint ]; then
     echo "Running Pint..."
     if ! printf '%s\n' "$phpFiles" | xargs -d '\n' vendor/bin/pint --test; then

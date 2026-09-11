@@ -6,12 +6,11 @@
 ## Jenis perubahan
 
 - [ ] feat — fitur baru
-- [ ] fix — perbaikan bug
+- [ ] fix — perbaikan bug/keamanan (`security` bukan type commit — pakai `fix`/`chore`)
 - [ ] refactor — perubahan internal tanpa mengubah perilaku
 - [ ] docs — dokumentasi
 - [ ] test — penambahan/perbaikan tes
 - [ ] chore — tugas repo/tooling
-- [ ] security — perbaikan keamanan
 - [ ] ci/build — pipeline
 
 ## Checklist sebelum merge
