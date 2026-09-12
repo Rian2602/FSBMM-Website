@@ -53,6 +53,22 @@ class EresourceFingerprintTest extends TestCase
         $this->assertNull($eresource->fresh()->sha256);
     }
 
+    public function test_legacy_row_without_fingerprint_still_detects_duplicate(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('eresources/lama.pdf', 'SAME-BYTES');
+        Storage::disk('public')->put('eresources/biru.pdf', 'SAME-BYTES');
+
+        $legacy = Eresource::factory()->create(['file_path' => 'eresources/lama.pdf']);
+        // Simulate a pre-fingerprint row: the saving hook only recomputes when
+        // file_path is dirty, so a bare update() leaves sha256 null.
+        $legacy->update(['sha256' => null]);
+        $other = Eresource::factory()->create(['file_path' => 'eresources/biru.pdf']);
+
+        $this->assertTrue($legacy->fresh()->hasDuplicateFile());
+        $this->assertTrue($other->fresh()->hasDuplicateFile());
+    }
+
     public function test_fingerprint_updates_when_file_is_replaced(): void
     {
         Storage::fake('public');

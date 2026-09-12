@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Http\UploadedFile;
 
 /**
  * Phase B / T2 "ext-MIME lock" for the only non-image upload on the site:
@@ -13,6 +14,14 @@ use Illuminate\Contracts\Validation\ValidationRule;
  * polyglot prefix + PHP tail) never reaches the public disk where Caddy's
  * php_server could execute it.
  *
+ * (** executed (Phase B evaluation gate): Filament v3.3 form-level `->rules()`
+ * receives the pending upload as a `TemporaryUploadedFile` OBJECT (not the
+ * disk-relative temp path string), and Laravel's built-in image/mimes rules
+ * silently skip non-UploadedFile values — so the first shipped version of this
+ * rule, which treated the value as a path string, rejected every genuine PDF.
+ * The value is now sniffed through getRealPath() when it is an UploadedFile;
+ * plain path strings are still accepted for direct/unit-test use. **)
+ *
  * Detection: finfo() MIME when the extension is available (standard PHP
  * build), falling back to the PDF magic bytes "%PDF-" for environments where
  * fileinfo is missing — never the client-supplied extension or MIME.
@@ -21,7 +30,13 @@ class RealPdfFile implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $path = is_string($value) ? $value : null;
+        $path = null;
+
+        if ($value instanceof UploadedFile) {
+            $path = $value->getRealPath() ?: null;
+        } elseif (is_string($value)) {
+            $path = $value;
+        }
 
         if ($path === null || ! is_file($path)) {
             $fail('File bukan PDF yang valid.');

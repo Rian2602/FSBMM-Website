@@ -295,7 +295,10 @@ them directly, never concatenate a `border-`/`text-` prefix onto them.
   bytes to `public/storage`, where Caddy's `php_server` could execute `.php`
   files). E-resource PDFs are byte-sniffed server-side by
   `App\Rules\RealPdfFile` (finfo + `%PDF-` fallback) — `acceptedFileTypes` is
-  client-side only. Never reintroduce a raw-store fallback.
+  client-side only. Filament form-level `rules()` receives the pending upload
+  as a `TemporaryUploadedFile` OBJECT (not a path string), so the rule must
+  sniff through `getRealPath()` — Laravel's built-in image/mimes rules silently
+  skip non-UploadedFile values. Never reintroduce a raw-store fallback.
 - **E-resource fingerprint (Phase B/T2)** — `e_resources.sha256` is computed
   automatically on every `file_path` change (model `saving` hook,
   `Eresource::fingerprintPath()`); `hasDuplicateFile()` detects same-file

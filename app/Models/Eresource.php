@@ -63,15 +63,22 @@ class Eresource extends Model
 
     /**
      * True when another published e-resource already carries the exact same
-     * file bytes as this one (same SHA-256 fingerprint).
+     * file bytes as this one (same SHA-256 fingerprint). Legacy rows written
+     * before the fingerprint column existed fall back to hashing the file on
+     * disk on demand.
      */
     public function hasDuplicateFile(): bool
     {
-        return $this->sha256 !== null
-            && static::query()
-                ->where('sha256', $this->sha256)
-                ->whereKeyNot($this->getKey())
-                ->exists();
+        $sha = $this->sha256 ?? static::fingerprintPath($this->file_path);
+
+        if ($sha === null) {
+            return false;
+        }
+
+        return static::query()
+            ->where('sha256', $sha)
+            ->whereKeyNot($this->getKey())
+            ->exists();
     }
 
     public function getRouteKeyName(): string

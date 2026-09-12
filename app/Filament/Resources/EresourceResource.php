@@ -41,7 +41,7 @@ class EresourceResource extends Resource
                 Forms\Components\FileUpload::make('file_path')
                     ->label('File PDF')
                     ->acceptedFileTypes(['application/pdf'])
-                    ->rules([new RealPdfFile]) // server-side byte sniff — see App\Rules\RealPdfFile
+                    ->rules([new RealPdfFile]) // server-side byte sniff (TemporaryUploadedFile) — see App\Rules\RealPdfFile
                     // (** executed: Vercel functions reject requests >4.5MB
                     // (FUNCTION_PAYLOAD_TOO_LARGE), so e-resource PDFs are
                     // capped at 4MB. Anything larger misses serverless. **)
