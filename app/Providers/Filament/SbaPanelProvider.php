@@ -45,6 +45,7 @@ class SbaPanelProvider extends PanelProvider
             ->id('sba')
             ->path('panel-sba')
             ->login()
+            ->profile()
             ->brandName('Panel SBA')
             ->font('Plus Jakarta Sans')
             ->colors([
