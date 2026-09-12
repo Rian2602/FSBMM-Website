@@ -6,8 +6,9 @@ Laravel 12 + Filament 3 + Tailwind v4 public site for a trade-union federation
 locale/timezone (`APP_LOCALE=id`, `Asia/Jakarta`).
 
 See `README.md` for setup, stack, and structure that stays canonical.
-`knowledge.md` (repo root) is a longer module walkthrough — treat it as
-supplementary; its checklists/counts may trail the committed suite.
+`knowledge.md` (repo root) is an optional local agent scratch doc — it is
+gitignored (`# Agent tooling artifacts`) and not tracked, so don't reference it
+as canonical.
 
 ## Multi-phase roadmap
 
@@ -19,17 +20,19 @@ authoring in `/admin` (staff only), a "Kursus Saya" learner surface in both
 panels, and a super-admin-only learning report. Skipping a spec/plan is how
 this repo breaks — read the relevant one before touching an area.
 
-**SP5 (operational reporting / secure export / kartu anggota) is done through
-Phases 0–8** (all committed, gates PASS); Phases 9–10 remain. 4 tenant-scoped
-SBA report pages (`MemberReportPage`, `DuesReportPage`, `AttendanceReportPage`,
+**SP5 (operational reporting / secure export / kartu anggota) is complete through
+Phase 10** (all phases committed, gates PASS — incl. Phase 9 card PDF/QR print and
+the Phase 10 security + regression gate). 4 tenant-scoped SBA report pages
+(`MemberReportPage`, `DuesReportPage`, `AttendanceReportPage`,
 `ComplaintReportPage`, nav group `Laporan`, registered explicitly in
 `SbaPanelProvider->pages([...])`) + a `ReportingTest` suite + member-card
 lifecycle (`MemberCardService`), the SBA `MemberCardPage`, and public
 `/verifikasi/kartu/{token}`. Federation reporting is `super_admin`-only and
 `/verifikasi/kartu/{token}`/`/verifikasi/sertifikat/{token}` must be declared
-ABOVE the `{page:slug}` catch-all (spec §9.10). Remaining: Phase 9 (PDF print
-via snappy + QR via bacon-qr-code) and Phase 10 (final regression). Read the
-SP5 spec/plan before touching SBA reporting, exports, or member-cards.
+ABOVE the `{page:slug}` catch-all (spec §9.10). Card printing lives in
+`MemberCardPdfRenderer` + `QrCodeRenderer` (Snappy with HTML fallback when the
+wkhtmltopdf binary is absent). Read the SP5 spec/plan before touching SBA
+reporting, exports, or member-cards.
 
 Every plan records every deviation from spec/snippets as inline
 `(** executed: ... **)` annotations. Preserve/append these when you change
@@ -57,12 +60,12 @@ touching these:
   statuses, card/certificate numbers, and dataset names. Never pass member
   names/NIK/address/salary or raw complaint text.
 
-**Phase-4 enhancement code is COMMITTED as a single batch on master** (commit
-`feat(phase4): ...`): `CertificateService`, `AuditLogger`,
+**Phase-4 enhancement code is COMMITTED as a single batch** (commit `dba516e`,
+`feat(phase4): e-learning certificates, audit trail, bulk actions, PDF export
+fallback`): `CertificateService`, `AuditLogger`,
 `CertificatePrintController`, `AuditTrailPage*`, their migrations, and
 `CertificateTest`/`AuditTrailTest`/`SbaBatchActionTest`/`FederationReportExportTest`.
-See `git log --oneline -1` for the exact commit; no Phase-4 file is uncommitted
-in a clean worktree.
+No Phase-4 file is uncommitted in a clean worktree.
 
 ## Two panels, one app, three roles
 
@@ -148,6 +151,33 @@ conventional) — diaktifkan otomatis oleh `composer install`/`update` via
 suite) — aktifkan lokal dengan `git config blame.ignoreRevsFile
 .git-blame-ignore-revs`. Menambah/menghapus file ini wajib lewat plan seperti
 perubahan konvensi lainnya.
+
+## Deployment (branch `deploy/vercel`)
+
+Production ships off the `deploy/vercel` branch (currently checked out) — **not**
+`master`: Vercel builds a FrankenPHP container from `Dockerfile.vercel`
+(declared in `vercel.json`, container runtime) served via `Caddyfile`, and every
+push to `deploy/vercel` triggers `.github/workflows/deploy-migrate.yml`
+(secrets-driven `php artisan migrate --force` against the production MySQL/TiDB
+Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
+
+- Container filesystem is effectively read-only/ephemeral: filament assets,
+  `package:discover`, and the `storage/framework/*` dirs are baked into the
+  image at build time. `config:cache`/`route:cache` are intentionally NOT run
+  (env differs between build and runtime — and web.php's Closure routes can't
+  be route:cache'd anyway).
+- Production storage is an S3-compatible bucket (R2/Spaces):
+  `config/filesystems.php` swaps **both** the `local` and `public` disks to S3
+  when `FILESYSTEM_LOCAL_DRIVER`/`FILESYSTEM_PUBLIC_DRIVER=s3` (pinned in the
+  image ENV). Keep that swap shape if you touch filesystems config; tests and
+  local dev keep the local disks, so disk behavior only diverges in prod.
+- Never let a dev `bootstrap/cache/packages.php`/`services.php` reach the image:
+  `package:discover` in the `--no-dev` build would then load dev-only providers
+  (e.g. laravel/pail) and crash. This is enforced by `.dockerignore` — don't
+  remove it.
+- Runtime ENV pins `QUEUE_CONNECTION=sync`; uploads/report exports in prod land
+  in the S3 bucket, not container storage. `.env`/SQLite/storage never enter the
+  image (`.vercelignore`/`.dockerignore`).
 
 ## Env gotchas
 
