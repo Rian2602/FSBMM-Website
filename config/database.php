@@ -38,6 +38,10 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA', '/etc/ssl/certs/ca-certificates.crt'),
+                // Fail fast on an unreachable DB host: without a connect
+                // timeout a stalled TiDB TLS handshake can hang a request
+                // until Vercel's 300s function cap kills it (504).
+                PDO::ATTR_TIMEOUT => (int) env('DB_CONNECT_TIMEOUT', 10),
             ]) : [],
         ],
 
@@ -58,6 +62,10 @@ return [
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA', '/etc/ssl/certs/ca-certificates.crt'),
+                // Fail fast on an unreachable DB host: without a connect
+                // timeout a stalled TiDB TLS handshake can hang a request
+                // until Vercel's 300s function cap kills it (504).
+                PDO::ATTR_TIMEOUT => (int) env('DB_CONNECT_TIMEOUT', 10),
             ]) : [],
         ],
 

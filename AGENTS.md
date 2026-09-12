@@ -169,8 +169,12 @@ Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
 - Production storage is an S3-compatible bucket (R2/Spaces):
   `config/filesystems.php` swaps **both** the `local` and `public` disks to S3
   when `FILESYSTEM_LOCAL_DRIVER`/`FILESYSTEM_PUBLIC_DRIVER=s3` (pinned in the
-  image ENV). Keep that swap shape if you touch filesystems config; tests and
-  local dev keep the local disks, so disk behavior only diverges in prod.
+  image ENV). The swap is **guarded by `$s3Ready`**: it only engages when
+  `league/flysystem-aws-s3-v3` is installed AND the full `AWS_*` config
+  (endpoint/bucket/keys/region) is present, otherwise disks fall back to
+  `local` — a misconfigured AWS_* env can never take the site down. Keep that
+  guard and swap shape if you touch filesystems config; tests and local dev keep
+  the local disks.
 - Never let a dev `bootstrap/cache/packages.php`/`services.php` reach the image:
   `package:discover` in the `--no-dev` build would then load dev-only providers
   (e.g. laravel/pail) and crash. This is enforced by `.dockerignore` — don't
