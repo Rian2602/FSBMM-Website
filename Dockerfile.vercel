@@ -31,7 +31,7 @@ COPY resources ./resources
 COPY app ./app
 COPY routes ./routes
 RUN npm run build \
-    && test -s public/build/manifest.json \
+    && test -s public/build/.vite/manifest.json \
     && test -s public/build/assets/app.css \
     && test -s public/build/assets/site.js
 
