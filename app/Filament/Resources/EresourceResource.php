@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EresourceResource\Pages;
 use App\Models\Eresource;
+use App\Rules\RealPdfFile;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -40,6 +41,7 @@ class EresourceResource extends Resource
                 Forms\Components\FileUpload::make('file_path')
                     ->label('File PDF')
                     ->acceptedFileTypes(['application/pdf'])
+                    ->rules([new RealPdfFile]) // server-side byte sniff — see App\Rules\RealPdfFile
                     // (** executed: Vercel functions reject requests >4.5MB
                     // (FUNCTION_PAYLOAD_TOO_LARGE), so e-resource PDFs are
                     // capped at 4MB. Anything larger misses serverless. **)

@@ -279,6 +279,29 @@ them directly, never concatenate a `border-`/`text-` prefix onto them.
   path. Never add a no-sanitize bypass for it; articles/pages remain staff-raw.
 - E-resource downloads use signed URLs (`middleware('signed')`) + per-download
   counting; deleted files return a clean 404.
+- **Def-site blocking (Phase B/T2)** — `SecurityHeadersMiddleware`
+  (`X-Frame-Options: DENY`, `Content-Security-Policy:
+  frame-ancestors 'none'; form-action 'self'`, `X-Content-Type-Options`,
+  `Referrer-Policy`, `Permissions-Policy`) is mounted BOTH on the `web` route
+  group (`bootstrap/app.php`) AND in each `PanelProvider->middleware([...])` —
+  Filament panels do NOT inherit the `web` group, so a panel without its own
+  mount is unprotected. Do NOT add a full `default-src` CSP: Google Fonts,
+  Livewire/Filament inline bootstrap, and staff-authored trusted HTML that
+  embeds third-party frames (e.g. YouTube) all depend on the permissive
+  default — `frame-ancestors` already closes the embedding vector.
+- **Upload ext/MIME lock (Phase B/T2)** — `UploadedImageOptimizer::store()`
+  THROWS `RuntimeException` for anything it cannot decode as a real
+  JPEG/PNG/WEBP (the old `storeOriginal()` fallback persisted raw attacker
+  bytes to `public/storage`, where Caddy's `php_server` could execute `.php`
+  files). E-resource PDFs are byte-sniffed server-side by
+  `App\Rules\RealPdfFile` (finfo + `%PDF-` fallback) — `acceptedFileTypes` is
+  client-side only. Never reintroduce a raw-store fallback.
+- **E-resource fingerprint (Phase B/T2)** — `e_resources.sha256` is computed
+  automatically on every `file_path` change (model `saving` hook,
+  `Eresource::fingerprintPath()`); `hasDuplicateFile()` detects same-file
+  re-uploads. The hook uses the SAME traversal guard as the download route
+  (`..`/absolute paths → no fingerprint): corrupt paths must never be read
+  from disk (Local adapter rejects them → save would 500).
 - Structural pages (`home`, `tentang`, `kontak`) are protected from delete and
   slug-change at model + UI level. Don't bypass these guards.
 - An organization that still has `sba_admin` accounts or member rows can't be

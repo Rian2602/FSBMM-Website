@@ -10,6 +10,7 @@ use App\Filament\Admin\Pages\QuizViewPage;
 use App\Filament\Widgets\GlobalSearchWidget;
 use App\Filament\Widgets\NotificationAlertWidget;
 use App\Http\Controllers\CertificatePrintController;
+use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Support\FederationReportGenerator;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -94,6 +95,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SecurityHeadersMiddleware::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

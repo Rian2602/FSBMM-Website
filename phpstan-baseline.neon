@@ -1603,12 +1603,6 @@ parameters:
 			path: app/Support/UploadedImageOptimizer.php
 
 		-
-			message: '#^Unsafe call to private method App\\Support\\UploadedImageOptimizer\:\:storeOriginal\(\) through static\:\:\.$#'
-			identifier: staticClassAccess.privateMethod
-			count: 6
-			path: app/Support/UploadedImageOptimizer.php
-
-		-
 			message: '#^Method Tests\\Feature\\CardVerificationTest\:\:fixture\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1

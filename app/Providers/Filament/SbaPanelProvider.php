@@ -17,6 +17,7 @@ use App\Filament\Sba\Pages\MemberReportPage;
 use App\Filament\Sba\Pages\MyCoursesPage;
 use App\Filament\Sba\Pages\QuizViewPage;
 use App\Http\Controllers\CertificatePrintController;
+use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Models\MemberCard;
 use App\Support\MemberCardPdfRenderer;
 use Filament\Http\Middleware\Authenticate;
@@ -134,6 +135,7 @@ class SbaPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                SecurityHeadersMiddleware::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

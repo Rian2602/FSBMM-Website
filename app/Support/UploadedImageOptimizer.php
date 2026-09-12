@@ -5,6 +5,7 @@ namespace App\Support;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 /**
  * Downscales + recompresses an uploaded image before it is written to the
@@ -23,6 +24,16 @@ use Illuminate\Support\Str;
  * with FileUpload::maxSize() at the field level so oversized files are
  * rejected by Livewire's validation BEFORE they ever reach this class —
  * maxSize is the cheap first line of defense, this is the second.
+ *
+ * (** executed (Phase B / T2 "ext-MIME lock"): this class used to fall back to
+ * storeOriginal() — storing the raw bytes untouched with the client's
+ * filename — whenever GD/meta-detail checks failed or GD was absent. Any
+ * non-image payload (e.g. PHP renamed to `logo.png`) would then persist under
+ * public/storage where Caddy's php_server could execute it. The fallback is
+ * removed: anything this class cannot decode as a real JPEG/PNG/WEBP now
+ * throws RuntimeException and nothing is written. Served output is therefore
+ * always GD-re-encoded (polyglot/getimagesize tricks can't survive the
+ * re-encode), never attacker-tagged raw bytes. **)
  */
 class UploadedImageOptimizer
 {
@@ -32,23 +43,22 @@ class UploadedImageOptimizer
      * @param  int  $maxWidth  Images wider than this are downscaled (aspect ratio kept).
      * @param  int  $quality  JPEG quality 0-100 for re-encoded (non-PNG) output.
      * @return string Relative path on the 'public' disk, for the model's *_path column.
+     *
+     * @throws RuntimeException When the upload is not a decodable JPEG/PNG/WEBP
+     *                          image, or the re-encoded output cannot be written.
      */
     public static function store(UploadedFile $file, string $directory, int $maxWidth = 1600, int $quality = 82): string
     {
         $directory = trim($directory, '/');
 
-        // Graceful degradation: no GD, unreadable dimensions, or an
-        // unsupported/corrupt image → store the original untouched rather
-        // than fail the whole form submission. A missed optimization is
-        // safer than a broken upload.
         if (! extension_loaded('gd')) {
-            return static::storeOriginal($file, $directory);
+            throw new RuntimeException('Environment lacks GD; uploads are disabled.');
         }
 
         $info = @getimagesize($file->getRealPath());
 
         if ($info === false) {
-            return static::storeOriginal($file, $directory);
+            throw new RuntimeException('File bukan gambar yang valid (JPEG/PNG/WEBP).');
         }
 
         [$width, $height, $type] = $info;
@@ -61,7 +71,7 @@ class UploadedImageOptimizer
         };
 
         if (! $source || $width <= 0 || $height <= 0) {
-            return static::storeOriginal($file, $directory);
+            throw new RuntimeException('File bukan gambar yang valid (JPEG/PNG/WEBP).');
         }
 
         $isPng = $type === IMAGETYPE_PNG;
@@ -93,7 +103,7 @@ class UploadedImageOptimizer
         // so this stays driver-agnostic. **)
         $tmpPath = tempnam(sys_get_temp_dir(), 'img_');
         if ($tmpPath === false) {
-            return static::storeOriginal($file, $directory);
+            throw new RuntimeException('Gagal menyiapkan file sementara untuk gambar.');
         }
 
         // PNG stays PNG (transparency); everything else (JPEG, WEBP input) is
@@ -108,7 +118,7 @@ class UploadedImageOptimizer
         if (! $written) {
             @unlink($tmpPath);
 
-            return static::storeOriginal($file, $directory);
+            throw new RuntimeException('Gagal mengompresi gambar.');
         }
 
         // (** executed: both write paths (put of a full buffer vs streaming)
@@ -118,16 +128,9 @@ class UploadedImageOptimizer
         @unlink($tmpPath);
 
         if (! $stored) {
-            return static::storeOriginal($file, $directory);
+            throw new RuntimeException('Gagal menyimpan gambar.');
         }
 
         return $relativePath;
-    }
-
-    private static function storeOriginal(UploadedFile $file, string $directory): string
-    {
-        $path = $file->store($directory, 'public');
-
-        return $path ?: '';
     }
 }
