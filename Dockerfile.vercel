@@ -58,7 +58,7 @@ RUN mkdir -p \
     && php artisan package:discover --ansi \
     && php artisan filament:assets --ansi \
     && php artisan view:cache --ansi \
-    && php -r 'extension_loaded("Zend OPcache") || exit(1)' \
+    && php -m | grep -q OPcache \
     && chown -R www-data:www-data /app
 
 COPY Caddyfile /etc/frankenphp/Caddyfile
