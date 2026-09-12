@@ -2,8 +2,11 @@
     root * /app/public
     encode zstd gzip
 
-    # Serve Vite/static assets directly so CSS/JS/images never fall through to Laravel.
-    @static path /build/* /favicon.ico /robots.txt /images/* /storage/*
+    # Serve Vite/static assets directly so CSS/JS/images never fall through to
+    # Laravel. robots.txt is intentionally NOT matched here: it has no static
+    # file (public/robots.txt) and is served by the Laravel route so the
+    # Sitemap directive stays env-aware.
+    @static path /build/* /favicon.ico /images/* /storage/*
     handle @static {
         file_server
     }

@@ -182,6 +182,10 @@ Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
 - Runtime ENV pins `QUEUE_CONNECTION=sync`; uploads/report exports in prod land
   in the S3 bucket, not container storage. `.env`/SQLite/storage never enter the
   image (`.vercelignore`/`.dockerignore`).
+- `Caddyfile` serves static assets directly (`@static` matcher). `robots.txt`
+  MUST NOT be in that matcher and has no `public/robots.txt` file — it is served
+  by the Laravel route (`routes/web.php:18`) so the Sitemap directive stays
+  env-aware; listing it under `@static` makes it 404 (no file to serve).
 
 ## Env gotchas
 
