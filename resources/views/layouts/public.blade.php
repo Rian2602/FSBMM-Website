@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', config('app.name'))</title>
     @yield('meta')
-    <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/site.js'])
 </head>
 <body class="flex min-h-screen flex-col bg-stone-50">
     <div id="reading-progress" aria-hidden="true"></div>
@@ -140,7 +140,6 @@
         </svg>
     </button>
 
-    <script src="{{ asset('build/assets/site.js') }}" type="module"></script>
     <script>
         (function () {
             /* ── Mobile nav drawer with animation ── */
