@@ -19,6 +19,7 @@ use App\Filament\Sba\Pages\QuizViewPage;
 use App\Http\Controllers\CertificatePrintController;
 use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Models\MemberCard;
+use App\Support\Filament\NullFontProvider;
 use App\Support\MemberCardPdfRenderer;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -48,7 +49,7 @@ class SbaPanelProvider extends PanelProvider
             ->login()
             ->profile()
             ->brandName('Panel SBA')
-            ->font('Plus Jakarta Sans')
+            ->font('Plus Jakarta Sans', null, NullFontProvider::class) // self-hosted (public/css/fonts.css) — see NullFontProvider
             ->colors([
                 'primary' => Color::hex('#12806a'), // federation brand green (matches public --color-brand-600)
                 'info' => Color::Sky,

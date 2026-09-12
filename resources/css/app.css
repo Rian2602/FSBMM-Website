@@ -15,7 +15,8 @@
   --color-accent: #c9d43a;
 
   /* Modern typography — Plus Jakarta Sans for display/headings, Inter for body.
-     Loaded via Google Fonts <link> in layouts/public.blade.php. */
+     Self-hosted variable fonts — @font-face rules live in public/css/fonts.css
+     (linked in layouts/public.blade.php and via a panel render hook). */
   --font-display: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 

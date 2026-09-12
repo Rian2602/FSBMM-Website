@@ -19,12 +19,12 @@ use Symfony\Component\HttpFoundation\Response;
  * form to this origin.
  *
  * (** executed: the plan snippet also mooted a full default-src CSP. That is
- * deliberately NOT shipped: the public site loads Google Fonts, runs a
- * dependency-free site.js plus Livewire/Filament inline bootstrap, and renders
- * staff-authored "trusted HTML" articles that may embed third-party frames
- * (e.g. YouTube). A restrictive default-src would break those surfaces for no
- * extra protection — `frame-ancestors 'none'` + X-Frame-Options DENY already
- * close the "def-site" embedding vector. **)
+ * deliberately NOT shipped: the site runs a dependency-free site.js plus
+ * Livewire/Filament inline bootstrap, and renders staff-authored "trusted HTML"
+ * articles that may embed third-party frames (e.g. YouTube). A restrictive
+ * default-src would break those surfaces for no extra protection —
+ * `frame-ancestors 'none'` + X-Frame-Options DENY already close the "def-site"
+ * embedding vector. Fonts are self-hosted since Phase C (public/css/fonts.css). **)
  */
 class SecurityHeadersMiddleware
 {

@@ -12,6 +12,7 @@ use App\Filament\Widgets\NotificationAlertWidget;
 use App\Http\Controllers\CertificatePrintController;
 use App\Http\Middleware\SecurityHeadersMiddleware;
 use App\Support\FederationReportGenerator;
+use App\Support\Filament\NullFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -39,7 +40,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('FSBMM Admin')
-            ->font('Plus Jakarta Sans')
+            ->font('Plus Jakarta Sans', null, NullFontProvider::class) // self-hosted (public/css/fonts.css) — see NullFontProvider
             ->colors([
                 'primary' => Color::hex('#12806a'), // federation brand green (matches public --color-brand-600)
                 'info' => Color::Sky,

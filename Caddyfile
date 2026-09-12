@@ -16,7 +16,7 @@
         file_server
     }
 
-    @static path /favicon.ico /images/* /storage/*
+    @static path /favicon.ico /images/* /storage/* /css/fonts.css /fonts/*
     handle @static {
         header Cache-Control "public, max-age=86400"
         file_server

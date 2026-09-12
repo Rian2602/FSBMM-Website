@@ -244,7 +244,12 @@ Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
 
 The public design pass — refined-modern, merged from `v0/refine-visual-design`
 (commit `1934943`, adapted in merge `996ca32`): **Plus Jakarta Sans** (display)
-+ **Inter** (body) via Google Fonts `<link>` in `layouts/public.blade.php`,
++ **Inter** (body) as **self-hosted variable fonts** — `@font-face` rules in
+`public/css/fonts.css` (woff2 in `public/fonts/`), linked from
+`layouts/public.blade.php` and injected into both Filament panels via the
+`STYLES_AFTER` render hook in `AppServiceProvider`; `NullFontProvider`
+suppresses Filament's external font `<link>`. No Google Fonts/Bunny requests —
+an intentional privacy/offline hardening (Phase C), keep it that way:
 soft layered brand-tinted elevation (`card-pop`), a cohesive brand-green
 gradient for primary CTAs / `text-gradient` / `reading-progress`, toned
 `eyebrow-chip`/`search-input`, `--radius: 1rem`, and the `--color-vivid-*`
@@ -285,10 +290,10 @@ them directly, never concatenate a `border-`/`text-` prefix onto them.
   `Referrer-Policy`, `Permissions-Policy`) is mounted BOTH on the `web` route
   group (`bootstrap/app.php`) AND in each `PanelProvider->middleware([...])` —
   Filament panels do NOT inherit the `web` group, so a panel without its own
-  mount is unprotected. Do NOT add a full `default-src` CSP: Google Fonts,
-  Livewire/Filament inline bootstrap, and staff-authored trusted HTML that
-  embeds third-party frames (e.g. YouTube) all depend on the permissive
-  default — `frame-ancestors` already closes the embedding vector.
+  mount is unprotected. Do NOT add a full `default-src` CSP: Livewire/Filament
+  inline bootstrap and staff-authored trusted HTML that embeds third-party
+  frames (e.g. YouTube) depend on the permissive default —
+  `frame-ancestors` already closes the embedding vector.
 - **Upload ext/MIME lock (Phase B/T2)** — `UploadedImageOptimizer::store()`
   THROWS `RuntimeException` for anything it cannot decode as a real
   JPEG/PNG/WEBP (the old `storeOriginal()` fallback persisted raw attacker

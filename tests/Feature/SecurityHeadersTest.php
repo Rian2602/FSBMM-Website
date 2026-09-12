@@ -37,6 +37,23 @@ class SecurityHeadersTest extends TestCase
             ->assertHeader('Content-Security-Policy', "frame-ancestors 'none'; form-action 'self'");
     }
 
+    public function test_panel_login_pages_must_use_self_hosted_fonts(): void
+    {
+        // Phase C self-hosted fonts: the NullFontProvider suppresses Filament's
+        // Bunny link and fonts.css is linked via the STYLES_AFTER render hook.
+        $this->get('/admin/login')
+            ->assertOk()
+            ->assertSee('/css/fonts.css')
+            ->assertDontSee('fonts.bunny.net')
+            ->assertDontSee('fonts.googleapis.com');
+
+        $this->get('/panel-sba/login')
+            ->assertOk()
+            ->assertSee('/css/fonts.css')
+            ->assertDontSee('fonts.bunny.net')
+            ->assertDontSee('fonts.googleapis.com');
+    }
+
     public function test_sba_panel_login_page_gets_the_headers(): void
     {
         $this->get('/panel-sba/login')
@@ -53,6 +70,8 @@ class SecurityHeadersTest extends TestCase
 
         $this->get('/e-resource')
             ->assertOk()
-            ->assertHeader('X-Frame-Options', 'DENY');
+            ->assertHeader('X-Frame-Options', 'DENY')
+            ->assertSee('/css/fonts.css')
+            ->assertDontSee('fonts.googleapis.com');
     }
 }
