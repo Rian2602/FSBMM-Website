@@ -9,7 +9,7 @@
                         Tingkat {{ ucfirst($this->getCourse()->level) }}
                     </p>
                 </div>
-                <a href="{{ \App\Filament\Sba\Pages\MyCoursesPage::getUrl() }}"
+                <a href="{{ $this->panelRoute('pages.my-courses') }}"
                    class="text-sm text-primary-600 hover:underline dark:text-primary-400">
                     ← Kembali ke Kursus Saya
                 </a>
@@ -39,16 +39,16 @@
                             <span class="text-xs {{ $complete ? 'text-lime-600 dark:text-lime-400' : ($lesson->quizzes->isNotEmpty() ? 'text-amber-600 dark:text-amber-400' : 'text-gray-400') }}">
                                 {{ $complete ? 'Selesai' : ($lesson->quizzes->isNotEmpty() ? 'Kuis belum lulus' : 'Belum') }}
                             </span>
-                            <a href="{{ route('filament.sba.courses.lessons.show', [$this->getCourse()->slug, $lesson->id]) }}"
+                            <a href="{{ $this->panelRoute('courses.lessons.show', [$this->getCourse()->slug, $lesson->id]) }}"
                                class="rounded-lg bg-primary-600 px-3 py-1 text-xs font-medium text-white hover:bg-primary-500">
                                 Baca Materi
                             </a>
-@foreach ($lesson->quizzes as $quiz)
-                            <a href="{{ route('filament.sba.quizzes.show', $quiz->id) }}"
-                               class="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white hover:bg-amber-400">
-                                Kerjakan Kuis
-                            </a>
-                        @endforeach
+                            @foreach ($lesson->quizzes as $quiz)
+                                <a href="{{ $this->panelRoute('quizzes.show', [$quiz->id]) }}"
+                                   class="rounded-lg bg-amber-500 px-3 py-1 text-xs font-medium text-white hover:bg-amber-400">
+                                    Kerjakan Kuis
+                                </a>
+                            @endforeach
                             {{-- spec §6b: lesson without quiz → manual toggle --}}
                             @if ($lesson->quizzes->isEmpty())
                                 <button wire:click="toggleLessonCompletion({{ $lesson->id }})"
@@ -67,7 +67,7 @@
                 <p class="text-sm font-medium text-amber-800 dark:text-amber-200">
                     🏁 Kuis Akhir — {{ $courseProgress['final_quiz_passed'] ? '✓ lulus' : 'kerjakan setelah semua pelajaran selesai.' }}
                 </p>
-                <a href="{{ route('filament.sba.quizzes.show', $courseProgress['final_quiz']->id) }}"
+                <a href="{{ $this->panelRoute('quizzes.show', [$courseProgress['final_quiz']->id]) }}"
                    class="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-500">
                     Kerjakan Kuis Akhir
                 </a>
@@ -85,7 +85,7 @@
                     <p class="text-sm font-semibold text-lime-800 dark:text-lime-200">🎓 Kursus selesai — sertifikat tersedia</p>
                     <p class="mt-0.5 text-xs text-lime-700/80 dark:text-lime-300/80">Cetak atau simpan sertifikat kelulusan Anda sebagai PDF.</p>
                 </div>
-                <a href="{{ route('filament.sba.certificates.print', $this->getCourse()->slug) }}" target="_blank"
+                <a href="{{ $this->panelRoute('certificates.print', [$this->getCourse()->slug]) }}" target="_blank"
                    class="inline-flex items-center gap-2 rounded-lg bg-lime-600 px-4 py-2 text-xs font-semibold text-white hover:bg-lime-500">
                     <x-filament::icon icon="heroicon-o-academic-cap" class="h-4 w-4" />
                     Cetak Sertifikat

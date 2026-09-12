@@ -114,24 +114,40 @@ class FederationReportGenerator
     private static function writePdfOrHtml($disk, string $name, string $html): string
     {
         $pdfPath = 'exports/' . $name . '.pdf';
+        $tmpPath = null;
 
         try {
+            // (** executed: Snappy needs a real on-disk file; render to a
+            // temp path, then stream it onto the (possibly S3-backed) disk. **)
+            $tmpPath = tempnam(sys_get_temp_dir(), 'report_');
+            if ($tmpPath === false) {
+                throw new \RuntimeException('Gagal membuat berkas sementara.');
+            }
+
             SnappyPDF::loadHTML($html)
                 ->setOption('enable-local-file-access', true)
                 ->setOption('page-size', 'A4')
                 ->setOption('margin-top', '15mm')
                 ->setOption('margin-bottom', '15mm')
                 ->setOption('encoding', 'UTF-8')
-                ->save($disk->path($pdfPath));
+                ->save($tmpPath);
+
+            $disk->put($pdfPath, (string) file_get_contents($tmpPath));
+            @unlink($tmpPath);
 
             return $pdfPath;
         } catch (\Throwable $e) {
             // (** executed: the wkhtmltopdf binary is not guaranteed on every
-            // host (this dev box has none), which previously surfaced a 500 to
-            // the dashboard. Fall back to the same report as an inline
-            // print-ready HTML page — ExportDownloadController serves .html
-            // inline instead of forcing a download. **)
+            // host (this dev box has none, nor does Vercel's container
+            // runtime), which previously surfaced a 500 to the dashboard.
+            // Fall back to the same report as an inline print-ready HTML page
+            // — ExportDownloadController serves .html inline instead of
+            // forcing a download. **)
             report($e);
+
+            if ($tmpPath !== null && is_string($tmpPath)) {
+                @unlink($tmpPath);
+            }
 
             $htmlPath = 'exports/' . $name . '.html';
             $disk->put($htmlPath, $html);

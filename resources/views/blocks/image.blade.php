@@ -2,7 +2,7 @@
     <figure data-reveal class="group mx-auto max-w-6xl px-4 py-10">
         <div class="rounded-3xl bg-linear-to-br from-vivid-sky via-vivid-violet to-vivid-rose p-1.5 shadow-xl transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
             <img
-                src="{{ asset('storage/'.$payload['image_path']) }}"
+                src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($payload['image_path']) }}"
                 alt="{{ $payload['caption'] ?? '' }}"
                 class="mx-auto w-full rounded-[calc(1.5rem-4px)] object-cover"
                 loading="lazy"

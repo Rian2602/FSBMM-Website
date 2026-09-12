@@ -76,4 +76,38 @@ class UploadedImageOptimizerTest extends TestCase
 
         $this->assertStringEndsWith('.jpg', $path);
     }
+
+    // Phase B / T2 "ext-MIME lock": a payload that is NOT a decodable
+    // JPEG/PNG/WEBP is rejected outright — the old storeOriginal() fallback
+    // used to persist raw attacker-tagged bytes (e.g. PHP renamed to logo.png),
+    // which Caddy's php_server could later execute under public/storage.
+
+    public function test_php_payload_renamed_as_png_is_rejected(): void
+    {
+        $file = UploadedFile::fake()->createWithContent('logo.png', "<?php echo 'pwned'; ?>");
+
+        $this->expectException(\RuntimeException::class);
+
+        UploadedImageOptimizer::store($file, 'organizations', maxWidth: 512);
+
+        Storage::disk('public')->assertDirectoryEmpty('organizations');
+    }
+
+    public function test_text_file_renamed_as_jpg_is_rejected(): void
+    {
+        $file = UploadedFile::fake()->create('logo.jpg', 2048);
+
+        $this->expectException(\RuntimeException::class);
+
+        UploadedImageOptimizer::store($file, 'organizations', maxWidth: 512);
+    }
+
+    public function test_really_valid_png_still_stored(): void
+    {
+        $file = UploadedFile::fake()->image('logo.png', 600, 400);
+
+        $path = UploadedImageOptimizer::store($file, 'organizations', maxWidth: 512);
+
+        Storage::disk('public')->assertExists($path);
+    }
 }

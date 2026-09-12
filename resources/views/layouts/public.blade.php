@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', config('app.name'))</title>
     @yield('meta')
+    <link rel="stylesheet" href="{{ asset('css/fonts.css') }}">
     @vite(['resources/css/app.css', 'resources/js/site.js'])
 </head>
 <body class="flex min-h-screen flex-col bg-stone-50">

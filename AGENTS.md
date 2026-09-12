@@ -6,8 +6,9 @@ Laravel 12 + Filament 3 + Tailwind v4 public site for a trade-union federation
 locale/timezone (`APP_LOCALE=id`, `Asia/Jakarta`).
 
 See `README.md` for setup, stack, and structure that stays canonical.
-`knowledge.md` (repo root) is a longer module walkthrough — treat it as
-supplementary; its checklists/counts may trail the committed suite.
+`knowledge.md` (repo root) is an optional local agent scratch doc — it is
+gitignored (`# Agent tooling artifacts`) and not tracked, so don't reference it
+as canonical.
 
 ## Multi-phase roadmap
 
@@ -19,17 +20,19 @@ authoring in `/admin` (staff only), a "Kursus Saya" learner surface in both
 panels, and a super-admin-only learning report. Skipping a spec/plan is how
 this repo breaks — read the relevant one before touching an area.
 
-**SP5 (operational reporting / secure export / kartu anggota) is done through
-Phases 0–8** (all committed, gates PASS); Phases 9–10 remain. 4 tenant-scoped
-SBA report pages (`MemberReportPage`, `DuesReportPage`, `AttendanceReportPage`,
+**SP5 (operational reporting / secure export / kartu anggota) is complete through
+Phase 10** (all phases committed, gates PASS — incl. Phase 9 card PDF/QR print and
+the Phase 10 security + regression gate). 4 tenant-scoped SBA report pages
+(`MemberReportPage`, `DuesReportPage`, `AttendanceReportPage`,
 `ComplaintReportPage`, nav group `Laporan`, registered explicitly in
 `SbaPanelProvider->pages([...])`) + a `ReportingTest` suite + member-card
 lifecycle (`MemberCardService`), the SBA `MemberCardPage`, and public
 `/verifikasi/kartu/{token}`. Federation reporting is `super_admin`-only and
 `/verifikasi/kartu/{token}`/`/verifikasi/sertifikat/{token}` must be declared
-ABOVE the `{page:slug}` catch-all (spec §9.10). Remaining: Phase 9 (PDF print
-via snappy + QR via bacon-qr-code) and Phase 10 (final regression). Read the
-SP5 spec/plan before touching SBA reporting, exports, or member-cards.
+ABOVE the `{page:slug}` catch-all (spec §9.10). Card printing lives in
+`MemberCardPdfRenderer` + `QrCodeRenderer` (Snappy with HTML fallback when the
+wkhtmltopdf binary is absent). Read the SP5 spec/plan before touching SBA
+reporting, exports, or member-cards.
 
 Every plan records every deviation from spec/snippets as inline
 `(** executed: ... **)` annotations. Preserve/append these when you change
@@ -57,12 +60,12 @@ touching these:
   statuses, card/certificate numbers, and dataset names. Never pass member
   names/NIK/address/salary or raw complaint text.
 
-**Phase-4 enhancement code is COMMITTED as a single batch on master** (commit
-`feat(phase4): ...`): `CertificateService`, `AuditLogger`,
+**Phase-4 enhancement code is COMMITTED as a single batch** (commit `dba516e`,
+`feat(phase4): e-learning certificates, audit trail, bulk actions, PDF export
+fallback`): `CertificateService`, `AuditLogger`,
 `CertificatePrintController`, `AuditTrailPage*`, their migrations, and
 `CertificateTest`/`AuditTrailTest`/`SbaBatchActionTest`/`FederationReportExportTest`.
-See `git log --oneline -1` for the exact commit; no Phase-4 file is uncommitted
-in a clean worktree.
+No Phase-4 file is uncommitted in a clean worktree.
 
 ## Two panels, one app, three roles
 
@@ -104,15 +107,29 @@ side (PII policy, below).
 ### Learning pages are registered per-panel, not discovered
 
 The "Kursus Saya" pages (`MyCoursesPage`, `CourseDetailPage`, `LessonViewPage`,
-`QuizViewPage`) live in per-panel dirs `app/Filament/Admin/Pages/` and
-`app/Filament/Sba/Pages/` — **not** the panel-discovered `app/Filament/Pages`
-(which doesn't exist / is empty). Each `*PanelProvider` registers them
-explicitly via `->pages([...])`, and their pretty URLs
+`QuizViewPage`) have per-panel concrete classes in `app/Filament/Admin/Pages/`
+and `app/Filament/Sba/Pages/` — **not** a single panel-specific discovery dir.
+Their logic is deduplicated into abstract bases in `app/Filament/Pages/` (see
+below). Each `*PanelProvider` registers them explicitly via `->pages([...])`,
+and their pretty URLs
 (`/courses/{record}`, `/courses/{record}/lessons/{lesson}`, `/quizzes/{record}`)
 come from `Panel::authenticatedRoutes()` with implicit Livewire route-model
 binding into `mount(?Course $record)`. Page-level `getRoutes()` does **not**
 exist in Filament 3.3.55. To add a learning page, register it in BOTH
 `->pages()` and `->authenticatedRoutes()` — never `routes/web.php`.
+
+The 4 learning pages are **deduplicated**: each panel's concrete class is a thin
+`extends` of the shared abstract base in `app/Filament/Pages/` (`MyCoursesBase`,
+`CourseDetailBase`, `LessonViewBase`, `QuizViewBase`), and the 4 views live once
+in `resources/views/filament/pages/` (not per panel). Filament 3.3.55 page
+discovery skips abstract classes, so the bases never register routes/navigation —
+they must stay abstract. To reference a panel-specific named route from a shared
+blade use the `panelRoute()` helper (`App\Support\ResolvesPanelRoutes`:
+`route('filament.'.($panel = Filament::getCurrentPanel() ?? Filament::getDefaultPanel())->getId().'.'.$name, $params)`),
+never a hardcoded
+`filament.admin.*`/`filament.sba.*` prefix or `\App\Filament\...\MyCoursesPage::getUrl()`.
+When the panelled behavioral twins drift, fix the shared base once — the Admin and
+Sba `CourseDetailPage` diverged (quiz-less-toggle guard) and were merged here.
 
 ## Commands
 
@@ -148,6 +165,43 @@ conventional) — diaktifkan otomatis oleh `composer install`/`update` via
 suite) — aktifkan lokal dengan `git config blame.ignoreRevsFile
 .git-blame-ignore-revs`. Menambah/menghapus file ini wajib lewat plan seperti
 perubahan konvensi lainnya.
+
+## Deployment (branch `deploy/vercel`)
+
+Production ships off the `deploy/vercel` branch (currently checked out) — **not**
+`master`: Vercel builds a FrankenPHP container from `Dockerfile.vercel`
+(declared in `vercel.json`, container runtime) served via `Caddyfile`, and every
+push to `deploy/vercel` triggers `.github/workflows/deploy-migrate.yml`
+(secrets-driven `php artisan migrate --force` against the production MySQL/TiDB
+Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
+
+- Container filesystem is effectively read-only/ephemeral: filament assets,
+  `package:discover`, and the `storage/framework/*` dirs are baked into the
+  image at build time. `config:cache`/`route:cache` are intentionally NOT run
+  (env differs between build and runtime — and web.php's Closure routes can't
+  be route:cache'd anyway).
+- Production storage is an S3-compatible bucket (R2/Spaces):
+  `config/filesystems.php` swaps **both** the `local` and `public` disks to S3
+  when `FILESYSTEM_LOCAL_DRIVER`/`FILESYSTEM_PUBLIC_DRIVER=s3` (pinned in the
+  image ENV). The swap is **guarded by `$s3Ready`**: it only engages when
+  `league/flysystem-aws-s3-v3` is installed AND the full `AWS_*` config
+  (bucket/keys/region) is present, otherwise disks fall back to
+  `local` — a misconfigured AWS_* env can never take the site down. Keep that
+  guard and swap shape if you touch filesystems config; tests and local dev keep
+  the local disks. `AWS_ENDPOINT` is optional (required only for S3-compatible
+  providers like R2/Spaces; classic AWS S3 resolves the endpoint from
+  `AWS_DEFAULT_REGION`).
+- Never let a dev `bootstrap/cache/packages.php`/`services.php` reach the image:
+  `package:discover` in the `--no-dev` build would then load dev-only providers
+  (e.g. laravel/pail) and crash. This is enforced by `.dockerignore` — don't
+  remove it.
+- Runtime ENV pins `QUEUE_CONNECTION=sync`; uploads/report exports in prod land
+  in the S3 bucket, not container storage. `.env`/SQLite/storage never enter the
+  image (`.vercelignore`/`.dockerignore`).
+- `Caddyfile` serves static assets directly (`@static` matcher). `robots.txt`
+  MUST NOT be in that matcher and has no `public/robots.txt` file — it is served
+  by the Laravel route (`routes/web.php:18`) so the Sitemap directive stays
+  env-aware; listing it under `@static` makes it 404 (no file to serve).
 
 ## Env gotchas
 
@@ -190,11 +244,24 @@ perubahan konvensi lainnya.
 
 ## Style
 
-The public design pass (multi-color `--color-vivid-*` palette, gradients, blobs,
-`resources/js/site.js` interactivity, redesigned widget/public blades) is
-**committed** — don't revert or re-theme it. Only the `--color-brand-*` token
-VALUES (Swiss-Brutalist Green family, `resources/css/app.css:3`) are still
-placeholder: swap them when official brand assets arrive, nothing else.
+The public design pass — refined-modern, merged from `v0/refine-visual-design`
+(commit `1934943`, adapted in merge `996ca32`): **Plus Jakarta Sans** (display)
++ **Inter** (body) as **self-hosted variable fonts** — `@font-face` rules in
+`public/css/fonts.css` (woff2 in `public/fonts/`), linked from
+`layouts/public.blade.php` and injected into both Filament panels via the
+`STYLES_AFTER` render hook in `AppServiceProvider`; `NullFontProvider`
+suppresses Filament's external font `<link>`. No Google Fonts/Bunny requests —
+an intentional privacy/offline hardening (Phase C), keep it that way:
+soft layered brand-tinted elevation (`card-pop`), a cohesive brand-green
+gradient for primary CTAs / `text-gradient` / `reading-progress`, toned
+`eyebrow-chip`/`search-input`, `--radius: 1rem`, and the `--color-vivid-*`
+palette kept for decorative accents (blobs, rainbow-bar, accent arrays) — is
+**committed** — don't revert or re-theme it. Both Filament panels share the
+brand look: `primary = Color::hex('#12806a')` (matches public
+`--color-brand-600`), `font('Plus Jakarta Sans')`, brand names
+(`App\Providers\Filament\AdminPanelProvider` /
+`App\Providers\Filament\SbaPanelProvider`; SBA panel keeps `->profile()`). Use
+existing tokens/utilities from `resources/css/app.css` for any new public UI.
 
 ## Public-site interactivity (`resources/js/site.js`)
 
@@ -219,6 +286,32 @@ them directly, never concatenate a `border-`/`text-` prefix onto them.
   path. Never add a no-sanitize bypass for it; articles/pages remain staff-raw.
 - E-resource downloads use signed URLs (`middleware('signed')`) + per-download
   counting; deleted files return a clean 404.
+- **Def-site blocking (Phase B/T2)** — `SecurityHeadersMiddleware`
+  (`X-Frame-Options: DENY`, `Content-Security-Policy:
+  frame-ancestors 'none'; form-action 'self'`, `X-Content-Type-Options`,
+  `Referrer-Policy`, `Permissions-Policy`) is mounted BOTH on the `web` route
+  group (`bootstrap/app.php`) AND in each `PanelProvider->middleware([...])` —
+  Filament panels do NOT inherit the `web` group, so a panel without its own
+  mount is unprotected. Do NOT add a full `default-src` CSP: Livewire/Filament
+  inline bootstrap and staff-authored trusted HTML that embeds third-party
+  frames (e.g. YouTube) depend on the permissive default —
+  `frame-ancestors` already closes the embedding vector.
+- **Upload ext/MIME lock (Phase B/T2)** — `UploadedImageOptimizer::store()`
+  THROWS `RuntimeException` for anything it cannot decode as a real
+  JPEG/PNG/WEBP (the old `storeOriginal()` fallback persisted raw attacker
+  bytes to `public/storage`, where Caddy's `php_server` could execute `.php`
+  files). E-resource PDFs are byte-sniffed server-side by
+  `App\Rules\RealPdfFile` (finfo + `%PDF-` fallback) — `acceptedFileTypes` is
+  client-side only. Filament form-level `rules()` receives the pending upload
+  as a `TemporaryUploadedFile` OBJECT (not a path string), so the rule must
+  sniff through `getRealPath()` — Laravel's built-in image/mimes rules silently
+  skip non-UploadedFile values. Never reintroduce a raw-store fallback.
+- **E-resource fingerprint (Phase B/T2)** — `e_resources.sha256` is computed
+  automatically on every `file_path` change (model `saving` hook,
+  `Eresource::fingerprintPath()`); `hasDuplicateFile()` detects same-file
+  re-uploads. The hook uses the SAME traversal guard as the download route
+  (`..`/absolute paths → no fingerprint): corrupt paths must never be read
+  from disk (Local adapter rejects them → save would 500).
 - Structural pages (`home`, `tentang`, `kontak`) are protected from delete and
   slug-change at model + UI level. Don't bypass these guards.
 - An organization that still has `sba_admin` accounts or member rows can't be

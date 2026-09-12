@@ -1,0 +1,27 @@
+# Same intent as .vercelignore — Vercel builds the container image from the
+# Vercel-repo filesystem, but a .dockerignore keeps the image context slim and
+# prevents accidentally COPYing a host vendor/ or .env into /app.
+.env
+.env.*
+!.env.example
+database/database.sqlite
+node_modules
+vendor
+public/build
+public/storage
+storage/
+coverage
+.phpunit.cache
+.git
+.opencode/
+.agents/
+docs/
+tests/
+.github/
+knowledge.md
+# Generated Filament/panel caches. A dev cache (from the local `composer install`)
+# still lists dev-only providers like laravel/pail, which `package:discover`
+# then tries to load in a `--no-dev` image and crashes the build. Never ship a
+# dev cache into a production image.
+bootstrap/cache/packages.php
+bootstrap/cache/services.php

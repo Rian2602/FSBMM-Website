@@ -21,9 +21,9 @@ class ArticleController extends Controller
 
         return view('public.articles.index', [
             'articles' => $query->get(),
-            'categories' => Category::with([
+            'categories' => Category::withCount([
                 'articles' => fn ($q) => $q->published(),
-            ])->orderBy('name')->get()->filter(fn ($category) => $category->articles->isNotEmpty()),
+            ])->orderBy('name')->get()->filter(fn ($category) => $category->articles_count > 0),
             'activeCategory' => $categorySlug ?? null,
         ]);
     }
