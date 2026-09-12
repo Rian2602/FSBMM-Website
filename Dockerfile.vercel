@@ -31,9 +31,9 @@ COPY resources ./resources
 COPY app ./app
 COPY routes ./routes
 RUN npm run build \
-    && test -s public/build/.vite/manifest.json \
-    && test -s public/build/assets/app.css \
-    && test -s public/build/assets/site.js
+    && test -s public/build/manifest.json \
+    && test -n "$(find public/build/assets -maxdepth 1 -type f -name '*.css' -size +0c -print -quit)" \
+    && test -n "$(find public/build/assets -maxdepth 1 -type f -name '*.js' -size +0c -print -quit)"
 
 FROM base AS runtime
 
