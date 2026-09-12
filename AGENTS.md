@@ -228,11 +228,19 @@ Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
 
 ## Style
 
-The public design pass (multi-color `--color-vivid-*` palette, gradients, blobs,
-`resources/js/site.js` interactivity, redesigned widget/public blades) is
-**committed** — don't revert or re-theme it. Only the `--color-brand-*` token
-VALUES (Swiss-Brutalist Green family, `resources/css/app.css:3`) are still
-placeholder: swap them when official brand assets arrive, nothing else.
+The public design pass — refined-modern, merged from `v0/refine-visual-design`
+(commit `1934943`, adapted in merge `996ca32`): **Plus Jakarta Sans** (display)
++ **Inter** (body) via Google Fonts `<link>` in `layouts/public.blade.php`,
+soft layered brand-tinted elevation (`card-pop`), a cohesive brand-green
+gradient for primary CTAs / `text-gradient` / `reading-progress`, toned
+`eyebrow-chip`/`search-input`, `--radius: 1rem`, and the `--color-vivid-*`
+palette kept for decorative accents (blobs, rainbow-bar, accent arrays) — is
+**committed** — don't revert or re-theme it. Both Filament panels share the
+brand look: `primary = Color::hex('#12806a')` (matches public
+`--color-brand-600`), `font('Plus Jakarta Sans')`, brand names
+(`App\Providers\Filament\AdminPanelProvider` /
+`App\Providers\Filament\SbaPanelProvider`; SBA panel keeps `->profile()`). Use
+existing tokens/utilities from `resources/css/app.css` for any new public UI.
 
 ## Public-site interactivity (`resources/js/site.js`)
 
