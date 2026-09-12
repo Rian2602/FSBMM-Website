@@ -125,7 +125,8 @@ in `resources/views/filament/pages/` (not per panel). Filament 3.3.55 page
 discovery skips abstract classes, so the bases never register routes/navigation —
 they must stay abstract. To reference a panel-specific named route from a shared
 blade use the `panelRoute()` helper (`App\Support\ResolvesPanelRoutes`:
-`route('filament.'.getCurrentPanel()->id.'.'.$name, $params)`), never a hardcoded
+`route('filament.'.($panel = Filament::getCurrentPanel() ?? Filament::getDefaultPanel())->getId().'.'.$name, $params)`),
+never a hardcoded
 `filament.admin.*`/`filament.sba.*` prefix or `\App\Filament\...\MyCoursesPage::getUrl()`.
 When the panelled behavioral twins drift, fix the shared base once — the Admin and
 Sba `CourseDetailPage` diverged (quiz-less-toggle guard) and were merged here.

@@ -14,6 +14,13 @@ storage/
 .vitest
 coverage
 .phpunit.cache
+.git
+.opencode/
+.agents/
+docs/
+tests/
+.github/
+knowledge.md
 .idea
 .vscode
 *.log

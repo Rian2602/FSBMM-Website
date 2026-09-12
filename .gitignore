@@ -28,6 +28,7 @@ Thumbs.db
 
 # Agent tooling artifacts
 .agents/
+.opencode/
 knowledge.md
 .vercel
 .env*
