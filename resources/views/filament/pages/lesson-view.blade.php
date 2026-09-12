@@ -1,6 +1,6 @@
 <x-filament-panels::page>
     <div class="space-y-4">
-        <a href="{{ route('filament.sba.courses.show', $this->getCourse()->slug) }}"
+        <a href="{{ $this->panelRoute('courses.show', [$this->getCourse()->slug]) }}"
            class="text-sm text-primary-600 hover:underline dark:text-primary-400">
             ← Kembali ke {{ $this->getCourse()->title }}
         </a>

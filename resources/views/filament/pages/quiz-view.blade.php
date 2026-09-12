@@ -7,7 +7,7 @@
                     {{ $this->getQuiz()->course->title }} · Ambang lulus {{ $this->getQuiz()->passThreshold() }}
                 </p>
             </div>
-            <a href="{{ route('filament.admin.courses.show', $this->getQuiz()->course->slug) }}"
+            <a href="{{ $this->panelRoute('courses.show', [$this->getQuiz()->course->slug]) }}"
                class="text-sm text-primary-600 hover:underline dark:text-primary-400">
                 ← Kembali ke kursus
             </a>

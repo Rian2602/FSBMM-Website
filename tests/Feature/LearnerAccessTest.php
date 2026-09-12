@@ -70,7 +70,11 @@ class LearnerAccessTest extends TestCase
         $this->actingAs($editor)
             ->get('/admin/courses/kursus-detail')
             ->assertOk()
-            ->assertSee('Pelajaran Satu');
+            ->assertSee('Pelajaran Satu')
+            // (** executed: C2 refactor — the back-link used a hardcoded
+            // MyCoursesPage::getUrl() per panel; now rendered via the shared
+            // panelRoute() helper. Guard the resolved panel URL. **)
+            ->assertSee('/admin/my-courses', false);
     }
 
     public function test_course_detail_is_unavailable_for_draft_course(): void
@@ -93,7 +97,8 @@ class LearnerAccessTest extends TestCase
         $this->actingAs($sba)
             ->get('/panel-sba/courses/kursus-sba')
             ->assertOk()
-            ->assertSee('Materi Satu');
+            ->assertSee('Materi Satu')
+            ->assertSee('/panel-sba/my-courses', false);
 
         $this->actingAs($sba)
             ->get('/panel-sba/courses/kursus-sba/lessons/' . $lesson->id)

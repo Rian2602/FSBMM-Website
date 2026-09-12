@@ -283,34 +283,34 @@ parameters:
 			path: app/Exports/ReportExport.php
 
 		-
-			message: '#^Method App\\Filament\\Admin\\Pages\\CourseDetailPage\:\:getCourseProgress\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Filament\\Pages\\CourseDetailBase\:\:getCourseProgress\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Filament/Admin/Pages/CourseDetailPage.php
+			path: app/Filament/Pages/CourseDetailBase.php
 
 		-
-			message: '#^Method App\\Filament\\Admin\\Pages\\MyCoursesPage\:\:getCourses\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			message: '#^Method App\\Filament\\Pages\\MyCoursesBase\:\:getCourses\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
-			path: app/Filament/Admin/Pages/MyCoursesPage.php
+			path: app/Filament/Pages/MyCoursesBase.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$course\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Filament/Admin/Pages/QuizViewPage.php
+			path: app/Filament/Pages/QuizViewBase.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$questions\.$#'
 			identifier: property.notFound
 			count: 1
-			path: app/Filament/Admin/Pages/QuizViewPage.php
+			path: app/Filament/Pages/QuizViewBase.php
 
 		-
-			message: '#^Method App\\Filament\\Admin\\Pages\\QuizViewPage\:\:getResult\(\) return type has no value type specified in iterable type array\.$#'
+			message: '#^Method App\\Filament\\Pages\\QuizViewBase\:\:getResult\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Filament/Admin/Pages/QuizViewPage.php
+			path: app/Filament/Pages/QuizViewBase.php
 
 		-
 			message: '#^Cannot call method isPast\(\) on string\.$#'
@@ -529,12 +529,6 @@ parameters:
 			path: app/Filament/Sba/Pages/ComplaintReportPage.php
 
 		-
-			message: '#^Method App\\Filament\\Sba\\Pages\\CourseDetailPage\:\:getCourseProgress\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Sba/Pages/CourseDetailPage.php
-
-		-
 			message: '#^Access to an undefined property App\\Filament\\Sba\\Pages\\DuesReportPage\:\:\$form\.$#'
 			identifier: property.notFound
 			count: 1
@@ -641,30 +635,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Filament/Sba/Pages/MemberReportPage.php
-
-		-
-			message: '#^Method App\\Filament\\Sba\\Pages\\MyCoursesPage\:\:getCourses\(\) return type with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Filament/Sba/Pages/MyCoursesPage.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$course\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Sba/Pages/QuizViewPage.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\CourseQuiz\:\:\$questions\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Sba/Pages/QuizViewPage.php
-
-		-
-			message: '#^Method App\\Filament\\Sba\\Pages\\QuizViewPage\:\:getResult\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Sba/Pages/QuizViewPage.php
 
 		-
 			message: '#^Method App\\Filament\\Sba\\Resources\\ComplaintResource\:\:getEloquentQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'

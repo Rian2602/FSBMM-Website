@@ -107,15 +107,28 @@ side (PII policy, below).
 ### Learning pages are registered per-panel, not discovered
 
 The "Kursus Saya" pages (`MyCoursesPage`, `CourseDetailPage`, `LessonViewPage`,
-`QuizViewPage`) live in per-panel dirs `app/Filament/Admin/Pages/` and
-`app/Filament/Sba/Pages/` — **not** the panel-discovered `app/Filament/Pages`
-(which doesn't exist / is empty). Each `*PanelProvider` registers them
-explicitly via `->pages([...])`, and their pretty URLs
+`QuizViewPage`) have per-panel concrete classes in `app/Filament/Admin/Pages/`
+and `app/Filament/Sba/Pages/` — **not** a single panel-specific discovery dir.
+Their logic is deduplicated into abstract bases in `app/Filament/Pages/` (see
+below). Each `*PanelProvider` registers them explicitly via `->pages([...])`,
+and their pretty URLs
 (`/courses/{record}`, `/courses/{record}/lessons/{lesson}`, `/quizzes/{record}`)
 come from `Panel::authenticatedRoutes()` with implicit Livewire route-model
 binding into `mount(?Course $record)`. Page-level `getRoutes()` does **not**
 exist in Filament 3.3.55. To add a learning page, register it in BOTH
 `->pages()` and `->authenticatedRoutes()` — never `routes/web.php`.
+
+The 4 learning pages are **deduplicated**: each panel's concrete class is a thin
+`extends` of the shared abstract base in `app/Filament/Pages/` (`MyCoursesBase`,
+`CourseDetailBase`, `LessonViewBase`, `QuizViewBase`), and the 4 views live once
+in `resources/views/filament/pages/` (not per panel). Filament 3.3.55 page
+discovery skips abstract classes, so the bases never register routes/navigation —
+they must stay abstract. To reference a panel-specific named route from a shared
+blade use the `panelRoute()` helper (`App\Support\ResolvesPanelRoutes`:
+`route('filament.'.getCurrentPanel()->id.'.'.$name, $params)`), never a hardcoded
+`filament.admin.*`/`filament.sba.*` prefix or `\App\Filament\...\MyCoursesPage::getUrl()`.
+When the panelled behavioral twins drift, fix the shared base once — the Admin and
+Sba `CourseDetailPage` diverged (quiz-less-toggle guard) and were merged here.
 
 ## Commands
 
