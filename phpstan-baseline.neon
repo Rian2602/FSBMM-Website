@@ -847,12 +847,6 @@ parameters:
 			path: app/Http/Controllers/CertificatePrintController.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\Category\:\:\$articles\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Public/ArticleController.php
-
-		-
 			message: '#^Cannot call method isPast\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 1
