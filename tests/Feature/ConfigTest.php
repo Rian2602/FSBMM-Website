@@ -42,8 +42,12 @@ class ConfigTest extends TestCase
     {
         // AWS_ENDPOINT is optional: classic AWS S3 resolves the endpoint from
         // AWS_DEFAULT_REGION; the guard in config/filesystems.php must NOT
-        // require it (R2/Spaces set it via env only when used).
-        $this->assertNull(config('filesystems.disks.s3.endpoint'));
+        // require it (R2/Spaces set it via env only when used). The value is
+        // null when unset locally, or '' when .env.example is copied (.env has
+        // AWS_ENDPOINT=), so both shapes must be tolerated.
+        $endpoint = config('filesystems.disks.s3.endpoint');
+        $this->assertTrue($endpoint === null || $endpoint === '');
+
         $this->assertFalse((bool) config('filesystems.disks.s3.use_path_style_endpoint'));
     }
 }
