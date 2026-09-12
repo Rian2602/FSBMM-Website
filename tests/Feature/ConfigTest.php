@@ -37,4 +37,13 @@ class ConfigTest extends TestCase
         $this->assertSame('local', config('filesystems.disks.public.driver'));
         $this->assertSame('s3', config('filesystems.disks.s3.driver'));
     }
+
+    public function test_s3_disk_shape_allows_classic_aws_without_endpoint(): void
+    {
+        // AWS_ENDPOINT is optional: classic AWS S3 resolves the endpoint from
+        // AWS_DEFAULT_REGION; the guard in config/filesystems.php must NOT
+        // require it (R2/Spaces set it via env only when used).
+        $this->assertNull(config('filesystems.disks.s3.endpoint'));
+        $this->assertFalse((bool) config('filesystems.disks.s3.use_path_style_endpoint'));
+    }
 }

@@ -13,13 +13,14 @@ use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 // AWS adapter (league/flysystem-aws-s3-v3) is installed AND the object-storage
 // config is complete. Otherwise disks fall back to the local ones, so a
 // misconfigured/lost AWS_* env can never take the site down (it just behaves
-// like the pre-S3 setup). **)
+// like the pre-S3 setup). AWS_ENDPOINT is OPTIONAL — it is required for
+// S3-compatible providers (R2/Spaces), but classic AWS S3 resolves the endpoint
+// from AWS_DEFAULT_REGION automatically. **)
 $s3Ready = class_exists(AwsS3V3Adapter::class)
     && env('AWS_ACCESS_KEY_ID')
     && env('AWS_SECRET_ACCESS_KEY')
     && env('AWS_DEFAULT_REGION')
-    && env('AWS_BUCKET')
-    && env('AWS_ENDPOINT');
+    && env('AWS_BUCKET');
 
 $localUsesS3 = env('FILESYSTEM_LOCAL_DRIVER', 'local') === 's3' && $s3Ready;
 $publicUsesS3 = env('FILESYSTEM_PUBLIC_DRIVER', 'local') === 's3' && $s3Ready;

@@ -185,10 +185,12 @@ Cloud DB). `master` runs CI only (`ci.yml`); master pushes don't deploy.
   when `FILESYSTEM_LOCAL_DRIVER`/`FILESYSTEM_PUBLIC_DRIVER=s3` (pinned in the
   image ENV). The swap is **guarded by `$s3Ready`**: it only engages when
   `league/flysystem-aws-s3-v3` is installed AND the full `AWS_*` config
-  (endpoint/bucket/keys/region) is present, otherwise disks fall back to
+  (bucket/keys/region) is present, otherwise disks fall back to
   `local` — a misconfigured AWS_* env can never take the site down. Keep that
   guard and swap shape if you touch filesystems config; tests and local dev keep
-  the local disks.
+  the local disks. `AWS_ENDPOINT` is optional (required only for S3-compatible
+  providers like R2/Spaces; classic AWS S3 resolves the endpoint from
+  `AWS_DEFAULT_REGION`).
 - Never let a dev `bootstrap/cache/packages.php`/`services.php` reach the image:
   `package:discover` in the `--no-dev` build would then load dev-only providers
   (e.g. laravel/pail) and crash. This is enforced by `.dockerignore` — don't
