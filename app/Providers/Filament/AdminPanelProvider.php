@@ -37,8 +37,10 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('FSBMM Admin')
+            ->font('Plus Jakarta Sans')
             ->colors([
-                'primary' => Color::Emerald, // brand family placeholder; final palette when official assets arrive
+                'primary' => Color::hex('#12806a'), // federation brand green (matches public --color-brand-600)
                 'info' => Color::Sky,
                 'warning' => Color::Amber,
                 'danger' => Color::Rose,

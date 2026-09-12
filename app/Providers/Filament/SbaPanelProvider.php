@@ -45,9 +45,10 @@ class SbaPanelProvider extends PanelProvider
             ->id('sba')
             ->path('panel-sba')
             ->login()
-            ->profile()
+            ->brandName('Panel SBA')
+            ->font('Plus Jakarta Sans')
             ->colors([
-                'primary' => Color::Emerald, // same placeholder brand family as /admin
+                'primary' => Color::hex('#12806a'), // federation brand green (matches public --color-brand-600)
                 'info' => Color::Sky,
                 'warning' => Color::Amber,
                 'danger' => Color::Rose,
